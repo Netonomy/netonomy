@@ -1,11 +1,12 @@
-import { Chat } from "./components/Chat";
+import { Providers } from "./Providers";
 import "./globals.css";
+import { Home } from "./pages/Home";
 
 function App() {
   return (
-    <>
-      <Chat />
-    </>
+    <Providers>
+      <Home />
+    </Providers>
   );
 }
 
