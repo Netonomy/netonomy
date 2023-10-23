@@ -1,0 +1,30 @@
+version: "3.0"
+services:
+  ai-webserver:
+    image: ghcr.io/abetlen/llama-cpp-python:latest
+    ports:
+      - 8000:8000
+    volumes:
+      - ./models:/models
+    environment:
+      - MODEL=/models/mistral/mistral-7b-instruct-v0.1.Q5_K_M.gguf
+      - LLAMA_METAL=on
+      - -DLLAMA_METAL=on
+      - n_gpu_layers=1
+
+  frontend:
+    build: ./web-frontend
+    ports:
+      - 4000:4000
+    volumes:
+      - ./web-frontend:/app
+
+  server:
+    build: ./server
+    ports:
+      - 3000:3000
+    volumes:
+      - ./server:/usr/src/app
+
+  vector-store:
+    image: chromadb/chroma
