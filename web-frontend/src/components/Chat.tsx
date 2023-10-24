@@ -98,7 +98,7 @@ export function Chat() {
                   className="absolute top-0 left-0 right-0 bottom-0 m-auto"
                 />
                 <img
-                  src="/agent-ring.svg"
+                  src="/agent-ring-2.svg"
                   height={175}
                   width={175}
                   alt="agent-ring"

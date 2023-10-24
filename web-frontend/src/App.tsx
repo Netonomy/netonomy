@@ -1,13 +1,13 @@
-import { Providers } from "./Providers";
+import { useContext } from "react";
 import "./globals.css";
 import { Home } from "./pages/Home";
+import Web5Context from "./Web5Provider";
+import { Splash } from "./pages/Splash";
 
 function App() {
-  return (
-    <Providers>
-      <Home />
-    </Providers>
-  );
+  const web5Context = useContext(Web5Context);
+
+  return web5Context ? <Home /> : <Splash />;
 }
 
 export default App;

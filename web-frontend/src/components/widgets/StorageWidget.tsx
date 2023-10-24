@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 export function StorageWidget() {
   return (
-    <Card className="h-[700px]">
+    <Card className=" flex flex-1">
       <CardHeader>
         <CardTitle>Storage</CardTitle>
       </CardHeader>

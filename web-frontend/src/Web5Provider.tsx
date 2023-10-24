@@ -1,4 +1,4 @@
-import { Web5 } from "@web5/api";
+import { Web5 } from "@web5/api/browser";
 import React, { useEffect, useState } from "react";
 
 // Create Web5 context
@@ -9,8 +9,11 @@ export function Web5Provider({ children }: any) {
   const [web5, setWeb5] = useState<Web5 | null>(null);
 
   async function connect() {
-    const { web5, did } = await Web5.connect();
-    console.log(did);
+    const { web5 } = await Web5.connect({
+      techPreview: {
+        dwnEndpoints: [],
+      },
+    });
     setWeb5(web5);
   }
 
