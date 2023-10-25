@@ -28,5 +28,9 @@ services:
 
   vector-store:
     image: chromadb/chroma
+    volumes:
+      - ./chroma-data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
     ports:
       - 8000:8000

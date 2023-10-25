@@ -28,7 +28,7 @@ export type ChatMessage = {
 // Atoms for managing chat
 const aiChatMessagesAtom = atom<ChatMessage[]>([]);
 const inputAtom = atom<string>("");
-const contextStringAtom = atom<string>("");
+export const contextStringAtom = atom<string | null>(null);
 
 // Main hook function for managing chat
 export default function useChat() {
@@ -187,7 +187,10 @@ export default function useChat() {
 
     // If there is context, then add it to the beginning of the input
     let inputWithContext = `--- Use this as context:
-Users DID: ${web5Context?.agent.agentDid}\n--- End of context\n\n${input}`;
+Users DID: ${web5Context?.agent.agentDid}\n`;
+    if (context) inputWithContext += `Document recordId: ${context}`;
+
+    inputWithContext += `\n--- End of context\n\n${input}`;
 
     // Update messages array to have users input
     const newMessages: ChatMessage[] = [
@@ -206,6 +209,8 @@ Users DID: ${web5Context?.agent.agentDid}\n--- End of context\n\n${input}`;
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
   ) => {
+    e.stopPropagation();
+    e.preventDefault();
     const value = e.target.value;
     const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
     setInput(capitalizedValue);

@@ -111,15 +111,19 @@ export async function queryCollection({
 
   nResults = nResults || 3;
 
-  const filters: any = {
+  let filters: any = {
     did: { $eq: did },
   };
-  if (recordId) filters.$and.push({ recordId: { $eq: recordId } });
+  // if (recordId) {
+  //   filters = {
+  //     $and: [{ did: { $eq: did } }, { recordId: { $eq: recordId } }],
+  //   };
+  // }
 
   const results = await collection.query({
     nResults,
     queryEmbeddings,
-    // where: filters,
+    where: filters,
   });
 
   return {

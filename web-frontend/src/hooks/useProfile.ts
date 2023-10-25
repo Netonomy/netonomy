@@ -12,6 +12,8 @@ export default function useProfile() {
   const [fetched, setFetched] = useAtom(fetchedProfile);
   const web5Context = useContext(Web5Context);
 
+  console.log(profile);
+
   async function fetchProfile() {
     if (web5Context) {
       const { records } = await web5Context.dwn.records.query({
@@ -33,10 +35,16 @@ export default function useProfile() {
             },
           });
 
+          console.log(image);
+
           const blob = await image?.record.data.blob();
+
+          console.log(blob);
 
           const url = URL.createObjectURL(blob);
           profile.image = url;
+
+          console.log(url);
         } else {
           console.log("no image");
         }
@@ -58,6 +66,21 @@ export default function useProfile() {
       });
 
       if (record) {
+        // Load the profile image
+        if (profile.image) {
+          const image = await web5Context.dwn.records.read({
+            message: {
+              recordId: profile.image,
+            },
+          });
+          console.log(image);
+
+          const blob = await image?.record.data.blob();
+          console.log(blob);
+
+          profile.image = URL.createObjectURL(blob);
+        }
+
         setProfile(profile);
       }
     }

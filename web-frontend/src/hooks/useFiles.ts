@@ -27,23 +27,6 @@ export default function useFiles() {
           data: blob,
         });
 
-        // TODO: upload to chroma
-        const formData = new FormData();
-        formData.append("file", blob);
-        formData.append("did", web5Context.agent.agentDid || "");
-        formData.append("recordId", blobResult.record!.id);
-
-        // Upload to chroma
-        await axios.post(
-          "http://localhost:3000/api/chroma/uploadFile",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
         let data: DigitalDocument = {
           "@context": "https://schema.org",
           "@type": "DigitalDocument",
@@ -64,6 +47,23 @@ export default function useFiles() {
         });
 
         if (fileObjectRes.record) data.identifier = fileObjectRes.record?.id;
+
+        // upload to chroma
+        const formData = new FormData();
+        formData.append("file", blob);
+        formData.append("did", web5Context.agent.agentDid || "");
+        formData.append("recordId", fileObjectRes.record!.id);
+
+        // Upload to chroma
+        await axios.post(
+          "http://localhost:3000/api/chroma/uploadFile",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
         setFiles((prevDocs: DigitalDocument[]) => [data, ...prevDocs]);
       }
@@ -132,7 +132,7 @@ export default function useFiles() {
 
 // Types
 
-type DigitalDocument = {
+export type DigitalDocument = {
   "@context": "https://schema.org";
   "@type": "DigitalDocument";
   name: string;

@@ -11,8 +11,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 export function StorageWidget() {
+  const navigate = useNavigate();
   const { uploadFiles, files, deleteFile } = useFiles();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -55,6 +57,9 @@ export function StorageWidget() {
             <div
               key={i}
               className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-gray-100`}
+              onClick={() => {
+                navigate(`/${file.identifier}`);
+              }}
             >
               <FileIcon type={file.encodingFormat} />
 
@@ -94,6 +99,12 @@ export function StorageWidget() {
               </DropdownMenu>
             </div>
           ))}
+
+          {files.length === 0 && (
+            <div className="w-full h-[90%] flex items-center justify-center">
+              <div className="text-lg font-semibold">No files uploaded yet</div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
