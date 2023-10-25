@@ -1,5 +1,6 @@
+import Web5Context from "@/Web5Provider";
 import { atom, useAtom } from "jotai";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useContext, useState } from "react";
 
 // Enum to define the roles in the chat
 export enum MessageRole {
@@ -27,12 +28,15 @@ export type ChatMessage = {
 // Atoms for managing chat
 const aiChatMessagesAtom = atom<ChatMessage[]>([]);
 const inputAtom = atom<string>("");
+const contextStringAtom = atom<string>("");
 
 // Main hook function for managing chat
 export default function useChat() {
   const [messages, setMessages] = useAtom(aiChatMessagesAtom); // State for messages
   const [input, setInput] = useAtom(inputAtom); // State for input
   const [generating, setGenerating] = useState(false); // State for when AI is generating response
+  const [context, setContext] = useAtom(contextStringAtom); // State for context
+  const web5Context = useContext(Web5Context);
 
   // Function to reset the chat
   const resetChat = () => {
@@ -58,7 +62,7 @@ export default function useChat() {
     setGenerating(true);
 
     // Fetch request to send the messages
-    fetch(`http://localhost:3000/api/ai/chatCompletion`, {
+    fetch(`http://localhost:3000/api/ai/functionCalling`, {
       method: "POST",
       body: JSON.stringify({
         messages: _messages,
@@ -85,12 +89,81 @@ export default function useChat() {
                 const chunk = new TextDecoder().decode(value);
 
                 // Update AI message with new tokens
-                setMessages((prevMessages) => {
-                  let updatedMessages = [...prevMessages];
-                  let lastMessage = updatedMessages[updatedMessages.length - 1];
-                  lastMessage.content += chunk;
+                // setMessages((prevMessages) => {
+                //   let updatedMessages = [...prevMessages];
+                //   let lastMessage = updatedMessages[updatedMessages.length - 1];
+                //   lastMessage.content += chunk;
 
-                  return updatedMessages;
+                //   return updatedMessages;
+                // });
+
+                // Split the chunk by '}' and filter out any empty strings
+                const jsonStrings = chunk
+                  .split("}")
+                  .filter((str) => str.trim() !== "");
+
+                jsonStrings.forEach((jsonString) => {
+                  // Try to parse each JSON string
+                  let json: {
+                    type: string;
+                    token?: string;
+                    name?: string;
+                    id?: string;
+                  };
+                  try {
+                    json = JSON.parse(jsonString + "}");
+                  } catch (err) {
+                    console.error(`Unable to parse chunk as JSON: ${err}`);
+                    return;
+                  }
+
+                  // If its type message then update the messages
+                  if (json.type === "message" && json.token !== undefined) {
+                    // extract the token
+                    const { token } = json;
+
+                    // Update AI message with new tokens
+                    setMessages((prevMessages) => {
+                      let updatedMessages = [...prevMessages];
+                      let lastMessage =
+                        updatedMessages[updatedMessages.length - 1];
+                      lastMessage.content += token;
+
+                      return updatedMessages;
+                    });
+                  } else if (json.type === "function-call-start") {
+                    // Update the messages to know the function call is starting
+                    // Store a new message right before the last message in the array
+                    setMessages((prevMessages) => {
+                      let updatedMessages = [...prevMessages];
+                      let lastMessage =
+                        updatedMessages[updatedMessages.length - 1];
+                      updatedMessages.splice(updatedMessages.length - 1, 0, {
+                        role: MessageRole.function,
+                        id: json.id,
+                        content: null,
+                        function_call: {
+                          name: json.name!,
+                          arguments: "",
+                          executing: true,
+                        },
+                      });
+                      return updatedMessages;
+                    });
+                  } else if (json.type === "function-call-end") {
+                    // Get the index of the function call message by id
+                    // Set the function call message to not executing
+                    setMessages((prevMessages) => {
+                      let updatedMessages = [...prevMessages];
+                      let functionCallMessageIndex = updatedMessages.findIndex(
+                        (message) => message.id === json.id
+                      );
+                      updatedMessages[
+                        functionCallMessageIndex
+                      ].function_call!.executing = false;
+                      return updatedMessages;
+                    });
+                  }
                 });
               }
             }
@@ -112,12 +185,16 @@ export default function useChat() {
     // If there no user input then don't send messages
     if (input === "") return;
 
+    // If there is context, then add it to the beginning of the input
+    let inputWithContext = `--- Use this as context:
+Users DID: ${web5Context?.agent.agentDid}\n--- End of context\n\n${input}`;
+
     // Update messages array to have users input
     const newMessages: ChatMessage[] = [
       ...messages,
       {
         role: MessageRole.user,
-        content: input,
+        content: inputWithContext,
       },
     ];
     setMessages(newMessages); // Set the new messages
@@ -145,5 +222,6 @@ export default function useChat() {
     handleSubmit,
     sendMessages,
     generating,
+    setContext,
   };
 }

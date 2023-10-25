@@ -134,7 +134,7 @@ export function Chat() {
                       <div
                         className={`my-2 p-3 rounded-xl inline-block bg-blue-500 text-white ml-auto whitespace-pre-wrap`}
                       >
-                        {message.content}
+                        {message.content?.split("--- End of context")[1].trim()}
                       </div>
                     )}
                     {message.role === "assistant" && (

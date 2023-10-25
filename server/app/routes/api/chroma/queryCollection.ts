@@ -60,31 +60,11 @@ export default Router({ mergeParams: true }).post(
 
       nResults = nResults || 10;
 
-      const collection = await chromaClient.getCollection({
-        name: collectionName,
-      });
-
-      if (!collection)
-        return res.status(400).json({
-          status: "FAILED",
-          message: "Failed to get collection",
-        });
-
-      let queryEmbeddings = [];
-      for (const queryText of queryTexts) {
-        const queryEmbedding = await openai.embeddings.create({
-          input: queryText,
-          model: "text-embedding-ada-002",
-        });
-        queryEmbeddings.push(queryEmbedding.data[0].embedding);
-      }
-
-      const results = await collection.query({
+      const results = await queryCollection({
+        queryTexts,
+        did,
+        recordId,
         nResults,
-        queryEmbeddings,
-        where: {
-          $and: [{ did: { $eq: did } }, { recordId: { $eq: recordId } }],
-        },
       });
 
       return res.json(results);
@@ -98,3 +78,53 @@ export default Router({ mergeParams: true }).post(
     }
   }
 );
+
+export async function queryCollection({
+  queryTexts,
+  did,
+  recordId,
+  nResults,
+}: {
+  queryTexts: string[];
+  did: string;
+  recordId?: string;
+  nResults?: number;
+}) {
+  const collection = await chromaClient.getCollection({
+    name: "test2",
+  });
+
+  if (!collection)
+    return {
+      status: "FAILED",
+      message: "Failed to get collection",
+    };
+
+  let queryEmbeddings = [];
+  for (const queryText of queryTexts) {
+    const queryEmbedding = await openai.embeddings.create({
+      input: queryText,
+      model: "text-embedding-ada-002",
+    });
+    queryEmbeddings.push(queryEmbedding.data[0].embedding);
+  }
+
+  nResults = nResults || 3;
+
+  const filters: any = {
+    did: { $eq: did },
+  };
+  if (recordId) filters.$and.push({ recordId: { $eq: recordId } });
+
+  const results = await collection.query({
+    nResults,
+    queryEmbeddings,
+    // where: filters,
+  });
+
+  return {
+    status: "OK",
+    message: "Collection queried",
+    results,
+  };
+}

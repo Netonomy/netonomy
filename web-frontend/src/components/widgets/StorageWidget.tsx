@@ -1,4 +1,4 @@
-import { FileUp, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { FileUp, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useRef } from "react";

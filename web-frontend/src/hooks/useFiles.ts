@@ -3,6 +3,7 @@ import { loadingAtom } from "@/state/loadingAtom";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { useContext, useEffect } from "react";
+import axios from "axios";
 
 // Atoms
 const filesAtom = atomWithStorage<DigitalDocument[]>("files", []);
@@ -27,6 +28,21 @@ export default function useFiles() {
         });
 
         // TODO: upload to chroma
+        const formData = new FormData();
+        formData.append("file", blob);
+        formData.append("did", web5Context.agent.agentDid || "");
+        formData.append("recordId", blobResult.record!.id);
+
+        // Upload to chroma
+        await axios.post(
+          "http://localhost:3000/api/chroma/uploadFile",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
         let data: DigitalDocument = {
           "@context": "https://schema.org",
