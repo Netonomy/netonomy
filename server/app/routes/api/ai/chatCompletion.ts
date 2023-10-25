@@ -52,7 +52,7 @@ export default Router({ mergeParams: true }).post(
       let messages: ChatCompletionMessageParam[] = [...req.body.messages];
 
       const stream = await openai.chat.completions.create({
-        model: "mistal-7b-instruct",
+        model: "gpt-3.5-turbo",
         messages,
         stream: true,
         temperature: 0,

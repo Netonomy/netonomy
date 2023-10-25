@@ -1,8 +1,7 @@
 import OpenAI from "openai";
 
 const openai = new OpenAI({
-  baseURL: "http://ai-webserver:8000/v1",
-  apiKey: "",
+  baseURL: process.env.OPENAI_BASE_URL,
 });
 
 export default openai;
