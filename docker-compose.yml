@@ -1,16 +1,16 @@
 version: "3.0"
 services:
-  # llama-cpp:
-  #   image: ghcr.io/abetlen/llama-cpp-python:latest
-  #   ports:
-  #     - 8000:8000
-  #   volumes:
-  #     - ./models:/models
-  #   environment:
-  #     - MODEL=/models/llama/llama-2-7b-chat.Q4_K_M.gguf
-  #     - LLAMA_METAL=on
-  #     - -DLLAMA_METAL=on
-  #     - n_gpu_layers=1
+  llama-cpp:
+    image: ghcr.io/abetlen/llama-cpp-python:latest
+    ports:
+      - 8000:8000
+    volumes:
+      - ./models:/models
+    environment:
+      - MODEL=/models/llama/llama-2-7b-chat.Q4_K_M.gguf
+      - LLAMA_METAL=on
+      - -DLLAMA_METAL=on
+      - n_gpu_layers=1
 
   frontend:
     build: ./web-frontend
@@ -26,11 +26,11 @@ services:
     volumes:
       - ./server:/usr/src/app
 
-  vector-store:
-    image: chromadb/chroma
-    volumes:
-      - ./chroma-data:/chroma/chroma
-    environment:
-      - IS_PERSISTENT=TRUE
-    ports:
-      - 8000:8000
+  # vector-store:
+  #   image: chromadb/chroma
+  #   volumes:
+  #     - ./chroma-data:/chroma/chroma
+  #   environment:
+  #     - IS_PERSISTENT=TRUE
+  #   ports:
+  #     - 8000:8000
