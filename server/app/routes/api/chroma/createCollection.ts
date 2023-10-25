@@ -49,7 +49,6 @@ export default Router({ mergeParams: true }).post(
 
       const collection = await chromaClient.createCollection({
         name,
-        embeddingFunction: embedder,
       });
 
       if (!collection)
