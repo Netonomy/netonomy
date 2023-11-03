@@ -1,4 +1,14 @@
-# Netonomy: Internet Freedom 🚀
+<div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+<img src="./web-frontend/public/keyLogo.svg" height=100/>
+<h3 style="font-size: 45px;  margin-bottom: 4px;">Netonomy</h3>
+<p style="font-size: 16px;">Internet Freedom 🚀</p>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: center;">
+<a href="https://discord.gg/xG6KJwpxKj">
+<img src="./docs/images/discord-logo.png" height=30/>
+</a>
+</div>
 
 ## 🔎 What is the point of decentralized identifiers ?
 
