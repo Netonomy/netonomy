@@ -54,6 +54,9 @@ export default function useFiles() {
         formData.append("did", web5Context.agent.agentDid || "");
         formData.append("recordId", fileObjectRes.record!.id);
 
+        console.log("ID:");
+        console.log(fileObjectRes.record?.id);
+
         // Upload to chroma
         await axios.post(
           "http://localhost:3000/api/chroma/uploadFile",

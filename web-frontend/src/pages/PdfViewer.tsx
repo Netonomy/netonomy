@@ -12,7 +12,7 @@ import { RingLoader } from "react-spinners";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import { contextStringAtom } from "@/hooks/useChat";
+import useChat, { contextStringAtom, recordIdAtom } from "@/hooks/useChat";
 import { useAtom } from "jotai";
 // Set the worker source for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -24,7 +24,7 @@ export default function PdfViewer() {
   const navigate = useNavigate();
   const { recordId } = useParams();
 
-  const [, setContext] = useAtom(contextStringAtom); // State for context
+  const [, setRecordId] = useAtom(recordIdAtom);
 
   //   const { setContext } = useChat();
 
@@ -56,10 +56,10 @@ export default function PdfViewer() {
   }
 
   useEffect(() => {
-    setContext(recordId!);
+    setRecordId(recordId!);
 
     return () => {
-      setContext(null);
+      setRecordId(null);
     };
   }, [recordId]);
 

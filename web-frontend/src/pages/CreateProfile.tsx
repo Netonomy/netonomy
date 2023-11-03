@@ -72,48 +72,63 @@ export default function CreateProfile() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full max-w-[335px]"
+          className="space-y-8 w-full max-w-[335px] h-full flex flex-col items-center justify-between"
         >
-          <div className="w-full flex items-center flex-col gap-2">
-            <Avatar
-              className="h-16 w-16"
-              onClick={() => {
-                inputref?.current?.click();
-              }}
-            >
-              <AvatarImage src={file ? URL.createObjectURL(file) : undefined} />
-              <AvatarFallback>
-                <div className="rounded-full h-16 w-16 bg-gray-400 file:text-transparent" />
-              </AvatarFallback>
-            </Avatar>
+          <div className="w-full flex items-center flex-col gap-10">
+            <div className="mt-[30%] flex flex-col items-center w-full gap-[75px]">
+              <h3 className="scroll-m-20 text-4xl text-center font-semibold tracking-tight">
+                Create your digital profile
+              </h3>
 
-            <input
-              ref={inputref}
-              hidden
-              type="file"
-              accept="image/*"
-              onChange={handleChange}
+              <div className="flex flex-col items-center gap-2">
+                <Avatar
+                  className="h-16 w-16"
+                  onClick={() => {
+                    inputref?.current?.click();
+                  }}
+                >
+                  <AvatarImage
+                    src={file ? URL.createObjectURL(file) : undefined}
+                  />
+                  <AvatarFallback>
+                    <div className="rounded-full h-16 w-16 bg-gray-400 file:text-transparent" />
+                  </AvatarFallback>
+                </Avatar>
+
+                <input
+                  ref={inputref}
+                  hidden
+                  type="file"
+                  accept="image/*"
+                  onChange={handleChange}
+                />
+
+                <p className="text-sm text-muted-foreground">
+                  Select a profile image.
+                </p>
+              </div>
+            </div>
+
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Name" {...field} className="w-full" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-
-            <p className="text-sm text-muted-foreground">
-              Select a profile image.
-            </p>
           </div>
 
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Submit</Button>
+          <div className="w-full mb-[20px] min-h-[75px]">
+            <Button type="submit" className="w-full">
+              Submit
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

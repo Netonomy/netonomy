@@ -7,10 +7,6 @@ export function Splash() {
         width={250}
         className="animate-bounce"
       />
-
-      <div className="text-lg font-semibold text-white">
-        Setting up your decentralized identity...
-      </div>
     </div>
   );
 }

@@ -1,10 +1,29 @@
 import { Router } from "express";
-import chromaClient from "../../../config/chomaClient.js";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import multer from "multer";
-import openai from "../../../config/openai.js";
+import fs from "fs";
+import path from "path";
+import Joi from "joi";
+import vectorStore from "../../../config/vectorStore.js";
 
-const upload = multer({ dest: "files/" });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "files/");
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+const upload = multer({ storage: storage, dest: "files/" });
+
+const schema = Joi.object({
+  did: Joi.string().required(),
+  recordId: Joi.string().optional(),
+}).unknown(true);
 
 /**
  * @swagger
@@ -23,12 +42,11 @@ const upload = multer({ dest: "files/" });
  *                 type: string
  *                 format: binary
  *                 required: true
- *               recordId:
- *                 type: string
- *                 required: true
  *               did:
  *                 type: string
  *                 required: true
+ *               recordId:
+ *                  type: string
  *     responses:
  *       200:
  *         description: OK
@@ -40,64 +58,61 @@ export default Router({ mergeParams: true }).post(
   upload.single("file"),
   async (req, res) => {
     try {
+      const { error } = schema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          status: "FAILED",
+          message: error.details[0].message,
+        });
+      }
+
       const file = req.file; // Extracting file from the request
 
       // If no file is found in the request, return a 400 status code with a message
       if (!file) return res.status(400).json({ message: "No file" });
 
-      // Extracting 'did' and 'recordId' from the request body
       const { did, recordId } = req.body;
-
-      // If the file is a PDF, proceed with the following operations
-      if (file.mimetype === "application/pdf") {
-        // Create a new instance of PDFLoader with the file path
-        const loader = new PDFLoader(file.path);
-
-        // Load the documents from the PDF file
-        let docs = await loader.load();
-
-        const documents = docs.map((doc) => doc.pageContent);
-
-        // Map through the documents and add metadata to each document
-        const metadatas = docs.map(() => {
-          return { did, recordId };
-        });
-
-        const ids = docs.map((doc, i) => i.toString());
-
-        let embeddings: any = [];
-        for (const doc of docs) {
-          const embedding = await openai.embeddings.create({
-            input: doc.pageContent,
-            model: "text-embedding-ada-002",
-          });
-          embeddings.push(embedding.data[0].embedding);
-        }
-
-        const colleciton = await chromaClient.getCollection({
-          name: "test2",
-        });
-
-        const response = await colleciton.add({
-          documents,
-          metadatas,
-          ids,
-          embeddings,
-        });
-
-        if (response.error) {
-          console.error(response.error);
-          return res.status(400).json({
-            status: "FAILED",
-            message: response.error,
-          });
-        }
+      let filter: any = {
+        did,
+      };
+      if (recordId) {
+        filter = {
+          ...filter,
+          recordId,
+        };
       }
 
-      return res.json({
-        status: "OK",
-        message: "Documents added to collection",
-      });
+      if (file.mimetype === "application/pdf") {
+        const loader = new PDFLoader(file.path);
+
+        let docs = await loader.load();
+        docs = docs.map((doc) => {
+          doc.metadata = {
+            ...doc.metadata,
+            ...filter,
+          };
+          return doc;
+        });
+
+        await vectorStore.addDocuments(docs);
+
+        fs.unlink(file.path, (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+        });
+
+        return res.json({
+          status: "OK",
+          message: "Documents added to collection",
+        });
+      } else {
+        return res.status(400).json({
+          status: "FAILED",
+          message: "Invalid file type",
+        });
+      }
     } catch (err) {
       console.error(err);
 

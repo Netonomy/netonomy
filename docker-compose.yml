@@ -18,6 +18,8 @@ services:
       - 4000:4000
     volumes:
       - ./web-frontend:/app
+    depends_on:
+      - server 
 
   server:
     build: ./server
@@ -25,6 +27,8 @@ services:
       - 3000:3000
     volumes:
       - ./server:/usr/src/app
+    depends_on:
+      - vector-store
 
   vector-store:
     image: chromadb/chroma

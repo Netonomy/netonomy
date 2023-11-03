@@ -29,6 +29,7 @@ export type ChatMessage = {
 const aiChatMessagesAtom = atom<ChatMessage[]>([]);
 const inputAtom = atom<string>("");
 export const contextStringAtom = atom<string | null>(null);
+export const recordIdAtom = atom<string | null>(null); // Record Id if the file is currently being viewed
 
 // Main hook function for managing chat
 export default function useChat() {
@@ -37,6 +38,7 @@ export default function useChat() {
   const [generating, setGenerating] = useState(false); // State for when AI is generating response
   const [context, setContext] = useAtom(contextStringAtom); // State for context
   const web5Context = useContext(Web5Context);
+  const [recordId, setRecordId] = useAtom(recordIdAtom);
 
   // Function to reset the chat
   const resetChat = () => {
@@ -44,7 +46,7 @@ export default function useChat() {
   };
 
   // Function to send messages
-  async function sendMessages(_messages: ChatMessage[]) {
+  async function sendMessages(_messages: ChatMessage[], question: string) {
     // Reset input
     setInput("");
 
@@ -62,10 +64,13 @@ export default function useChat() {
     setGenerating(true);
 
     // Fetch request to send the messages
-    fetch(`http://localhost:3000/api/ai/functionCalling`, {
+    fetch(`http://localhost:3000/api/ai/chains/retrievalQA`, {
       method: "POST",
       body: JSON.stringify({
-        messages: _messages,
+        chatHistory: _messages,
+        input: question,
+        did: web5Context?.agent.agentDid,
+        recordId: recordId || undefined,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -89,82 +94,82 @@ export default function useChat() {
                 const chunk = new TextDecoder().decode(value);
 
                 // Update AI message with new tokens
-                // setMessages((prevMessages) => {
-                //   let updatedMessages = [...prevMessages];
-                //   let lastMessage = updatedMessages[updatedMessages.length - 1];
-                //   lastMessage.content += chunk;
+                setMessages((prevMessages) => {
+                  let updatedMessages = [...prevMessages];
+                  let lastMessage = updatedMessages[updatedMessages.length - 1];
+                  lastMessage.content += chunk;
 
-                //   return updatedMessages;
-                // });
+                  return updatedMessages;
+                });
 
                 // Split the chunk by '}' and filter out any empty strings
-                const jsonStrings = chunk
-                  .split("}")
-                  .filter((str) => str.trim() !== "");
+                // const jsonStrings = chunk
+                //   .split("}")
+                //   .filter((str) => str.trim() !== "");
 
-                jsonStrings.forEach((jsonString) => {
-                  // Try to parse each JSON string
-                  let json: {
-                    type: string;
-                    token?: string;
-                    name?: string;
-                    id?: string;
-                  };
-                  try {
-                    json = JSON.parse(jsonString + "}");
-                  } catch (err) {
-                    console.error(`Unable to parse chunk as JSON: ${err}`);
-                    return;
-                  }
+                // jsonStrings.forEach((jsonString) => {
+                //   // Try to parse each JSON string
+                //   let json: {
+                //     type: string;
+                //     token?: string;
+                //     name?: string;
+                //     id?: string;
+                //   };
+                //   try {
+                //     json = JSON.parse(jsonString + "}");
+                //   } catch (err) {
+                //     console.error(`Unable to parse chunk as JSON: ${err}`);
+                //     return;
+                //   }
 
-                  // If its type message then update the messages
-                  if (json.type === "message" && json.token !== undefined) {
-                    // extract the token
-                    const { token } = json;
+                //   // If its type message then update the messages
+                //   if (json.type === "message" && json.token !== undefined) {
+                //     // extract the token
+                //     const { token } = json;
 
-                    // Update AI message with new tokens
-                    setMessages((prevMessages) => {
-                      let updatedMessages = [...prevMessages];
-                      let lastMessage =
-                        updatedMessages[updatedMessages.length - 1];
-                      lastMessage.content += token;
+                //     // Update AI message with new tokens
+                //     setMessages((prevMessages) => {
+                //       let updatedMessages = [...prevMessages];
+                //       let lastMessage =
+                //         updatedMessages[updatedMessages.length - 1];
+                //       lastMessage.content += token;
 
-                      return updatedMessages;
-                    });
-                  } else if (json.type === "function-call-start") {
-                    // Update the messages to know the function call is starting
-                    // Store a new message right before the last message in the array
-                    setMessages((prevMessages) => {
-                      let updatedMessages = [...prevMessages];
-                      let lastMessage =
-                        updatedMessages[updatedMessages.length - 1];
-                      updatedMessages.splice(updatedMessages.length - 1, 0, {
-                        role: MessageRole.function,
-                        id: json.id,
-                        content: null,
-                        function_call: {
-                          name: json.name!,
-                          arguments: "",
-                          executing: true,
-                        },
-                      });
-                      return updatedMessages;
-                    });
-                  } else if (json.type === "function-call-end") {
-                    // Get the index of the function call message by id
-                    // Set the function call message to not executing
-                    setMessages((prevMessages) => {
-                      let updatedMessages = [...prevMessages];
-                      let functionCallMessageIndex = updatedMessages.findIndex(
-                        (message) => message.id === json.id
-                      );
-                      updatedMessages[
-                        functionCallMessageIndex
-                      ].function_call!.executing = false;
-                      return updatedMessages;
-                    });
-                  }
-                });
+                //       return updatedMessages;
+                //     });
+                //   } else if (json.type === "function-call-start") {
+                //     // Update the messages to know the function call is starting
+                //     // Store a new message right before the last message in the array
+                //     setMessages((prevMessages) => {
+                //       let updatedMessages = [...prevMessages];
+                //       let lastMessage =
+                //         updatedMessages[updatedMessages.length - 1];
+                //       updatedMessages.splice(updatedMessages.length - 1, 0, {
+                //         role: MessageRole.function,
+                //         id: json.id,
+                //         content: null,
+                //         function_call: {
+                //           name: json.name!,
+                //           arguments: "",
+                //           executing: true,
+                //         },
+                //       });
+                //       return updatedMessages;
+                //     });
+                //   } else if (json.type === "function-call-end") {
+                //     // Get the index of the function call message by id
+                //     // Set the function call message to not executing
+                //     setMessages((prevMessages) => {
+                //       let updatedMessages = [...prevMessages];
+                //       let functionCallMessageIndex = updatedMessages.findIndex(
+                //         (message) => message.id === json.id
+                //       );
+                //       updatedMessages[
+                //         functionCallMessageIndex
+                //       ].function_call!.executing = false;
+                //       return updatedMessages;
+                //     });
+                //   }
+                // });
               }
             }
           } catch (err) {
@@ -185,24 +190,16 @@ export default function useChat() {
     // If there no user input then don't send messages
     if (input === "") return;
 
-    // If there is context, then add it to the beginning of the input
-    let inputWithContext = `--- Use this as context:
-Users DID: ${web5Context?.agent.agentDid}\n`;
-    if (context) inputWithContext += `Document recordId: ${context}`;
-
-    inputWithContext += `\n--- End of context\n\n${input}`;
-
     // Update messages array to have users input
     const newMessages: ChatMessage[] = [
       ...messages,
       {
         role: MessageRole.user,
-        content: inputWithContext,
+        content: input,
       },
     ];
-    setMessages(newMessages); // Set the new messages
 
-    sendMessages(newMessages); // Send the new messages
+    sendMessages(newMessages, input); // Send the new messages
   };
 
   // Function to handle input change
@@ -228,5 +225,6 @@ Users DID: ${web5Context?.agent.agentDid}\n`;
     sendMessages,
     generating,
     setContext,
+    setRecordId,
   };
 }

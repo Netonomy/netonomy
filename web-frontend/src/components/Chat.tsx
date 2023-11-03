@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef } from "react";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { PlusIcon, SendIcon } from "lucide-react";
+import { Loader2, PlusIcon, SendIcon } from "lucide-react";
 import useChat from "@/hooks/useChat";
 import { Card, CardContent } from "./ui/card";
 
@@ -49,7 +49,7 @@ export function Chat() {
   }, [generating]);
 
   return (
-    <Card className="relative flex flex-col items-center flex-1 w-full h-full rounded-xl">
+    <Card className="relative flex flex-col items-center flex-1 w-full h-full rounded-xl overflow-hidden shadow-lg">
       <CardContent className="h-full flex flex-col items-center w-full rounded-xl p-0">
         {/** Header */}
         <div className="absolute top-0 left-0 right-0 h-[55px] z-40 backdrop-blur-xl bg-[#fafafa]/30 dark:bg-[#0a0a0a]/30 ">
@@ -134,7 +134,7 @@ export function Chat() {
                       <div
                         className={`my-2 p-3 rounded-xl inline-block bg-blue-500 text-white ml-auto whitespace-pre-wrap`}
                       >
-                        {message.content?.split("--- End of context")[1].trim()}
+                        {message.content}
                       </div>
                     )}
                     {message.role === "assistant" && (
@@ -164,6 +164,7 @@ export function Chat() {
             role="textbox"
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
+            disabled={generating}
             placeholder="Send a message..."
             className="min-h-[50px] h-10 max-h-[250px] pt-[12px] mr-[47px] resize-none w-full text-md bg-secondary text-primary box-border"
           />
@@ -172,9 +173,14 @@ export function Chat() {
             size="icon"
             className="p-2 absolute bottom-3 right-2"
             type="submit"
+            disabled={generating}
             ref={buttonRef}
           >
-            <SendIcon className="w-4 h-4" />
+            {generating ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <SendIcon className="w-4 h-4" />
+            )}
           </Button>
         </form>
       </CardContent>

@@ -25,7 +25,7 @@ export function StorageWidget() {
   };
 
   return (
-    <Card className=" flex flex-col flex-1 ">
+    <Card className=" flex flex-col flex-1 rounded-xl shadow-lg">
       <CardHeader className="flex flex-row items-center">
         <CardTitle>Storage</CardTitle>
 

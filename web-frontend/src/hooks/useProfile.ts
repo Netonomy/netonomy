@@ -12,8 +12,6 @@ export default function useProfile() {
   const [fetched, setFetched] = useAtom(fetchedProfile);
   const web5Context = useContext(Web5Context);
 
-  console.log(profile);
-
   async function fetchProfile() {
     if (web5Context) {
       const { records } = await web5Context.dwn.records.query({
