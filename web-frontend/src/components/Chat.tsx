@@ -5,6 +5,13 @@ import { Loader2, PlusIcon, SendIcon } from "lucide-react";
 import useChat from "@/hooks/useChat";
 import { Card, CardContent } from "./ui/card";
 import ReactMarkdown from "react-markdown";
+import { CodeBlock, dracula } from "react-code-blocks";
+import {
+  materialDark,
+  materialLight,
+  oneLight,
+} from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 
 export function Chat() {
   const {
@@ -149,7 +156,7 @@ export function Chat() {
                       )}
                       {message.role === "assistant" && (
                         <div
-                          className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-black mr-auto whitespace-pre-wrap ${
+                          className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-black mr-auto max-w-[60%] whitespace-pre-wrap ${
                             message.content === "" && "animate-bounce"
                           }`}
                         >
@@ -175,6 +182,32 @@ export function Chat() {
                                   {...props}
                                 />
                               ),
+                              code({
+                                node,
+
+                                className,
+                                children,
+                                ...props
+                              }) {
+                                const match = /language-(\w+)/.exec(
+                                  className || ""
+                                );
+                                return match ? (
+                                  <SyntaxHighlighter
+                                    children={String(children).replace(
+                                      /\n$/,
+                                      ""
+                                    )}
+                                    language={match[1]}
+                                    style={oneLight}
+                                    {...props}
+                                  />
+                                ) : (
+                                  <code className={className} {...props}>
+                                    {children}
+                                  </code>
+                                );
+                              },
                             }}
                           >
                             {message.content}

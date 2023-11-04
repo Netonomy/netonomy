@@ -33,10 +33,10 @@ export function ProfileWidet() {
         <div className="h-12 w-12 lg:h-40 lg:w-40 relative">
           <Avatar className="h-full w-full">
             {profile?.image && <AvatarImage src={profile.image} />}
-            <AvatarFallback>
+            {/* <AvatarFallback>
               {profile?.name?.split(" ")[0]?.charAt(0)}
               {profile?.name?.split(" ")[1]?.charAt(0)}
-            </AvatarFallback>
+            </AvatarFallback> */}
           </Avatar>
 
           {dings.length > 0 && <DingsDialog />}

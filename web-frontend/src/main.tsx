@@ -7,6 +7,7 @@ import { Providers } from "./Providers.tsx";
 import PdfViewer from "./pages/PdfViewer.tsx";
 import { ProfileWidet } from "./components/widgets/ProfileWidget.tsx";
 import { StorageWidget } from "./components/widgets/StorageWidget.tsx";
+import { Chat } from "./components/Chat.tsx";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,14 @@ const router = createBrowserRouter([
   {
     path: "/profile",
     element: <CreateProfile />,
+  },
+  {
+    path: "/chat",
+    element: (
+      <div className="h-screen w-screen p-8">
+        <Chat />
+      </div>
+    ),
   },
 ]);
 
