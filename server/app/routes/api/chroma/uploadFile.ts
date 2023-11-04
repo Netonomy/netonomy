@@ -94,6 +94,8 @@ export default Router({ mergeParams: true }).post(
           return doc;
         });
 
+        console.log(docs);
+
         await vectorStore.addDocuments(docs);
 
         fs.unlink(file.path, (err) => {

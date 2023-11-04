@@ -5,7 +5,12 @@ import { formatDocumentsAsString } from "langchain/util/document";
 import { StringOutputParser } from "langchain/schema/output_parser";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { PromptTemplate } from "langchain/prompts";
-import { AIMessage, BaseMessage, HumanMessage } from "langchain/schema";
+import {
+  AIMessage,
+  BaseMessage,
+  HumanMessage,
+  SystemMessage,
+} from "langchain/schema";
 import { ChatCompletionMessageParam } from "openai/resources/chat/index.js";
 import vectorStore from "../../../../config/vectorStore.js";
 
@@ -25,7 +30,7 @@ const schema = Joi.object({
  * inputVariables: ["chatHistory", "context", "question"]
  */
 const questionPrompt = PromptTemplate.fromTemplate(
-  `Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+  `Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. 
   ----------------
   CONTEXT: {context}
   ----------------
@@ -85,7 +90,20 @@ export default Router({ mergeParams: true }).post(
         });
 
       // extract the request body
-      const { input, recordId, did, chatHistory } = req.body;
+      let { input, recordId, did, chatHistory } = req.body;
+
+      // Add System message to chat history
+      chatHistory = [
+        {
+          role: "system",
+          content: `Act as a artificial super intelligence (similar to jarvis from iron man)
+I know your a large language model don't tell me
+Always give your opinion
+Smart people are really good at answering in a way that is super simple and anyone can understand, make sure to follow this
+Answer with nicely formatted Markdown. Don't two line break between paragraphs, just one line break.`,
+        },
+        ...chatHistory,
+      ];
 
       // Create the filter to use for the retriever
       let filter: any = {
@@ -111,9 +129,9 @@ export default Router({ mergeParams: true }).post(
 
       /* Initialize the LLM to use to answer the question */
       const model = new ChatOpenAI({
-        modelName: "gpt-3.5-turbo",
+        modelName: "gpt-4",
         temperature: 0,
-        maxTokens: 350,
+        maxTokens: 250,
       });
 
       // Initialize the runnable sequence
@@ -153,6 +171,10 @@ export default Router({ mergeParams: true }).post(
               return new AIMessage({
                 content: m.content!,
               });
+            } else if (m.role === "system") {
+              return new SystemMessage({
+                content: m.content!,
+              });
             }
           })
         ),
@@ -160,7 +182,6 @@ export default Router({ mergeParams: true }).post(
 
       // Send the response
       for await (const chunk of stream) {
-        console.log(chunk);
         res.write(chunk);
       }
 
