@@ -40,6 +40,19 @@ export default function useProfile() {
         } else {
         }
 
+        // Load the banner image
+        if (profile.banner) {
+          const banner = await web5Context.web5.dwn.records.read({
+            message: {
+              recordId: profile.banner,
+            },
+          });
+
+          const blob = await banner?.record.data.blob();
+
+          profile.banner = URL.createObjectURL(blob);
+        }
+
         setProfile(profile);
       }
     }
@@ -70,6 +83,19 @@ export default function useProfile() {
           profile.image = URL.createObjectURL(blob);
         }
 
+        // Load the banner image
+        if (profile.banner) {
+          const banner = await web5Context.web5.dwn.records.read({
+            message: {
+              recordId: profile.banner,
+            },
+          });
+
+          const blob = await banner?.record.data.blob();
+
+          profile.banner = URL.createObjectURL(blob);
+        }
+
         setProfile(profile);
       }
     }
@@ -91,4 +117,5 @@ type Person = {
   email?: string;
   image?: string;
   url?: string;
+  banner?: string;
 };

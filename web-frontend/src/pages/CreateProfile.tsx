@@ -16,6 +16,7 @@ import { useContext, useRef, useState } from "react";
 import Web5Context from "@/Web5Provider";
 import useProfile from "@/hooks/useProfile";
 import { useNavigate } from "react-router-dom";
+import BannerImgSelector from "@/components/BannerImgSelector";
 
 const profileSchema = z.object({
   name: z.string().min(2).max(50),
@@ -27,6 +28,7 @@ export default function CreateProfile() {
   const web5Context = useContext(Web5Context);
   const { createProfile } = useProfile();
   const navigate = useNavigate();
+  const [bannerImg, setBannerImg] = useState<File | null>(null);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof profileSchema>>({
@@ -50,11 +52,28 @@ export default function CreateProfile() {
         data: blob,
       });
 
+      // Convert banner file to blob
+      let bannerBlob: Blob | undefined;
+      let bannerRecordId: string | undefined;
+      if (bannerImg) {
+        bannerBlob = new Blob([bannerImg], {
+          type: "image/png",
+        });
+
+        // Upload banner image
+        const bannerRecord = await web5Context?.web5?.dwn.records.create({
+          data: bannerBlob,
+        });
+
+        bannerRecordId = bannerRecord?.record?.id;
+      }
+
       await createProfile({
         name: values.name,
         "@context": "https://schema.org",
         "@type": "Person",
         image: record?.record?.id,
+        banner: bannerRecordId,
       });
 
       navigate("/");
@@ -75,37 +94,41 @@ export default function CreateProfile() {
           className="space-y-8 w-full max-w-[335px] h-full flex flex-col items-center justify-between"
         >
           <div className="w-full flex items-center flex-col gap-10">
-            <div className="mt-[30%] flex flex-col items-center w-full gap-[75px]">
+            <div className="mt-[25%] flex flex-col items-center w-full gap-[75px]">
               <h3 className="scroll-m-20 text-4xl text-center font-semibold tracking-tight">
                 Create your digital profile
               </h3>
 
               <div className="flex flex-col items-center gap-2">
-                <Avatar
-                  className="h-16 w-16"
-                  onClick={() => {
-                    inputref?.current?.click();
-                  }}
-                >
-                  <AvatarImage
-                    src={file ? URL.createObjectURL(file) : undefined}
+                <BannerImgSelector file={bannerImg} setFile={setBannerImg} />
+
+                <div className="flex flex-col items-center gap-2">
+                  <Avatar
+                    className="h-16 w-16"
+                    onClick={() => {
+                      inputref?.current?.click();
+                    }}
+                  >
+                    <AvatarImage
+                      src={file ? URL.createObjectURL(file) : undefined}
+                    />
+                    <AvatarFallback>
+                      <div className="rounded-full h-16 w-16 bg-gray-400 file:text-transparent" />
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <input
+                    ref={inputref}
+                    hidden
+                    type="file"
+                    accept="image/*"
+                    onChange={handleChange}
                   />
-                  <AvatarFallback>
-                    <div className="rounded-full h-16 w-16 bg-gray-400 file:text-transparent" />
-                  </AvatarFallback>
-                </Avatar>
 
-                <input
-                  ref={inputref}
-                  hidden
-                  type="file"
-                  accept="image/*"
-                  onChange={handleChange}
-                />
-
-                <p className="text-sm text-muted-foreground">
-                  Select a profile image.
-                </p>
+                  <p className="text-sm text-muted-foreground">
+                    Select a profile image.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -126,7 +149,7 @@ export default function CreateProfile() {
 
           <div className="w-full mb-[20px] min-h-[75px]">
             <Button type="submit" className="w-full">
-              Submit
+              Continue
             </Button>
           </div>
         </form>

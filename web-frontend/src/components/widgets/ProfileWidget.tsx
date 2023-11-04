@@ -30,16 +30,30 @@ export function ProfileWidet() {
   return (
     <Card className="w-[425px] h-min rounded-xl shadow-lg">
       <CardContent className="flex items-center justify-center gap-4 lg:flex-col p-4">
-        <div className="h-12 w-12 lg:h-40 lg:w-40 relative">
-          <Avatar className="h-full w-full">
-            {profile?.image && <AvatarImage src={profile.image} />}
-            {/* <AvatarFallback>
+        <div className="w-full relative mb-10 mt-2">
+          <div className="w-full h-28 relative">
+            {profile?.banner ? (
+              <img
+                src={profile.banner}
+                alt="banner"
+                className="rounded-3xl h-full w-full"
+              />
+            ) : (
+              <Skeleton className="w-full h-full rounded-3xl" />
+            )}
+          </div>
+
+          <div className="h-12 w-12 lg:h-20 lg:w-20 absolute bottom-[-30%] left-1/2 transform -translate-x-1/2">
+            <Avatar className="h-full w-full">
+              {profile?.image && <AvatarImage src={profile.image} />}
+              {/* <AvatarFallback>
               {profile?.name?.split(" ")[0]?.charAt(0)}
               {profile?.name?.split(" ")[1]?.charAt(0)}
             </AvatarFallback> */}
-          </Avatar>
+            </Avatar>
 
-          {dings.length > 0 && <DingsDialog />}
+            {dings.length > 0 && <DingsDialog />}
+          </div>
         </div>
 
         {profile && (

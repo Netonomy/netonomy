@@ -12,7 +12,7 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, SendIcon, TowerControl } from "lucide-react";
 
 export function SendDingDialog() {
   const { handleDing } = useDinger();
@@ -26,7 +26,9 @@ export function SendDingDialog() {
   return (
     <Dialog open={open} onOpenChange={handleChange}>
       <DialogTrigger asChild>
-        <Button onClick={handleChange}>Ding</Button>
+        <Button onClick={handleChange} className="gap-2">
+          <SendIcon className="h-4 w-4" /> Send a Ding
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
