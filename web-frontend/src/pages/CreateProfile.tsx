@@ -40,13 +40,13 @@ export default function CreateProfile() {
   async function onSubmit(values: z.infer<typeof profileSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    if (file && web5Context) {
+    if (file && web5Context.web5) {
       // Convert file to blob
       const blob = new Blob([file], {
         type: "image/png",
       });
 
-      const record = await web5Context?.dwn.records.create({
+      const record = await web5Context?.web5?.dwn.records.create({
         data: blob,
       });
 

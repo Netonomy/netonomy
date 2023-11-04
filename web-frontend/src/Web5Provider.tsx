@@ -2,15 +2,20 @@ import { Web5 } from "@web5/api/browser";
 import React, { useEffect, useState } from "react";
 
 // Create Web5 context
-const Web5Context = React.createContext<Web5 | null>(null as any);
+const Web5Context = React.createContext<{ web5?: Web5; did?: string }>({});
 
 // Create Web5 provider
 export function Web5Provider({ children }: any) {
   const [web5, setWeb5] = useState<Web5 | null>(null);
   const [did, setDid] = useState<string | null>(null);
 
-  async function configureProtocol() {
-    if (!web5) return;
+  // This function is used to configure the protocols for the Web5 instance.
+  // It first queries the existing protocols and checks if the required protocol already exists.
+  // If the protocol does not exist, it configures the protocol on the local DWN.
+  // After the local configuration, it also configures the protocol on the remote DWN.
+  // This is done because the sync may not have occurred yet.
+  // The function logs the status of the local and remote configuration.
+  async function configureProtocol(web5: Web5, did: string) {
     const { protocols, status } = await web5.dwn.protocols.query({
       message: {
         filter: {
@@ -50,19 +55,30 @@ export function Web5Provider({ children }: any) {
       techPreview: {
         // dwnEndpoints: [],
       },
+      sync: "1000",
     });
     setWeb5(web5);
     setDid(did);
+    console.log(did);
 
     // Configure protocol
-    configureProtocol();
+    configureProtocol(web5, did);
   }
 
   useEffect(() => {
     connect();
   }, []);
 
-  return <Web5Context.Provider value={web5}>{children}</Web5Context.Provider>;
+  return (
+    <Web5Context.Provider
+      value={{
+        web5: web5 || undefined,
+        did: did || undefined,
+      }}
+    >
+      {children}
+    </Web5Context.Provider>
+  );
 }
 
 export default Web5Context;

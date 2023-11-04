@@ -13,8 +13,8 @@ export default function useProfile() {
   const web5Context = useContext(Web5Context);
 
   async function fetchProfile() {
-    if (web5Context) {
-      const { records } = await web5Context.dwn.records.query({
+    if (web5Context.web5) {
+      const { records } = await web5Context.web5.dwn.records.query({
         message: {
           filter: {
             schema: "https://schema.org/Person",
@@ -27,24 +27,17 @@ export default function useProfile() {
 
         // Load the profile image
         if (profile.image) {
-          const image = await web5Context.dwn.records.read({
+          const image = await web5Context.web5.dwn.records.read({
             message: {
               recordId: profile.image,
             },
           });
 
-          console.log(image);
-
           const blob = await image?.record.data.blob();
-
-          console.log(blob);
 
           const url = URL.createObjectURL(blob);
           profile.image = url;
-
-          console.log(url);
         } else {
-          console.log("no image");
         }
 
         setProfile(profile);
@@ -55,8 +48,8 @@ export default function useProfile() {
   }
 
   async function createProfile(profile: Person) {
-    if (web5Context) {
-      const record = await web5Context.dwn.records.create({
+    if (web5Context.web5) {
+      const record = await web5Context.web5.dwn.records.create({
         data: profile,
         message: {
           schema: "https://schema.org/Person",
@@ -66,15 +59,13 @@ export default function useProfile() {
       if (record) {
         // Load the profile image
         if (profile.image) {
-          const image = await web5Context.dwn.records.read({
+          const image = await web5Context.web5.dwn.records.read({
             message: {
               recordId: profile.image,
             },
           });
-          console.log(image);
 
           const blob = await image?.record.data.blob();
-          console.log(blob);
 
           profile.image = URL.createObjectURL(blob);
         }

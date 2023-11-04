@@ -8,8 +8,8 @@ export default function useFile(recordId: string) {
   const web5Context = useContext(Web5Context);
 
   async function fetchFile() {
-    if (web5Context) {
-      const { record } = await web5Context.dwn.records.read({
+    if (web5Context.web5) {
+      const { record } = await web5Context.web5.dwn.records.read({
         message: {
           recordId,
         },
@@ -19,7 +19,7 @@ export default function useFile(recordId: string) {
 
       setFile(data);
 
-      const { record: blobRecord } = await web5Context.dwn.records.read({
+      const { record: blobRecord } = await web5Context.web5.dwn.records.read({
         message: {
           recordId: data.url,
         },

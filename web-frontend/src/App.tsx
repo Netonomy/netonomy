@@ -7,7 +7,7 @@ import { Splash } from "./pages/Splash";
 function App() {
   const web5Context = useContext(Web5Context);
 
-  return web5Context ? <Home /> : <Splash />;
+  return web5Context.web5 ? <Home /> : <Splash />;
 }
 
 export default App;

@@ -14,7 +14,7 @@ export default function useFolder() {
   const [, setLoading] = useAtom(loadingAtom);
 
   async function uploadFiles(files: FileList) {
-    if (web5Context) {
+    if (web5Context.web5) {
       setLoading(true);
       for (var i = 0; i < files.length; i++) {
         // Convert file to blob
@@ -23,7 +23,7 @@ export default function useFolder() {
         });
 
         // Upload image to blob store
-        const blobResult = await web5Context.dwn.records.create({
+        const blobResult = await web5Context.web5.dwn.records.create({
           data: blob,
         });
 
@@ -39,7 +39,7 @@ export default function useFolder() {
         };
 
         // Upload as File Object: https://schema.org/DigitalDocument
-        const fileObjectRes = await web5Context.dwn.records.create({
+        const fileObjectRes = await web5Context.web5.dwn.records.create({
           data: data,
           message: {
             schema: "https://schema.org/DigitalDocument",
@@ -51,7 +51,7 @@ export default function useFolder() {
         // upload to chroma
         const formData = new FormData();
         formData.append("file", blob);
-        formData.append("did", web5Context.agent.agentDid || "");
+        formData.append("did", web5Context.web5.agent.agentDid || "");
         formData.append("recordId", fileObjectRes.record!.id);
 
         console.log("ID:");
@@ -75,9 +75,9 @@ export default function useFolder() {
   }
 
   async function createFolder(name: string) {
-    if (!web5Context) return;
+    if (!web5Context.web5) return;
 
-    const { status } = await web5Context.dwn.records.create({
+    const { status } = await web5Context.web5.dwn.records.create({
       data: { name },
       message: {
         schema: "https://schema.org/Collection",
@@ -86,8 +86,8 @@ export default function useFolder() {
   }
 
   async function fetchFiles() {
-    if (web5Context) {
-      const { records } = await web5Context.dwn.records.query({
+    if (web5Context.web5) {
+      const { records } = await web5Context.web5.dwn.records.query({
         message: {
           filter: {
             schema: "https://schema.org/DigitalDocument",
@@ -104,7 +104,7 @@ export default function useFolder() {
         data.identifier = record.id;
 
         // Get the file blob
-        const blob = await web5Context.dwn.records.read({
+        const blob = await web5Context.web5.dwn.records.read({
           message: {
             recordId: data.url,
           },
@@ -123,9 +123,9 @@ export default function useFolder() {
   }
 
   async function deleteFile(recordId: string) {
-    if (web5Context) {
+    if (web5Context.web5) {
       setLoading(true);
-      await web5Context.dwn.records.delete({
+      await web5Context.web5.dwn.records.delete({
         message: {
           recordId: recordId,
         },

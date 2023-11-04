@@ -1,11 +1,21 @@
 import Web5Context, { dingerProtocolDefinition } from "@/Web5Provider";
-import { useContext } from "react";
+import { atom, useAtom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import { useContext, useEffect } from "react";
+
+const dingsAtom = atomWithStorage<Ding[]>("dings", []);
 
 export default function useDinger() {
   const web5Context = useContext(Web5Context);
+  const [dings, setDings] = useAtom(dingsAtom);
 
+  /**
+   * This function is used to handle the ding button click.
+   * It first checks if the web5Context exists.
+   * If it does, it calls the handleDing function.
+   */
   async function handleDing(did: string, note?: string) {
-    if (!web5Context) return;
+    if (!web5Context.web5) return;
 
     if (did.length === 0) {
       return;
@@ -19,7 +29,7 @@ export default function useDinger() {
     //   dingProgressElement.textContent = "writing ding to local DWN...";
 
     try {
-      const { record, status } = await web5Context.dwn.records.write({
+      const { record, status } = await web5Context.web5.dwn.records.write({
         data: ding,
         message: {
           protocol: dingerProtocolDefinition.protocol,
@@ -51,4 +61,62 @@ export default function useDinger() {
       return;
     }
   }
+
+  /**
+   * This function is used to fetch dings from the DWN.
+   * It first checks if the web5Context exists.
+   * If it does, it queries the DWN for records with the dinger protocol.
+   * Converts the records to JSON and adds them to the dings array.
+   */
+  async function fetchDings() {
+    if (!web5Context.web5) return;
+
+    console.log("Fetching dings...");
+
+    // Fetch the dings
+    const { records } = await web5Context.web5.dwn.records.query({
+      message: {
+        filter: {
+          protocol: dingerProtocolDefinition.protocol,
+        },
+      },
+    });
+
+    if (!records) return;
+
+    let dings: Ding[] = [];
+
+    // Convert the records to JSON
+    for (var i = 0; i < records.length; i++) {
+      const record = records[i];
+      let data = await record.data.json();
+
+      data.date = record.dateCreated;
+
+      dings.push(data);
+    }
+
+    // Sort the dings by most recent date
+    dings = dings.sort((a, b) => {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+
+    console.log(dings);
+    // Set the dings
+    setDings(dings);
+  }
+
+  useEffect(() => {
+    setInterval(() => {
+      fetchDings();
+    }, 5000);
+  }, []);
+
+  return { dings };
 }
+
+type Ding = {
+  dinger: string;
+  date: string;
+  note?: string;
+};

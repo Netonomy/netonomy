@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import useDinger from "@/hooks/useDinger";
 
 export function StorageWidget() {
   const navigate = useNavigate();
@@ -50,14 +51,19 @@ export function StorageWidget() {
               <Folder className="mr-2 h-4 w-4" />
               <span>Folder</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="rounded-xl">
+            <DropdownMenuItem
+              className="rounded-xl"
+              onClick={() => {
+                inputRef.current?.click();
+              }}
+            >
               <File className="mr-2 h-4 w-4" />
               <span>File</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* <>
+        <>
           <Input
             type="file"
             multiple
@@ -66,7 +72,7 @@ export function StorageWidget() {
             ref={inputRef}
             onChange={handleChange}
           />
-        </> */}
+        </>
       </div>
 
       <Card className=" flex flex-col flex-1 rounded-xl shadow-lg w-full">
@@ -110,7 +116,7 @@ export function StorageWidget() {
                         event.stopPropagation();
                         deleteFile(file.identifier);
                       }}
-                      className="cursor-pointer rounded-xl"
+                      className="cursor-pointer roun"
                     >
                       <Trash2 className="mr-2 h-4 w-4" /> Delete
                     </DropdownMenuItem>

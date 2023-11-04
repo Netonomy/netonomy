@@ -69,7 +69,7 @@ export default function useChat() {
       body: JSON.stringify({
         chatHistory: _messages,
         input: question,
-        did: web5Context?.agent.agentDid,
+        did: web5Context?.did,
         recordId: recordId || undefined,
       }),
       headers: {
