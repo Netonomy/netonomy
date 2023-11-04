@@ -66,7 +66,7 @@ export default function PdfViewer() {
   return (
     <div className="flex flex-1 w-full flex-row items-center gap-6 ">
       <div className="flex-grow h-full flex flex-col items-center max-h-[calc(100vh-40px)]">
-        <Card className="flex flex-1 w-full overflow-hidden">
+        <Card className="flex flex-1 w-full overflow-hidden shadow-lg">
           <CardContent className="w-full h-full overflow-y-auto flex flex-col p-0 relative">
             {/** Document Control Header */}
             <div className="absolute top-0 left-0 right-0 h-[55px] z-40 flex items-center backdrop-blur-xl bg-white/30 dark:bg-black/30 ">

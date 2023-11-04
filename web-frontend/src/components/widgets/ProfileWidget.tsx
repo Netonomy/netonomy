@@ -7,15 +7,15 @@ export function ProfileWidet() {
   const { profile } = useProfile();
 
   return (
-    <Card className="w-[425px] min-h-[100px] lg:h-[314px] rounded-xl shadow-lg">
-      <CardContent className="h-full flex items-center justify-center gap-[25px] lg:flex-col">
+    <Card className="w-[425px] h-min rounded-xl shadow-lg">
+      <CardContent className="flex items-center justify-center gap-4 lg:flex-col p-4">
         <div className="h-12 w-12 lg:h-40 lg:w-40">
           <Avatar className="h-full w-full">
             {profile?.image && <AvatarImage src={profile.image} />}
-            {/* <AvatarFallback>
+            <AvatarFallback>
               {profile?.name?.split(" ")[0]?.charAt(0)}
               {profile?.name?.split(" ")[1]?.charAt(0)}
-            </AvatarFallback> */}
+            </AvatarFallback>
           </Avatar>
         </div>
 

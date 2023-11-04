@@ -8,7 +8,7 @@ import axios from "axios";
 // Atoms
 const filesAtom = atomWithStorage<DigitalDocument[]>("files", []);
 
-export default function useFiles() {
+export default function useFolder() {
   const web5Context = useContext(Web5Context);
   const [files, setFiles] = useAtom(filesAtom);
   const [, setLoading] = useAtom(loadingAtom);
@@ -58,20 +58,31 @@ export default function useFiles() {
         console.log(fileObjectRes.record?.id);
 
         // Upload to chroma
-        await axios.post(
-          "http://localhost:3000/api/chroma/uploadFile",
-          formData,
-          {
+        await axios
+          .post("http://localhost:3000/api/chroma/uploadFile", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-          }
-        );
+          })
+          .catch((err) => {
+            console.error(err);
+          });
 
         setFiles((prevDocs: DigitalDocument[]) => [data, ...prevDocs]);
       }
       setLoading(false);
     }
+  }
+
+  async function createFolder(name: string) {
+    if (!web5Context) return;
+
+    const { status } = await web5Context.dwn.records.create({
+      data: { name },
+      message: {
+        schema: "https://schema.org/Collection",
+      },
+    });
   }
 
   async function fetchFiles() {
@@ -148,4 +159,9 @@ export type DigitalDocument = {
   datePublished: string;
   thumbnail?: Blob;
   thumbnailUrl?: string;
+};
+
+export type Folder = {
+  name: string;
+  id: string;
 };
