@@ -1,17 +1,12 @@
 import useDinger from "@/hooks/useDinger";
-import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { useState } from "react";
 
 export function DingsDialog() {
   const { dings } = useDinger();
@@ -31,7 +26,7 @@ export function DingsDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="w-full  overflow-y-auto flex flex-col items-center">
+        <div className="w-full max-h-[500px] overflow-y-auto flex flex-col items-center">
           {dings.map((ding) => (
             <div className="w-full flex items-center justify-between gap-4 p-4">
               <div className="flex items-center gap-4">

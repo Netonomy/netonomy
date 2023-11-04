@@ -7,6 +7,8 @@ import Web5Context from "@/Web5Provider";
 import { CheckCircle, CopyIcon } from "lucide-react";
 import useDinger from "@/hooks/useDinger";
 import { DingsDialog } from "../DingsDialog";
+import { Button } from "../ui/button";
+import { SendDingDialog } from "../SendDingDialog";
 
 export function ProfileWidet() {
   const { profile } = useProfile();
@@ -67,6 +69,8 @@ export function ProfileWidet() {
         ) : (
           <Skeleton className="h-6 w-[150px]" />
         )}
+
+        <SendDingDialog />
       </CardContent>
     </Card>
   );

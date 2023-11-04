@@ -1,5 +1,5 @@
 import Web5Context, { dingerProtocolDefinition } from "@/Web5Provider";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { useContext, useEffect } from "react";
 
@@ -26,8 +26,6 @@ export default function useDinger() {
       ding.note = note;
     }
 
-    //   dingProgressElement.textContent = "writing ding to local DWN...";
-
     try {
       const { record, status } = await web5Context.web5.dwn.records.write({
         data: ding,
@@ -40,12 +38,9 @@ export default function useDinger() {
       });
 
       if (status.code !== 202) {
-        //   dingErrorElement.textContent = `${status.code} - ${status.detail}`;
+        console.log("Unable to write to DWN:" + status);
         return;
       }
-
-      const shortenedDid = did.substr(0, 22);
-      // dingProgressElement.textContent = `Ding written locally! Dinging ${shortenedDid}...`;
 
       const { status: sendStatus } = await record!.send(did);
 
@@ -55,6 +50,8 @@ export default function useDinger() {
         return;
       }
 
+      console.log("Dinged!");
+      console.log(did);
       // dingProgressElement.textContent = `Dinged ${shortenedDid}!`;
     } catch (e) {
       // dingErrorElement.textContent = e.message;
@@ -112,7 +109,7 @@ export default function useDinger() {
     }, 5000);
   }, []);
 
-  return { dings };
+  return { dings, handleDing };
 }
 
 type Ding = {
