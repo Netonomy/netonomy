@@ -8,7 +8,6 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import useFolder from "@/hooks/useFiles";

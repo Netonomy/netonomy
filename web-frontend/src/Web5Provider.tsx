@@ -19,7 +19,7 @@ export function Web5Provider({ children }: any) {
     const { protocols, status } = await web5.dwn.protocols.query({
       message: {
         filter: {
-          protocol: "https://dinger.app/protocol",
+          protocol: "https://schema.org/Collection",
         },
       },
     });
@@ -40,7 +40,7 @@ export function Web5Provider({ children }: any) {
     const { status: configureStatus, protocol } =
       await web5.dwn.protocols.configure({
         message: {
-          definition: dingerProtocolDefinition,
+          definition: collectionProtocolDefinition,
         },
       });
     console.log("configure protocol local status", configureStatus);
@@ -107,6 +107,37 @@ export const dingerProtocolDefinition = {
         {
           who: "recipient",
           of: "ding",
+          can: "read",
+        },
+      ],
+    },
+  },
+};
+
+export const collectionProtocolDefinition = {
+  protocol: "https://schema.org/Collection",
+  published: true,
+  types: {
+    collection: {
+      schema: "collection",
+      dataFormats: ["application/json"],
+    },
+  },
+  structure: {
+    collection: {
+      $actions: [
+        {
+          who: "anyone",
+          can: "write",
+        },
+        {
+          who: "author",
+          of: "collection",
+          can: "read",
+        },
+        {
+          who: "recipient",
+          of: "collection",
           can: "read",
         },
       ],

@@ -1,8 +1,8 @@
-import Web5Context from "@/Web5Provider";
+import Web5Context, { collectionProtocolDefinition } from "@/Web5Provider";
 import { loadingAtom } from "@/state/loadingAtom";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 // Atoms
@@ -16,8 +16,9 @@ export default function useFolder(folderId?: string) {
   const [files, setFiles] = useAtom(filesAtom);
   const [, setLoading] = useAtom(loadingAtom);
 
-  async function uploadFiles(files: FileList) {
+  async function uploadFiles(files: FileList, folderId?: string) {
     if (web5Context.web5 && web5Context.did) {
+      console.log(`Uploading ${files.length} files...`);
       setLoading(true);
       for (var i = 0; i < files.length; i++) {
         // Convert file to blob
@@ -37,15 +38,19 @@ export default function useFolder(folderId?: string) {
           encodingFormat: files[i].type,
           size: files[i].size.toString(),
           datePublished: new Date().toISOString(),
+          dateCreated: new Date().toISOString(),
           identifier: "",
           url: blobResult.record!.id,
         };
+
+        console.log(`Folder id: ${folderId}`);
 
         // Upload as File Object: https://schema.org/DigitalDocument
         const fileObjectRes = await web5Context.web5.dwn.records.create({
           data: data,
           message: {
             schema: "https://schema.org/DigitalDocument",
+            parentId: folderId,
           },
         });
 
@@ -80,7 +85,7 @@ export default function useFolder(folderId?: string) {
   async function createFolder(name: string) {
     if (!web5Context.web5) return;
 
-    const data: Folder = {
+    let data: Folder = {
       "@context": "https://schema.org",
       "@type": "Collection",
       name,
@@ -92,11 +97,17 @@ export default function useFolder(folderId?: string) {
       data,
       message: {
         schema: "https://schema.org/Collection",
+        parentId: folderId,
+        contextId: folderId,
       },
     });
 
-    // If the status is 200 then add the folder to the files array
+    console.log(`Created folder: ${record?.id}`);
+
+    // Add the folder to the files and folders array
     if (record) {
+      console.log(`Updating files...`);
+      data.identifier = record.id;
       setFiles((prevFiles) => [data, ...prevFiles]);
     }
   }
@@ -140,7 +151,6 @@ export default function useFolder(folderId?: string) {
       );
 
       if (!fileRecords) return;
-      let files: DigitalDocument[] = [];
       for (var i = 0; i < fileRecords.length; i++) {
         const record = fileRecords[i];
         let data = await record.data.json();
@@ -162,8 +172,14 @@ export default function useFolder(folderId?: string) {
         filesAndFolders.push(data);
       }
 
-      // Reverse the array so the newest files are at the top
-      files.reverse();
+      // Order the files by most recent dateCreated
+      filesAndFolders = filesAndFolders.sort((a, b) => {
+        return (
+          new Date(b.dateCreated!).getTime() -
+          new Date(a.dateCreated!).getTime()
+        );
+      });
+
       setFiles(filesAndFolders);
     }
   }
@@ -185,7 +201,7 @@ export default function useFolder(folderId?: string) {
 
   useEffect(() => {
     fetchFilesAndFolders();
-  }, [web5Context]);
+  }, [web5Context, folderId]);
 
   return { uploadFiles, files, deleteFile, createFolder };
 }
@@ -212,5 +228,5 @@ export type Folder = {
   "@type": "Collection";
   name: string;
   identifier: string;
-  dateCreated?: string;
+  dateCreated: string;
 };

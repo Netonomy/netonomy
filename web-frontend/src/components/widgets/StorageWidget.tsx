@@ -1,7 +1,7 @@
 import { File, Folder, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import useFiles, { filesAtom } from "@/hooks/useFiles";
 import { Input } from "../ui/input";
 import FileIcon from "../FileIcon";
@@ -11,13 +11,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { CreateFolderDialog } from "../CreateFolderDialog";
 import { useAtom } from "jotai";
 
 export function StorageWidget() {
   const navigate = useNavigate();
-  const { uploadFiles, deleteFile } = useFiles();
+  let [searchParams, setSearchParams] = useSearchParams();
+  const { uploadFiles, deleteFile } = useFiles(
+    searchParams.get("folderId") || undefined
+  );
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [files] = useAtom(filesAtom);
@@ -27,7 +30,7 @@ export function StorageWidget() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    uploadFiles(files);
+    uploadFiles(files, searchParams.get("folderId") || undefined);
   };
 
   return (
@@ -94,12 +97,11 @@ export function StorageWidget() {
         <CardContent className="h-full w-full flex flex-1 p-4 overflow-y-auto max-h-[calc(100vh-135px)]">
           <div className="flex flex-col w-full">
             {files.map((file, i) => {
-              console.log(file);
               const type = file["@type"];
               const isFolder = type === "Collection";
 
               return (
-                <>
+                <Fragment key={file.identifier}>
                   {!isFolder ? (
                     <div
                       key={i}
@@ -149,7 +151,11 @@ export function StorageWidget() {
                     <div
                       key={i}
                       className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
-                      onClick={() => {}}
+                      onClick={() => {
+                        setSearchParams({
+                          folderId: file.identifier,
+                        });
+                      }}
                     >
                       <FileIcon type={"folder"} />
 
@@ -185,7 +191,7 @@ export function StorageWidget() {
                       </DropdownMenu>
                     </div>
                   )}
-                </>
+                </Fragment>
               );
             })}
 
