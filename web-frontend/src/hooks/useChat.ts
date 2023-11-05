@@ -1,6 +1,7 @@
 import Web5Context from "@/Web5Provider";
 import { atom, useAtom } from "jotai";
 import { ChangeEvent, FormEvent, useContext, useState } from "react";
+import useProfile from "./useProfile";
 
 // Enum to define the roles in the chat
 export enum MessageRole {
@@ -23,6 +24,16 @@ export type ChatMessage = {
   content: string | null;
   function_call?: FunctionCall;
   id?: string;
+  datePublished?: string;
+};
+
+// Type definition for a chat conversation
+type AIConversation = {
+  messages: ChatMessage[];
+  name: string;
+  "@type": "AIConversation";
+  "@context": "https://netonomy.io/";
+  id: string;
 };
 
 // Atoms for managing chat
@@ -31,6 +42,8 @@ const inputAtom = atom<string>("");
 export const contextStringAtom = atom<string | null>(null);
 export const recordIdAtom = atom<string | null>(null); // Record Id if the file is currently being viewed
 
+const aiConversationsAtom = atom<AIConversation[]>([]); // State for all conversations
+export const currentConversationAtom = atom<AIConversation | null>(null); // State for current conversation
 // Main hook function for managing chat
 export default function useChat() {
   const [messages, setMessages] = useAtom(aiChatMessagesAtom); // State for messages
@@ -40,25 +53,90 @@ export default function useChat() {
   const web5Context = useContext(Web5Context);
   const [recordId, setRecordId] = useAtom(recordIdAtom);
 
+  const [, setConversations] = useAtom(aiConversationsAtom); // State for all conversations
+  const [currentConversation, setCurrentConversation] = useAtom(
+    currentConversationAtom
+  ); // State for current conversation
+
+  const { profile } = useProfile();
+
   // Function to reset the chat
   const resetChat = () => {
-    setMessages([]);
+    setCurrentConversation(null);
+    setGenerating(false);
   };
 
+  // Function to load a conversation
+  async function loadConversations() {
+    if (!web5Context || !web5Context.web5) return;
+
+    // Fetch the conversation
+    const { records } = await web5Context.web5.dwn.records.query({
+      message: {
+        filter: {
+          schema: "https://netonomy.io/AIConversation",
+        },
+      },
+    });
+
+    // If there are no records then return
+    if (!records) return;
+
+    // Get the conversations
+    let _conversations: AIConversation[] = [];
+    for (let record of records) {
+      let data = await record.data.json();
+
+      data.id = record.id;
+
+      _conversations.push(data);
+    }
+
+    setConversations(_conversations);
+  }
+
+  // Function to create a conversation with the first message
+  async function createConversation(message: ChatMessage) {
+    if (!web5Context || !web5Context.web5) return;
+
+    let conversation: AIConversation = {
+      messages: [message],
+      name: "Conversation",
+      "@type": "AIConversation",
+      "@context": "https://netonomy.io/",
+      id: "",
+    };
+
+    // Create the conversation
+    const { record } = await web5Context.web5.dwn.records.create({
+      data: conversation,
+    });
+
+    if (!record) return;
+
+    conversation.id = record.id;
+
+    // Reset the current conversation
+    return conversation;
+  }
+
   // Function to send messages
-  async function sendMessages(_messages: ChatMessage[], question: string) {
+  async function sendMessages(_conversation: AIConversation, question: string) {
     // Reset input
     setInput("");
 
-    // Update messages array to have empty ai message
-    const messagesWithEmptyAiMsg: ChatMessage[] = [
-      ..._messages,
-      {
-        role: MessageRole.assistant,
-        content: "",
-      },
-    ];
-    setMessages(messagesWithEmptyAiMsg); // Set the new messages
+    // Update conversation to have empty AI response
+    const conversationWithEmptyAIResponse = {
+      ..._conversation,
+      messages: [
+        ..._conversation.messages,
+        {
+          role: MessageRole.assistant,
+          content: "",
+        },
+      ],
+    };
+    setCurrentConversation(conversationWithEmptyAIResponse);
 
     // Set generating to true
     setGenerating(true);
@@ -67,10 +145,13 @@ export default function useChat() {
     fetch(`http://localhost:3000/api/ai/chains/retrievalQA`, {
       method: "POST",
       body: JSON.stringify({
-        chatHistory: _messages,
+        chatHistory: _conversation.messages,
         input: question,
         did: web5Context!.did,
         recordId: recordId || undefined,
+        profile: {
+          name: profile?.name,
+        },
       }),
       headers: {
         "Content-Type": "application/json",
@@ -93,13 +174,19 @@ export default function useChat() {
               if (value) {
                 const chunk = new TextDecoder().decode(value);
 
-                // Update AI message with new tokens
-                setMessages((prevMessages) => {
-                  let updatedMessages = [...prevMessages];
-                  let lastMessage = updatedMessages[updatedMessages.length - 1];
+                // Update Last AI message with new tokens
+
+                setCurrentConversation((prevConversation) => {
+                  if (!prevConversation) return null;
+
+                  let updatedConversation = { ...prevConversation };
+                  let lastMessage =
+                    updatedConversation.messages[
+                      updatedConversation.messages.length - 1
+                    ];
                   lastMessage.content += chunk;
 
-                  return updatedMessages;
+                  return updatedConversation;
                 });
 
                 // Split the chunk by '}' and filter out any empty strings
@@ -183,23 +270,33 @@ export default function useChat() {
   }
 
   // Function to handle form submission
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
     // If there no user input then don't send messages
     if (input === "") return;
 
-    // Update messages array to have users input
-    const newMessages: ChatMessage[] = [
-      ...messages,
-      {
+    // If there is no current conversation then create one
+    let conversation;
+    if (!currentConversation) {
+      conversation = await createConversation({
         role: MessageRole.user,
         content: input,
-      },
-    ];
+      });
+      if (conversation) setCurrentConversation(conversation);
+    } else {
+      // Add the user message to the current conversation
+      conversation = currentConversation;
+      conversation.messages.push({
+        role: MessageRole.user,
+        content: input,
+      });
+      setCurrentConversation(conversation);
+    }
 
-    sendMessages(newMessages, input); // Send the new messages
+    // Send the messages
+    sendMessages(conversation!, input); // Send the new messages
   };
 
   // Function to handle input change
@@ -226,5 +323,33 @@ export default function useChat() {
     generating,
     setContext,
     setRecordId,
+    loadConversations,
+    currentConversation,
   };
 }
+
+type Message = {
+  "@context": "https://schema.org/";
+  "@type": "Message";
+  text: string;
+  sender: {
+    "@type": string;
+    did: string;
+  };
+  recipient: {
+    "@type": string;
+    did: string;
+  };
+  about?: {
+    "@type": string;
+    name: string;
+  };
+  datePublished: string;
+};
+
+type Conversation = {
+  "@context": "https://schema.org/";
+  "@type": "Conversation";
+  name: string;
+  hasPart: Message[];
+};

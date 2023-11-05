@@ -19,6 +19,7 @@ const schema = Joi.object({
   did: Joi.string().required(),
   recordId: Joi.string().optional(),
   chatHistory: Joi.array().optional(),
+  profile: Joi.any().required(),
 });
 
 /**
@@ -71,6 +72,11 @@ const questionPrompt = PromptTemplate.fromTemplate(
  *                       type: string
  *                     content:
  *                       type: string
+ *                     profile:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
  *     responses:
  *       200:
  *         description: OK
@@ -90,18 +96,26 @@ export default Router({ mergeParams: true }).post(
         });
 
       // extract the request body
-      let { input, recordId, did, chatHistory } = req.body;
+      let { input, recordId, did, chatHistory, profile } = req.body;
 
       // Add System message to chat history
       chatHistory = [
         {
           role: "system",
-          content: `Act as a artificial super intelligence (similar to jarvis from iron man)
-I know your a large language model don't tell me
-Always give your opinion
-Smart people are really good at answering in a way that is super simple and anyone can understand, make sure to follow this
-Answer with nicely formatted Markdown. Don't two line break between paragraphs, just one line break.
-The user may just want you to write code. Make sure to put it in a markdown code block.`,
+          content: `You are the digital tertiary layer of ${
+            profile.name
+          }'s brain. You are the digital representation of ${
+            profile.name
+          }'s intelligence.
+          If the user asks who or what you are, explain this to them.
+          
+          This is currently a chat with you and ${profile.name}.
+
+          Here is their full profile:
+          ${JSON.stringify(profile)}
+
+          Be concise and to the point. Don't be too wordy. Don't be too short. Be just right.
+          Always responsd with markdown formatted text.`,
         },
         ...chatHistory,
       ];

@@ -2,15 +2,15 @@ import { Fragment, useEffect, useRef } from "react";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Loader2, PlusIcon, SendIcon } from "lucide-react";
-import useChat from "@/hooks/useChat";
+import useChat, { currentConversationAtom } from "@/hooks/useChat";
 import { Card, CardContent } from "./ui/card";
 import ReactMarkdown from "react-markdown";
 import { oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { useAtom } from "jotai";
 
 export function Chat() {
   const {
-    messages,
     resetChat,
     input,
     setInput,
@@ -18,6 +18,8 @@ export function Chat() {
     handleSubmit,
     generating,
   } = useChat();
+
+  const [conversation] = useAtom(currentConversationAtom);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -64,7 +66,7 @@ export function Chat() {
             <div className="h-full w-full flex items-center justify-between p-6">
               <div className="w-[10%]"></div>
               <div className="flex items-center gap-2 w-[80%] justify-center relative ">
-                {messages.length > 1 && (
+                {conversation && conversation.messages.length > 1 && (
                   <>
                     <img
                       src="/agent.svg"
@@ -85,7 +87,7 @@ export function Chat() {
               </div>
 
               <div className="w-[10%]">
-                {messages.length > 1 && (
+                {conversation && conversation.messages.length > 1 && (
                   <Button
                     onClick={async () => {
                       resetChat();
@@ -102,7 +104,9 @@ export function Chat() {
           </div>
 
           {/** Info Message when chat is empty */}
-          {(messages.length === 1 || messages.length === 0) && (
+          {(conversation?.messages.length === 1 ||
+            conversation?.messages.length === 0 ||
+            !conversation) && (
             <div className="absolute flex flex-col items-center gap-4 w-[95%] p-4 justify-center h-[60%] z-30">
               <div className="flex flex-col gap-4 items-center">
                 <div className="h-[300px] w-[200px]">
@@ -141,7 +145,7 @@ export function Chat() {
           <div className="flex flex-1 h flex-col items-center w-full  relative overflow-y-auto max-h-[calc(100vh-135px)]">
             <div className="flex flex-1 flex-col items-center w-full relative overflow-y-auto">
               <div className="h-full w-full p-4 flex overflow-y-auto flex-col-reverse z-30 pt-[60px]">
-                {messages
+                {conversation?.messages
                   .slice()
                   .reverse()
                   .map((message, i) => (
