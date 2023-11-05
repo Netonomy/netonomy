@@ -170,7 +170,7 @@ export default Router({ mergeParams: true }).post(
       /* Initialize the LLM to use to answer the question */
       const model = new ChatOpenAI({
         modelName: "gpt-4",
-        temperature: 0,
+        temperature: 0.5,
         maxTokens: 250,
       });
 

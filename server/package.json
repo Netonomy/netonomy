@@ -27,6 +27,7 @@
     "neo4j-driver": "^5.11.0",
     "openai": "^4.12.4",
     "pdf-parse": "^1.1.1",
+    "serpapi": "^2.0.0",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.6.0"
   },

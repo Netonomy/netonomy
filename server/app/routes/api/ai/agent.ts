@@ -7,8 +7,9 @@ import { AIMessage, SystemMessage, HumanMessage } from "langchain/schema";
 import { BufferMemory } from "langchain/memory";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { WebBrowser } from "langchain/tools/webbrowser";
-import { ChainTool, SerpAPI } from "langchain/tools";
+import { ChainTool, DynamicTool, SerpAPI } from "langchain/tools";
 import { VectorDBQAChain } from "langchain/chains";
+import { getJson } from "serpapi";
 
 import Joi from "joi";
 import vectorStore from "../../../config/vectorStore.js";
@@ -48,15 +49,15 @@ const schema = Joi.object({
  *                       type: [ai, user, system]
  *                     content:
  *                       type: string
- *                     profile:
- *                       type: object
- *                       properties:
- *                         name:
- *                           type: string
- *                     did:
- *                       type: string
- *                     recordId:
- *                       type: string
+ *               profile:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *               did:
+ *                 type: string
+ *               recordId:
+ *                 type: string
  *               input:
  *                 type: string
  *     responses:
@@ -81,9 +82,13 @@ export default Router({ mergeParams: true }).post(
 
       // Select model
       const model = new ChatOpenAI({
-        temperature: 0,
+        temperature: 0.5,
         modelName: "gpt-4",
         streaming: true,
+        // configuration: {
+        //   baseURL: process.env.OPENAI_BASE_URL,
+        //   apiKey: process.env.PERPLEXITY_API_KEY,
+        // },
       });
 
       // Create the filter to use for the retriever
@@ -119,8 +124,58 @@ export default Router({ mergeParams: true }).post(
         chain: chain,
       });
 
-      // give the agent the tools it needs
+      const serp = new SerpAPI(process.env.SERPAPI_API_KEY, {
+        // currently not working , issue with langchain tool
+        location: "Washington,DC,United States",
+        hl: "en",
+        gl: "us",
+      });
+
       const embeddings = new OpenAIEmbeddings();
+      const browser = new WebBrowser({ model, embeddings });
+
+      const customSearchTool = new DynamicTool({
+        name: "internet-access",
+        description:
+          "Internet Access - use this tool when you need to search the internet for an answer. The input will be the search query so make to input the right query.",
+        func: async (input: string) => {
+          try {
+            // Get top links from serp api
+            const res = await getJson({
+              engine: "google",
+              api_key: process.env.SERPAPI_API_KEY,
+              q: input,
+              location: "Austin, Texas",
+            });
+
+            // Get the top 4 links
+            const topLinks = res.organic_results
+              .slice(0, 1)
+              .map((result: any) => result.link);
+
+            let toolResponse = "";
+
+            // Browse each link to try and find an answer
+            for (const link of topLinks) {
+              console.log(link);
+              const result = await browser.call(`"${link}","${input}"`);
+              console.log(result);
+
+              toolResponse += result;
+            }
+
+            console.log(res.organic_results);
+
+            return toolResponse;
+          } catch (err) {
+            console.log(err);
+            return "Sorry, I could not find an answer to your question. Please try again.";
+          }
+        },
+      });
+
+      // give the agent the tools it needs
+
       const tools = [
         // new WebBrowser({ model, embeddings }),
         new Calculator(),
@@ -131,6 +186,7 @@ export default Router({ mergeParams: true }).post(
           hl: "en",
           gl: "us",
         }),
+        // customSearchTool,
       ];
 
       // create the message history
@@ -149,6 +205,10 @@ export default Router({ mergeParams: true }).post(
             profile.name
           }'s intelligence.
           If the user asks who or what you are, explain this to them.
+          When the user asks a question, you should answer it as if you are ${
+            profile.name
+          }.
+          Don't act as if you are a robot. Be human. Be ${profile.name}.
           
           This is currently a chat with you and ${profile.name}.
 
@@ -171,17 +231,6 @@ export default Router({ mergeParams: true }).post(
           chatHistory: new ChatMessageHistory(pastMessages),
         }),
       });
-
-      // const executor = await PlanAndExecuteAgentExecutor.fromLLMAndTools({
-      //   llm: model,
-      //   tools,
-      //   verbose: true,
-      //   memory: new BufferMemory({
-      //     returnMessages: true,
-      //     memoryKey: "chat_history",
-      //     chatHistory: new ChatMessageHistory(pastMessages),
-      //   }),
-      // });
 
       const { input } = req.body;
 
