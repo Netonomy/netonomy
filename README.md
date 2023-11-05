@@ -24,7 +24,7 @@ In summary, the main point of DIDs is to give users more control over their digi
 | :------------------------------------------ | :-----------------: |
 | [server](server)                            | Node Express Server |
 | [web-frontend](shawarma)                    |   React Vite App    |
-| [https://docs.trychroma.com/](vector store) |      Chroma DB      |
+| [vector-db](https://docs.trychroma.com/) |      Chroma DB      |
 
 ## 🏃‍♂️ How to run locally
 
