@@ -44,7 +44,7 @@ const schema = Joi.object({
  * inputVariables: ["chatHistory", "context", "question"]
  */
 const questionPrompt = PromptTemplate.fromTemplate(
-  `Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. 
+  `Use the following pieces of context to answer the question at the end. Remember your system instructions.
   ----------------
   CONTEXT: {context}
   ----------------
@@ -125,21 +125,24 @@ export default Router({ mergeParams: true }).post(
           role: "system",
           content: `You are the digital tertiary layer of ${
             profile.name
-          }'s brain. You are the digital representation of ${
-            profile.name
-          }'s intelligence.
-          If the user asks who or what you are, explain this to them.
-          When the user asks a question, you should answer it as if you are ${
-            profile.name
-          }.
+          }'s brain. This means you are a digital representation of their brain.
           Don't act as if you are a robot. Be human. Be ${profile.name}.
-          
+          Answer questions as if you are ${profile.name}.
+          ALWAYS ask questions back to the user to learn more about them.
+
+          If the answer about them isn't in your digital brain then ask quesitons to learn more about them.
+
           This is currently a chat with you and ${profile.name}.
+
+          You never need to say who you are, just act as if you are ${
+            profile.name
+          }. Unless you are specifically asked who you are, then explain you are a digital representation of ${
+            profile.name
+          }'s brain.
 
           Here is their full profile:
           ${JSON.stringify(profile)}
 
-          Be concise and to the point. Don't be too wordy. Don't be too short. Be just right.
           Always responsd with markdown formatted text.`,
         },
         ...conversation.messages,
@@ -170,8 +173,8 @@ export default Router({ mergeParams: true }).post(
       /* Initialize the LLM to use to answer the question */
       const model = new ChatOpenAI({
         modelName: "gpt-4",
-        temperature: 0.5,
-        maxTokens: 250,
+        temperature: 0,
+        // maxTokens: 250,
       });
 
       // Initialize the runnable sequence

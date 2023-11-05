@@ -26,7 +26,7 @@ export function SendDingDialog() {
   return (
     <Dialog open={open} onOpenChange={handleChange}>
       <DialogTrigger asChild>
-        <Button onClick={handleChange} className="gap-2">
+        <Button onClick={handleChange} className="gap-2" size={"sm"}>
           <SendIcon className="h-4 w-4" /> Send a Ding
         </Button>
       </DialogTrigger>

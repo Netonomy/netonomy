@@ -159,7 +159,7 @@ export function Chat() {
                       )}
                       {message.role === "assistant" && (
                         <div
-                          className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-black mr-auto max-w-[80%] whitespace-pre-wrap ${
+                          className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-black mr-auto max-w-[80%] lg:max-w-full whitespace-pre-wrap ${
                             message.content === "" && "animate-bounce"
                           }`}
                         >

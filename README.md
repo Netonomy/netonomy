@@ -1,5 +1,9 @@
 # Netonomy: Internet Freedom 🚀
 
+An application that allows users and organizations to own their digital identities, data, and finances.
+
+## Why?
+
 Today, our online identities are mostly in the hands of big companies and websites. They keep our personal information in their systems, and sometimes this can be risky because they might get hacked. Also, these companies have a lot of control over our information and can use it in ways we might not like. Decentralized Identifiers (DIDs) are like a new kind of online ID that we can control ourselves, without needing these big companies to do it for us. This can make things safer, easier to use, and give us more control over our information.
 
 ### The main benefits of DIDs are:
@@ -23,6 +27,8 @@ In summary, the main point of DIDs is to give users more control over their digi
 | vector-store             |      Chroma DB      |
 | llama-cpp                |      Local LLM      |
 
-## How to run locally
+## 🏃‍♂️ How to run locally
 
-Check <a href="">here</a> on how to run locally</a>
+**Prequisites:**
+
+- Install Docker
