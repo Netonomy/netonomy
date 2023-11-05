@@ -18,9 +18,21 @@ const schema = Joi.object({
   input: Joi.string(),
   did: Joi.string().required(),
   recordId: Joi.string().optional(),
-  chatHistory: Joi.array().optional(),
   profile: Joi.any().required(),
-});
+  conversation: Joi.object({
+    name: Joi.string().optional(),
+    id: Joi.string().required(),
+    "@context": Joi.string().optional(),
+    "@type": Joi.string().optional(),
+    messages: Joi.array().items(
+      Joi.object({
+        role: Joi.string().required(),
+        content: Joi.string().required(),
+        datePublished: Joi.string().optional(),
+      })
+    ),
+  }),
+}).unknown(true);
 
 /**
  * Create a prompt template for generating an answer based on context and
@@ -63,20 +75,28 @@ const questionPrompt = PromptTemplate.fromTemplate(
  *               recordId:
  *                 type: string
  *                 required: false
- *               chatHistory:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     role:
- *                       type: string
- *                     content:
- *                       type: string
- *                     profile:
+ *               profile:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *               conversation:
+ *                 type: object
+ *                 properties:
+ *                   name: 
+ *                     type: string
+ *                   id: 
+ *                     type: string
+ *                   messages:                 
+ *                     type: array
+ *                     items:
  *                       type: object
  *                       properties:
- *                         name:
+ *                         role:
  *                           type: string
+ *                         content:
+ *                           type: string
+
  *     responses:
  *       200:
  *         description: OK
@@ -88,18 +108,18 @@ export default Router({ mergeParams: true }).post(
   async (req, res) => {
     try {
       // validate the request
-      const validation = schema.validate(req.body);
-      if (validation.error)
+      const { error, value } = schema.validate(req.body);
+      if (error)
         return res.status(400).json({
           status: "ERROR",
-          message: validation.error,
+          message: error,
         });
 
       // extract the request body
-      let { input, recordId, did, chatHistory, profile } = req.body;
+      let { input, recordId, did, conversation, profile } = value;
 
       // Add System message to chat history
-      chatHistory = [
+      let chatHistory: ChatCompletionMessageParam[] = [
         {
           role: "system",
           content: `You are the digital tertiary layer of ${
@@ -117,7 +137,7 @@ export default Router({ mergeParams: true }).post(
           Be concise and to the point. Don't be too wordy. Don't be too short. Be just right.
           Always responsd with markdown formatted text.`,
         },
-        ...chatHistory,
+        ...conversation.messages,
       ];
 
       // Create the filter to use for the retriever
@@ -191,6 +211,10 @@ export default Router({ mergeParams: true }).post(
                 content: m.content!,
               });
             }
+
+            return new SystemMessage({
+              content: m.content!,
+            });
           })
         ),
       });

@@ -1,6 +1,6 @@
 import Web5Context from "@/Web5Provider";
 import { atom, useAtom } from "jotai";
-import { ChangeEvent, FormEvent, useContext, useState } from "react";
+import { ChangeEvent, FormEvent, useContext, useEffect, useState } from "react";
 import useProfile from "./useProfile";
 
 // Enum to define the roles in the chat
@@ -68,6 +68,7 @@ export default function useChat() {
 
   // Function to load a conversation
   async function loadConversations() {
+    console.log("LOADING CONVERSATIONS");
     if (!web5Context || !web5Context.web5) return;
 
     // Fetch the conversation
@@ -92,6 +93,8 @@ export default function useChat() {
       _conversations.push(data);
     }
 
+    console.log(_conversations);
+
     setConversations(_conversations);
   }
 
@@ -110,6 +113,9 @@ export default function useChat() {
     // Create the conversation
     const { record } = await web5Context.web5.dwn.records.create({
       data: conversation,
+      message: {
+        schema: "https://netonomy.io/AIConversation",
+      },
     });
 
     if (!record) return;
@@ -118,6 +124,25 @@ export default function useChat() {
 
     // Reset the current conversation
     return conversation;
+  }
+
+  // Update the current conversation
+  async function updateConversation(_conversation: AIConversation) {
+    if (!web5Context || !web5Context.web5) return;
+
+    // Update the conversation
+    const { record } = await web5Context.web5.dwn.records.read({
+      message: {
+        recordId: _conversation.id,
+      },
+    });
+
+    if (!record) return;
+
+    // Update the conversation
+    await record.update({
+      data: _conversation,
+    });
   }
 
   // Function to send messages
@@ -145,7 +170,7 @@ export default function useChat() {
     fetch(`http://localhost:3000/api/ai/chains/retrievalQA`, {
       method: "POST",
       body: JSON.stringify({
-        chatHistory: _conversation.messages,
+        conversation: _conversation,
         input: question,
         did: web5Context!.did,
         recordId: recordId || undefined,
@@ -168,6 +193,7 @@ export default function useChat() {
               if (done) {
                 // Set generating to false
                 setGenerating(false);
+                await updateConversation(_conversation);
                 break;
               }
 
@@ -175,7 +201,6 @@ export default function useChat() {
                 const chunk = new TextDecoder().decode(value);
 
                 // Update Last AI message with new tokens
-
                 setCurrentConversation((prevConversation) => {
                   if (!prevConversation) return null;
 
@@ -185,6 +210,9 @@ export default function useChat() {
                       updatedConversation.messages.length - 1
                     ];
                   lastMessage.content += chunk;
+                  lastMessage.datePublished = new Date().toISOString();
+
+                  _conversation = updatedConversation;
 
                   return updatedConversation;
                 });
@@ -283,6 +311,7 @@ export default function useChat() {
       conversation = await createConversation({
         role: MessageRole.user,
         content: input,
+        datePublished: new Date().toISOString(),
       });
       if (conversation) setCurrentConversation(conversation);
     } else {
@@ -291,6 +320,7 @@ export default function useChat() {
       conversation.messages.push({
         role: MessageRole.user,
         content: input,
+        datePublished: new Date().toISOString(),
       });
       setCurrentConversation(conversation);
     }
@@ -309,6 +339,10 @@ export default function useChat() {
     const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
     setInput(capitalizedValue);
   };
+
+  useEffect(() => {
+    loadConversations();
+  }, [web5Context]);
 
   // Return the state and handlers
   return {
