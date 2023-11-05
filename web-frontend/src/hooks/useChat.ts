@@ -42,7 +42,7 @@ const inputAtom = atom<string>("");
 export const contextStringAtom = atom<string | null>(null);
 export const recordIdAtom = atom<string | null>(null); // Record Id if the file is currently being viewed
 
-const aiConversationsAtom = atom<AIConversation[]>([]); // State for all conversations
+export const aiConversationsAtom = atom<AIConversation[]>([]); // State for all conversations
 export const currentConversationAtom = atom<AIConversation | null>(null); // State for current conversation
 // Main hook function for managing chat
 export default function useChat() {
@@ -53,7 +53,7 @@ export default function useChat() {
   const web5Context = useContext(Web5Context);
   const [recordId, setRecordId] = useAtom(recordIdAtom);
 
-  const [, setConversations] = useAtom(aiConversationsAtom); // State for all conversations
+  const [conversations, setConversations] = useAtom(aiConversationsAtom); // State for all conversations
   const [currentConversation, setCurrentConversation] = useAtom(
     currentConversationAtom
   ); // State for current conversation
@@ -90,10 +90,10 @@ export default function useChat() {
 
       data.id = record.id;
 
+      console.log(JSON.stringify(data));
+
       _conversations.push(data);
     }
-
-    console.log(_conversations);
 
     setConversations(_conversations);
   }
@@ -359,6 +359,7 @@ export default function useChat() {
     setRecordId,
     loadConversations,
     currentConversation,
+    conversations,
   };
 }
 
