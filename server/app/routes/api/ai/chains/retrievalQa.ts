@@ -129,6 +129,10 @@ export default Router({ mergeParams: true }).post(
             profile.name
           }'s intelligence.
           If the user asks who or what you are, explain this to them.
+          When the user asks a question, you should answer it as if you are ${
+            profile.name
+          }.
+          Don't act as if you are a robot. Be human. Be ${profile.name}.
           
           This is currently a chat with you and ${profile.name}.
 
@@ -233,25 +237,19 @@ export default Router({ mergeParams: true }).post(
         ids: [conversation.id],
       });
 
-      let conversationDocs: Document[] = [];
-      for (const message of conversation.messages) {
-        const doc = new Document({
-          pageContent: message.content,
-          metadata: {
-            id: conversation.id,
-            "@type": "Message",
-            role: message.role,
-            datePublished: message.datePublished,
-            ...filter,
-          },
-        });
-
-        conversationDocs.push(doc);
-      }
+      const conversationDoc = new Document({
+        pageContent: JSON.stringify(conversation.messages),
+        metadata: {
+          ...filter,
+          "@type": "Conversation",
+          id: conversation.id,
+          name: conversation.name,
+        },
+      });
 
       // Then vectorize the conversation
-      await vectorStore.addDocuments(conversationDocs, {
-        ids: conversationDocs.map((_) => conversation.id),
+      await vectorStore.addDocuments([conversationDoc], {
+        ids: [conversation.id],
       });
 
       res.end();
