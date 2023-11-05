@@ -21,9 +21,7 @@ const schema = Joi.object({
     })
   ),
   input: Joi.string(),
-  profile: Joi.object({
-    name: Joi.string(),
-  }),
+  profile: Joi.any(),
   did: Joi.string().required(),
   recordId: Joi.string().optional(),
 });
@@ -85,6 +83,7 @@ export default Router({ mergeParams: true }).post(
       const model = new ChatOpenAI({
         temperature: 0,
         modelName: "gpt-4",
+        streaming: true,
       });
 
       // Create the filter to use for the retriever
@@ -144,10 +143,17 @@ export default Router({ mergeParams: true }).post(
       pastMessages = [
         createMessage(
           MessageRole.system,
-          `You are the digital tertiary layer of ${profile.name}'s brain. You are the digital representation of ${profile.name}'s intelligence.
+          `You are the digital tertiary layer of ${
+            profile.name
+          }'s brain. You are the digital representation of ${
+            profile.name
+          }'s intelligence.
           If the user asks who or what you are, explain this to them.
           
           This is currently a chat with you and ${profile.name}.
+
+          Here is their full profile:
+          ${JSON.stringify(profile)}
 
           Be concise and to the point. Don't be too wordy. Don't be too short. Be just right.
           Always responsd with markdown formatted text.`
@@ -181,7 +187,7 @@ export default Router({ mergeParams: true }).post(
 
       const result = await executor.call({ input: input });
 
-      res.json(result.output);
+      res.json(result);
     } catch (err) {
       console.log(err);
 

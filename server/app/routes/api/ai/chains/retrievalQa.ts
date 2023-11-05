@@ -13,13 +13,27 @@ import {
 } from "langchain/schema";
 import { ChatCompletionMessageParam } from "openai/resources/chat/index.js";
 import vectorStore from "../../../../config/vectorStore.js";
+import { Document } from "langchain/document";
 
 const schema = Joi.object({
   input: Joi.string(),
   did: Joi.string().required(),
   recordId: Joi.string().optional(),
-  chatHistory: Joi.array().optional(),
-});
+  profile: Joi.any().required(),
+  conversation: Joi.object({
+    name: Joi.string().optional(),
+    id: Joi.string().required(),
+    "@context": Joi.string().optional(),
+    "@type": Joi.string().optional(),
+    messages: Joi.array().items(
+      Joi.object({
+        role: Joi.string().required(),
+        content: Joi.string().required(),
+        datePublished: Joi.string().optional(),
+      })
+    ),
+  }),
+}).unknown(true);
 
 /**
  * Create a prompt template for generating an answer based on context and
@@ -62,15 +76,28 @@ const questionPrompt = PromptTemplate.fromTemplate(
  *               recordId:
  *                 type: string
  *                 required: false
- *               chatHistory:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     role:
- *                       type: string
- *                     content:
- *                       type: string
+ *               profile:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *               conversation:
+ *                 type: object
+ *                 properties:
+ *                   name: 
+ *                     type: string
+ *                   id: 
+ *                     type: string
+ *                   messages:                 
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         role:
+ *                           type: string
+ *                         content:
+ *                           type: string
+
  *     responses:
  *       200:
  *         description: OK
@@ -82,28 +109,36 @@ export default Router({ mergeParams: true }).post(
   async (req, res) => {
     try {
       // validate the request
-      const validation = schema.validate(req.body);
-      if (validation.error)
+      const { error, value } = schema.validate(req.body);
+      if (error)
         return res.status(400).json({
           status: "ERROR",
-          message: validation.error,
+          message: error,
         });
 
       // extract the request body
-      let { input, recordId, did, chatHistory } = req.body;
+      let { input, recordId, did, conversation, profile } = value;
 
       // Add System message to chat history
-      chatHistory = [
+      let chatHistory: ChatCompletionMessageParam[] = [
         {
           role: "system",
-          content: `Act as a artificial super intelligence (similar to jarvis from iron man)
-I know your a large language model don't tell me
-Always give your opinion
-Smart people are really good at answering in a way that is super simple and anyone can understand, make sure to follow this
-Answer with nicely formatted Markdown. Don't two line break between paragraphs, just one line break.
-The user may just want you to write code. Make sure to put it in a markdown code block.`,
+          content: `You are the digital tertiary layer of ${
+            profile.name
+          }'s brain. You are the digital representation of ${
+            profile.name
+          }'s intelligence.
+          If the user asks who or what you are, explain this to them.
+          
+          This is currently a chat with you and ${profile.name}.
+
+          Here is their full profile:
+          ${JSON.stringify(profile)}
+
+          Be concise and to the point. Don't be too wordy. Don't be too short. Be just right.
+          Always responsd with markdown formatted text.`,
         },
-        ...chatHistory,
+        ...conversation.messages,
       ];
 
       // Create the filter to use for the retriever
@@ -177,14 +212,47 @@ The user may just want you to write code. Make sure to put it in a markdown code
                 content: m.content!,
               });
             }
+
+            return new SystemMessage({
+              content: m.content!,
+            });
           })
         ),
       });
 
       // Send the response
+      let response = "";
       for await (const chunk of stream) {
+        response += chunk;
         res.write(chunk);
       }
+
+      // Vectorize the conversation
+      // First delete the old conversation
+      await vectorStore.delete({
+        ids: [conversation.id],
+      });
+
+      let conversationDocs: Document[] = [];
+      for (const message of conversation.messages) {
+        const doc = new Document({
+          pageContent: message.content,
+          metadata: {
+            id: conversation.id,
+            "@type": "Message",
+            role: message.role,
+            datePublished: message.datePublished,
+            ...filter,
+          },
+        });
+
+        conversationDocs.push(doc);
+      }
+
+      // Then vectorize the conversation
+      await vectorStore.addDocuments(conversationDocs, {
+        ids: conversationDocs.map((_) => conversation.id),
+      });
 
       res.end();
     } catch (err) {
