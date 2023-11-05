@@ -13,6 +13,7 @@ import {
 } from "langchain/schema";
 import { ChatCompletionMessageParam } from "openai/resources/chat/index.js";
 import vectorStore from "../../../../config/vectorStore.js";
+import { Document } from "langchain/document";
 
 const schema = Joi.object({
   input: Joi.string(),
@@ -220,9 +221,38 @@ export default Router({ mergeParams: true }).post(
       });
 
       // Send the response
+      let response = "";
       for await (const chunk of stream) {
+        response += chunk;
         res.write(chunk);
       }
+
+      // Vectorize the conversation
+      // First delete the old conversation
+      await vectorStore.delete({
+        ids: [conversation.id],
+      });
+
+      let conversationDocs: Document[] = [];
+      for (const message of conversation.messages) {
+        const doc = new Document({
+          pageContent: message.content,
+          metadata: {
+            id: conversation.id,
+            "@type": "Message",
+            role: message.role,
+            datePublished: message.datePublished,
+            ...filter,
+          },
+        });
+
+        conversationDocs.push(doc);
+      }
+
+      // Then vectorize the conversation
+      await vectorStore.addDocuments(conversationDocs, {
+        ids: conversationDocs.map((_) => conversation.id),
+      });
 
       res.end();
     } catch (err) {
