@@ -22,7 +22,7 @@ export function Home() {
       <div
         className={`h-screen w-screen flex items-center p-8 gap-10 relative`}
       >
-        <div className="flex flex-1 h-full gap-10">
+        <div className="flex flex-1 w-full flex-row items-center mb-4 h-full">
           <Outlet />
         </div>
 

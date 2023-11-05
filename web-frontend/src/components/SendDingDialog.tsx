@@ -12,7 +12,7 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useState } from "react";
-import { Loader2, SendIcon, TowerControl } from "lucide-react";
+import { Loader2, SendIcon } from "lucide-react";
 
 export function SendDingDialog() {
   const { handleDing } = useDinger();

@@ -1,13 +1,12 @@
 import useProfile from "@/hooks/useProfile";
 import { Card, CardContent } from "../ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarImage } from "../ui/avatar";
 import { Skeleton } from "../ui/skeleton";
 import { useContext, useState } from "react";
 import Web5Context from "@/Web5Provider";
 import { CheckCircle, CopyIcon } from "lucide-react";
 import useDinger from "@/hooks/useDinger";
 import { DingsDialog } from "../DingsDialog";
-import { Button } from "../ui/button";
 import { SendDingDialog } from "../SendDingDialog";
 
 export function ProfileWidet() {
@@ -31,7 +30,7 @@ export function ProfileWidet() {
     <Card className="w-[425px] h-min rounded-xl shadow-lg">
       <CardContent className="flex items-center justify-center gap-4 lg:flex-col p-4">
         <div className="w-full relative mb-10 mt-2">
-          <div className="w-full h-28 relative">
+          <div className="w-full h-32 relative">
             {profile?.banner ? (
               <img
                 src={profile.banner}

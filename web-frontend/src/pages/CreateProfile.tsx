@@ -17,6 +17,7 @@ import Web5Context from "@/Web5Provider";
 import useProfile from "@/hooks/useProfile";
 import { useNavigate } from "react-router-dom";
 import BannerImgSelector from "@/components/BannerImgSelector";
+import ProfileImgSelector from "@/components/ProfileImgSelector";
 
 const profileSchema = z.object({
   name: z.string().min(2).max(50),
@@ -24,7 +25,7 @@ const profileSchema = z.object({
 
 export default function CreateProfile() {
   const inputref = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<Blob | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const web5Context = useContext(Web5Context);
   const { createProfile } = useProfile();
   const navigate = useNavigate();
@@ -91,60 +92,33 @@ export default function CreateProfile() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full max-w-[335px] h-full flex flex-col items-center justify-between"
+          className="space-y-8 w-full max-w-[335px] h-full flex flex-col items-center"
         >
-          <div className="w-full flex items-center flex-col gap-10">
-            <div className="mt-[25%] flex flex-col items-center w-full gap-[75px]">
-              <h3 className="scroll-m-20 text-4xl text-center font-semibold tracking-tight">
+          <div className="w-full flex items-center flex-col flex-1">
+            <div className="mt-[25%] flex flex-col items-center w-full ">
+              <h3 className="text-4xl text-center font-semibold tracking-tight">
                 Create your digital profile
               </h3>
 
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center gap-2 mt-12">
                 <BannerImgSelector file={bannerImg} setFile={setBannerImg} />
 
-                <div className="flex flex-col items-center gap-2">
-                  <Avatar
-                    className="h-16 w-16"
-                    onClick={() => {
-                      inputref?.current?.click();
-                    }}
-                  >
-                    <AvatarImage
-                      src={file ? URL.createObjectURL(file) : undefined}
-                    />
-                    <AvatarFallback>
-                      <div className="rounded-full h-16 w-16 bg-gray-400 file:text-transparent" />
-                    </AvatarFallback>
-                  </Avatar>
-
-                  <input
-                    ref={inputref}
-                    hidden
-                    type="file"
-                    accept="image/*"
-                    onChange={handleChange}
-                  />
-
-                  <p className="text-sm text-muted-foreground">
-                    Select a profile image.
-                  </p>
-                </div>
+                <ProfileImgSelector file={file} setFile={setFile} />
               </div>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Name" {...field} className="w-full" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name" {...field} className="w-full" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
 
           <div className="w-full mb-[20px] min-h-[75px]">

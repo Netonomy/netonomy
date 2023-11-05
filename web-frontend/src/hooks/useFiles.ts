@@ -6,15 +6,18 @@ import { useContext, useEffect } from "react";
 import axios from "axios";
 
 // Atoms
-const filesAtom = atomWithStorage<DigitalDocument[]>("files", []);
+export const filesAtom = atomWithStorage<(DigitalDocument | Folder)[]>(
+  "files",
+  []
+);
 
-export default function useFolder() {
+export default function useFolder(folderId?: string) {
   const web5Context = useContext(Web5Context);
   const [files, setFiles] = useAtom(filesAtom);
   const [, setLoading] = useAtom(loadingAtom);
 
   async function uploadFiles(files: FileList) {
-    if (web5Context.web5) {
+    if (web5Context.web5 && web5Context.did) {
       setLoading(true);
       for (var i = 0; i < files.length; i++) {
         // Convert file to blob
@@ -51,11 +54,8 @@ export default function useFolder() {
         // upload to chroma
         const formData = new FormData();
         formData.append("file", blob);
-        formData.append("did", web5Context.web5.agent.agentDid || "");
+        formData.append("did", web5Context.did);
         formData.append("recordId", fileObjectRes.record!.id);
-
-        console.log("ID:");
-        console.log(fileObjectRes.record?.id);
 
         // Upload to chroma
         await axios
@@ -68,7 +68,10 @@ export default function useFolder() {
             console.error(err);
           });
 
-        setFiles((prevDocs: DigitalDocument[]) => [data, ...prevDocs]);
+        setFiles((prevDocs: (DigitalDocument | Folder)[]) => [
+          data,
+          ...prevDocs,
+        ]);
       }
       setLoading(false);
     }
@@ -77,28 +80,69 @@ export default function useFolder() {
   async function createFolder(name: string) {
     if (!web5Context.web5) return;
 
-    const { status } = await web5Context.web5.dwn.records.create({
-      data: { name },
+    const data: Folder = {
+      "@context": "https://schema.org",
+      "@type": "Collection",
+      name,
+      identifier: "",
+      dateCreated: new Date().toISOString(),
+    };
+
+    const { record } = await web5Context.web5.dwn.records.create({
+      data,
       message: {
         schema: "https://schema.org/Collection",
       },
     });
+
+    // If the status is 200 then add the folder to the files array
+    if (record) {
+      setFiles((prevFiles) => [data, ...prevFiles]);
+    }
   }
 
-  async function fetchFiles() {
+  async function fetchFilesAndFolders() {
     if (web5Context.web5) {
+      let filesAndFolders: (DigitalDocument | Folder)[] = [];
+
+      // Fetch the folders
       const { records } = await web5Context.web5.dwn.records.query({
         message: {
           filter: {
-            schema: "https://schema.org/DigitalDocument",
+            parentId: folderId,
+            schema: "https://schema.org/Collection",
           },
         },
       });
 
       if (!records) return;
-      let files: DigitalDocument[] = [];
+
       for (var i = 0; i < records.length; i++) {
         const record = records[i];
+        let data = await record.data.json();
+
+        data.identifier = record.id;
+
+        // Add the folder to the files and folders array
+        filesAndFolders.push(data);
+      }
+
+      // Fetch the files
+      const { records: fileRecords } = await web5Context.web5.dwn.records.query(
+        {
+          message: {
+            filter: {
+              parentId: folderId,
+              schema: "https://schema.org/DigitalDocument",
+            },
+          },
+        }
+      );
+
+      if (!fileRecords) return;
+      let files: DigitalDocument[] = [];
+      for (var i = 0; i < fileRecords.length; i++) {
+        const record = fileRecords[i];
         let data = await record.data.json();
 
         data.identifier = record.id;
@@ -114,11 +158,13 @@ export default function useFolder() {
 
         data.url = URL.createObjectURL(file);
 
-        files.push(data);
+        // Add the file to the files and folders array
+        filesAndFolders.push(data);
       }
-      // Revert the
+
+      // Reverse the array so the newest files are at the top
       files.reverse();
-      setFiles(files);
+      setFiles(filesAndFolders);
     }
   }
 
@@ -130,7 +176,7 @@ export default function useFolder() {
           recordId: recordId,
         },
       });
-      setFiles((prevDocs: DigitalDocument[]) =>
+      setFiles((prevDocs: (DigitalDocument | Folder)[]) =>
         prevDocs.filter((doc) => doc.identifier !== recordId)
       );
       setLoading(false);
@@ -138,10 +184,10 @@ export default function useFolder() {
   }
 
   useEffect(() => {
-    fetchFiles();
+    fetchFilesAndFolders();
   }, [web5Context]);
 
-  return { uploadFiles, files, deleteFile };
+  return { uploadFiles, files, deleteFile, createFolder };
 }
 
 // Types
@@ -162,6 +208,9 @@ export type DigitalDocument = {
 };
 
 export type Folder = {
+  "@context": "https://schema.org";
+  "@type": "Collection";
   name: string;
-  id: string;
+  identifier: string;
+  dateCreated?: string;
 };

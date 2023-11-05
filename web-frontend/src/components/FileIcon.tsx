@@ -1,4 +1,10 @@
-import { File, FileSpreadsheet, ImageIcon, VideoIcon } from "lucide-react";
+import {
+  File,
+  FileSpreadsheet,
+  FolderIcon,
+  ImageIcon,
+  VideoIcon,
+} from "lucide-react";
 
 export default function FileIcon({ type }: { type: string }) {
   const style =
@@ -39,6 +45,12 @@ export default function FileIcon({ type }: { type: string }) {
       return (
         <div className={`${style} bg-blue-600`}>
           <ImageIcon className="text-white" />
+        </div>
+      );
+    case "folder":
+      return (
+        <div className={`${style} bg-blue-600`}>
+          <FolderIcon className="text-white" />
         </div>
       );
     default:

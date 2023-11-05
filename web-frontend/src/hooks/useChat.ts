@@ -36,7 +36,7 @@ export default function useChat() {
   const [messages, setMessages] = useAtom(aiChatMessagesAtom); // State for messages
   const [input, setInput] = useAtom(inputAtom); // State for input
   const [generating, setGenerating] = useState(false); // State for when AI is generating response
-  const [context, setContext] = useAtom(contextStringAtom); // State for context
+  const [, setContext] = useAtom(contextStringAtom); // State for context
   const web5Context = useContext(Web5Context);
   const [recordId, setRecordId] = useAtom(recordIdAtom);
 
@@ -69,7 +69,7 @@ export default function useChat() {
       body: JSON.stringify({
         chatHistory: _messages,
         input: question,
-        did: web5Context?.did,
+        did: web5Context!.did,
         recordId: recordId || undefined,
       }),
       headers: {

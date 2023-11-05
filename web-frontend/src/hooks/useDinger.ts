@@ -104,9 +104,7 @@ export default function useDinger() {
   }
 
   useEffect(() => {
-    setInterval(() => {
-      fetchDings();
-    }, 5000);
+    fetchDings();
   }, []);
 
   return { dings, handleDing };

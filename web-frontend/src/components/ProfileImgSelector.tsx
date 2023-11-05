@@ -1,9 +1,10 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
+import { Button } from "./ui/button";
 import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-export default function BannerImgSelector(props: {
+export default function ProfileImgSelector(props: {
   file: File | null;
   setFile: Dispatch<SetStateAction<File | null>>;
 }) {
@@ -67,12 +68,10 @@ export default function BannerImgSelector(props: {
   }
 
   const onCropComplete = useCallback(
-    async (croppedAreaPixels: {
-      x: number;
-      y: number;
-      height: number;
-      width: number;
-    }) => {
+    async (
+      croppedArea: any,
+      croppedAreaPixels: { x: number; y: number; height: number; width: number }
+    ) => {
       setCroppedAreaPixels(croppedAreaPixels);
     },
     [props.file] // Adding dependencies for useCallback
@@ -88,7 +87,7 @@ export default function BannerImgSelector(props: {
   };
 
   return (
-    <div className="flex items-center justify-center flex-col gap-2">
+    <div className="mb-[70px] flex items-center justify-center flex-col gap-2">
       {showCropper && imageToCrop && (
         <div className="absolute top-0 right-0 bottom-0 left-0 z-[100] bg-black">
           <Button
@@ -110,7 +109,7 @@ export default function BannerImgSelector(props: {
             image={URL.createObjectURL(imageToCrop)}
             crop={crop}
             zoom={zoom}
-            aspect={16 / 9} // Changed aspect ratio for banner
+            aspect={1 / 1}
             onCropChange={setCrop}
             onCropComplete={onCropComplete}
             onZoomChange={setZoom}
@@ -122,20 +121,19 @@ export default function BannerImgSelector(props: {
         </div>
       )}
 
-      <div
-        className="h-36 w-96 min-h-36 min-w-96 rounded-3xl bg-gray-400 relative overflow-hidden"
+      <Avatar
+        className="h-16 w-16"
         onClick={() => {
           inputref.current.click();
         }}
       >
-        {props.file && (
-          <img
-            src={URL.createObjectURL(props.file)}
-            alt="banner image"
-            className="h-full w-full"
-          />
-        )}
-      </div>
+        <AvatarImage
+          src={props.file ? URL.createObjectURL(props.file) : undefined}
+        />
+        <AvatarFallback>
+          <div className="rounded-full h-16 w-16 bg-gray-400 file:text-transparent" />
+        </AvatarFallback>
+      </Avatar>
       <input
         type="file"
         accept="image/*"
@@ -144,7 +142,7 @@ export default function BannerImgSelector(props: {
         ref={inputref}
       />
 
-      <p className="text-sm text-muted-foreground">Select a banner image.</p>
+      <p className="text-sm text-muted-foreground">Select a profile image.</p>
     </div>
   );
 }

@@ -64,7 +64,7 @@ export default function PdfViewer() {
   }, [recordId]);
 
   return (
-    <div className="flex flex-1 w-full flex-row items-center gap-6 ">
+    <div className="flex flex-1 w-full flex-row items-center gap-6 h-full">
       <div className="flex-grow h-full flex flex-col items-center max-h-[calc(100vh-40px)]">
         <Card className="flex flex-1 w-full overflow-hidden shadow-lg">
           <CardContent className="w-full h-full overflow-y-auto flex flex-col p-0 relative">

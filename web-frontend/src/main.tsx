@@ -8,6 +8,7 @@ import PdfViewer from "./pages/PdfViewer.tsx";
 import { ProfileWidet } from "./components/widgets/ProfileWidget.tsx";
 import { StorageWidget } from "./components/widgets/StorageWidget.tsx";
 import { Chat } from "./components/Chat.tsx";
+import CredentialsWidget from "./components/widgets/CredentialsWidget.tsx";
 
 const router = createBrowserRouter([
   {
@@ -17,14 +18,20 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: (
-          <>
-            <ProfileWidet />
-            <StorageWidget />
-          </>
+          <div className="flex flex-1 w-full flex-row items-center h-full gap-10">
+            <div className="flex flex-col items-center w-[425px] h-full gap-10">
+              <ProfileWidet />
+              <CredentialsWidget />
+            </div>
+
+            <div className="flex flex-col items-center w-full h-full">
+              <StorageWidget />
+            </div>
+          </div>
         ),
       },
       {
-        path: "/:recordId",
+        path: "/pdf/:recordId",
         element: <PdfViewer />,
       },
     ],

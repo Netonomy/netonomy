@@ -55,7 +55,7 @@ export function Web5Provider({ children }: any) {
       techPreview: {
         // dwnEndpoints: [],
       },
-      sync: "1000",
+      // sync: "1000",
     });
     setWeb5(web5);
     setDid(did);
