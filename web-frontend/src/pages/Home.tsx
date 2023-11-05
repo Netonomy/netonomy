@@ -5,7 +5,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import TopLoader from "@/components/TopLoader";
 import { useAtom } from "jotai";
 import { loadingAtom } from "@/state/loadingAtom";
-// import KeyLogo from "@/components/KeyLogo";
+import KeyLogo from "@/components/KeyLogo";
 
 export function Home() {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export function Home() {
             <Outlet />
           </div>
 
-          <div className="w-[475px] h-full">
+          <div className="w-[475px] h-full hidden lg:flex">
             <Chat />
           </div>
         </div>

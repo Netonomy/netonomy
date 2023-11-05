@@ -14,7 +14,7 @@ export function DingsDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="absolute -top-2 -right-2 bg-red-600 h-8 w-8 rounded-full text-white items-center justify-center flex hover:h-[34px] hover:w-[34px] transition-all cursor-pointer">
+        <div className="absolute top-0 right-0 bg-red-600 h-8 w-8 rounded-full text-white items-center justify-center flex hover:h-[34px] hover:w-[34px] transition-all cursor-pointer">
           {dings.length}
         </div>
       </DialogTrigger>

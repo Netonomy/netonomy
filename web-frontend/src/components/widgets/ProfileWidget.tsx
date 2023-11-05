@@ -29,7 +29,7 @@ export function ProfileWidet() {
   return (
     <Card className="w-[425px] h-min rounded-xl shadow-lg">
       <CardContent className="flex items-center justify-center gap-4 lg:flex-col p-4">
-        <div className="h-12 w-12 lg:h-40 lg:w-40">
+        <div className="h-12 w-12 lg:h-40 lg:w-40 relative">
           <Avatar className="h-full w-full">
             {profile?.image && <AvatarImage src={profile.image} />}
             {/* <AvatarFallback>
