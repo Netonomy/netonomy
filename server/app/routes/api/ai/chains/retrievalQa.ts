@@ -100,7 +100,8 @@ export default Router({ mergeParams: true }).post(
 I know your a large language model don't tell me
 Always give your opinion
 Smart people are really good at answering in a way that is super simple and anyone can understand, make sure to follow this
-Answer with nicely formatted Markdown. Don't two line break between paragraphs, just one line break.`,
+Answer with nicely formatted Markdown. Don't two line break between paragraphs, just one line break.
+The user may just want you to write code. Make sure to put it in a markdown code block.`,
         },
         ...chatHistory,
       ];
@@ -124,7 +125,7 @@ Answer with nicely formatted Markdown. Don't two line break between paragraphs, 
 
       // Create the retriever to use to get the relevant documents
       const retriever = vectorStore.asRetriever({
-        metadata: filter,
+        filter: filter,
       });
 
       /* Initialize the LLM to use to answer the question */
