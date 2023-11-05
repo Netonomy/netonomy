@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useContext, useRef, useState } from "react";
 import Web5Context from "@/Web5Provider";
 import useProfile from "@/hooks/useProfile";
@@ -54,38 +53,32 @@ export default function CreateProfile() {
       });
 
       // Convert banner file to blob
-      let bannerBlob: Blob | undefined;
-      let bannerRecordId: string | undefined;
-      if (bannerImg) {
-        bannerBlob = new Blob([bannerImg], {
-          type: "image/png",
-        });
+      // let bannerBlob: Blob | undefined;
+      // let bannerRecordId: string | undefined;
+      // if (bannerImg) {
+      //   bannerBlob = new Blob([bannerImg], {
+      //     type: "image/png",
+      //   });
 
-        // Upload banner image
-        const bannerRecord = await web5Context?.web5?.dwn.records.create({
-          data: bannerBlob,
-        });
+      //   // Upload banner image
+      //   const bannerRecord = await web5Context?.web5?.dwn.records.create({
+      //     data: bannerBlob,
+      //   });
 
-        bannerRecordId = bannerRecord?.record?.id;
-      }
+      //   bannerRecordId = bannerRecord?.record?.id;
+      // }
 
       await createProfile({
         name: values.name,
         "@context": "https://schema.org",
         "@type": "Person",
         image: record?.record?.id,
-        banner: bannerRecordId,
+        // banner: bannerRecordId,
       });
 
       navigate("/");
     }
   }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-    setFile(files[0]);
-  };
 
   return (
     <div className="h-screen w-screen flex items-center justify-center ">
@@ -101,7 +94,7 @@ export default function CreateProfile() {
               </h3>
 
               <div className="flex flex-col items-center gap-2 mt-12">
-                <BannerImgSelector file={bannerImg} setFile={setBannerImg} />
+                {/* <BannerImgSelector file={bannerImg} setFile={setBannerImg} /> */}
 
                 <ProfileImgSelector file={file} setFile={setFile} />
               </div>
