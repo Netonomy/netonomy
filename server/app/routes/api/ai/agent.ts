@@ -7,26 +7,32 @@ import { AIMessage, SystemMessage, HumanMessage } from "langchain/schema";
 import { BufferMemory } from "langchain/memory";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { WebBrowser } from "langchain/tools/webbrowser";
-import { ChainTool, DynamicTool, SerpAPI } from "langchain/tools";
+import {
+  ChainTool,
+  DynamicStructuredTool,
+  DynamicTool,
+  SerpAPI,
+} from "langchain/tools";
 import { VectorDBQAChain } from "langchain/chains";
 import { getJson } from "serpapi";
-
 import Joi from "joi";
 import vectorStore from "../../../config/vectorStore.js";
 import { loadYoutubeVideoToMemory } from "./loadYoutubeVideoToMemory.js";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { z } from "zod";
 
 const schema = Joi.object({
   messageHistory: Joi.array().items(
     Joi.object({
-      role: Joi.string().valid("system", "user", "ai"),
+      role: Joi.string().valid("system", "user", "ai", "assistant"),
       content: Joi.string(),
-    })
+    }).unknown(true)
   ),
   input: Joi.string(),
   profile: Joi.any(),
   did: Joi.string().required(),
   recordId: Joi.string().optional(),
-});
+}).unknown(true);
 
 /**
  * @swagger
@@ -83,7 +89,7 @@ export default Router({ mergeParams: true }).post(
 
       // Select model
       const model = new ChatOpenAI({
-        temperature: 0.5,
+        temperature: 0,
         modelName: "gpt-4",
         streaming: true,
         // configuration: {
@@ -176,12 +182,33 @@ export default Router({ mergeParams: true }).post(
       });
 
       // Youtube watcher tool
-      const youtubeWatcherTool = new DynamicTool({
+      // This tool will watch a youtube video and return the transcript
+      const youtubeWatcherTool = new DynamicStructuredTool({
         name: "youtube-watcher",
         description:
-          "Youtube Watcher - use this tool when you need to watch a youtube video. The input should be the youtube video url",
-        func: async (input: string) => {
-          const docs = await loadYoutubeVideoToMemory(input, did);
+          "Youtube Watcher - use this tool when you need to watch a youtube video. The input should be the youtube video url and a question to ask the video.",
+        schema: z.object({
+          url: z.string().describe("The url of the youtube video"),
+          question: z.string().describe("The question to ask the video"),
+        }),
+        func: async ({ question, url }) => {
+          let docs = await loadYoutubeVideoToMemory(url, did);
+
+          // Load the docs into the vector store
+          const vectorStore = await MemoryVectorStore.fromDocuments(
+            docs,
+            new OpenAIEmbeddings()
+          );
+
+          docs = await vectorStore.similaritySearch(input);
+
+          const str = JSON.stringify(docs);
+
+          // Make sure the string is not too long
+          // If it is too long, then cut it off
+          if (str.length > 8000) {
+            return str.slice(0, 8000);
+          }
 
           return JSON.stringify(docs);
         },
@@ -237,7 +264,7 @@ export default Router({ mergeParams: true }).post(
 
       // init executor
       const executor = await initializeAgentExecutorWithOptions(tools, model, {
-        agentType: "chat-conversational-react-description",
+        agentType: "openai-functions",
         verbose: true,
         memory: new BufferMemory({
           returnMessages: true,
@@ -250,7 +277,7 @@ export default Router({ mergeParams: true }).post(
 
       const result = await executor.call({ input: input });
 
-      res.json(result);
+      res.json({ result: result.output });
     } catch (err) {
       console.log(err);
 
@@ -266,11 +293,14 @@ enum MessageRole {
   system = "system",
   user = "user",
   ai = "ai",
+  assistant = "assistant",
 }
 
 function createMessage(role: MessageRole, content: string) {
   switch (role) {
     case "ai":
+      return new AIMessage(content);
+    case "assistant":
       return new AIMessage(content);
     case "system":
       return new SystemMessage(content);
