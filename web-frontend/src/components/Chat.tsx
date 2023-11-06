@@ -128,7 +128,7 @@ export function Chat() {
 
                 <div className="gap-2 flex flex-col">
                   <h2 className="text-3xl font-semibold tracking-tight text-center">
-                    Chat with your AI Assistant
+                    Chat with your Digital Intelligence
                   </h2>
 
                   <p className="text-sm text-muted-foreground text-center">

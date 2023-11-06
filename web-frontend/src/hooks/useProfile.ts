@@ -7,10 +7,17 @@ import { useContext, useEffect } from "react";
 const profileAtom = atomWithStorage<Person | null>("person", null);
 const fetchedProfile = atom(false);
 
+export const showedCreatedProfileAtom = atomWithStorage(
+  "showedCreateProfile",
+  false
+);
+
 export default function useProfile() {
   const [profile, setProfile] = useAtom(profileAtom);
   const [fetched, setFetched] = useAtom(fetchedProfile);
   const web5Context = useContext(Web5Context);
+
+  const [, setShowedCreated] = useAtom(showedCreatedProfileAtom);
 
   async function fetchProfile() {
     if (web5Context.web5) {

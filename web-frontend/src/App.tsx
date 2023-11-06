@@ -8,6 +8,7 @@ import AiChatPage from "./pages/AiChatPage";
 import CreateProfile from "./pages/CreateProfile";
 import PdfViewer from "./pages/PdfViewer";
 import WidgetDashboard from "./components/widgets/WidgetDashboard";
+import ProfilePage from "./pages/ProfilePage";
 
 const router = createBrowserRouter([
   {
@@ -25,8 +26,12 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/profile",
+    path: "/create-profile",
     element: <CreateProfile />,
+  },
+  {
+    path: "/profile/:did",
+    element: <ProfilePage />,
   },
   {
     path: "/chat",

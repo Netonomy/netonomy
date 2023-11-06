@@ -7,7 +7,7 @@ export default function KeyLogo({
 }) {
   return (
     <div>
-      <img src="/keyLogoWhite1.png" height={height} width={width} />
+      <img src="/keyLogo.svg" height={height} width={width} />
     </div>
   );
 }

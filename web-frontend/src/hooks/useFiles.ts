@@ -2,7 +2,7 @@ import Web5Context, { collectionProtocolDefinition } from "@/Web5Provider";
 import { loadingAtom } from "@/state/loadingAtom";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import axios from "axios";
 
 // Atoms
@@ -10,7 +10,6 @@ export const filesAtom = atomWithStorage<(DigitalDocument | Folder)[]>(
   "files",
   []
 );
-
 export default function useFolder(folderId?: string) {
   const web5Context = useContext(Web5Context);
   const [files, setFiles] = useAtom(filesAtom);

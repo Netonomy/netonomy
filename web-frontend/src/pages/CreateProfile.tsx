@@ -11,12 +11,14 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Web5Context from "@/Web5Provider";
-import useProfile from "@/hooks/useProfile";
+import useProfile, { showedCreatedProfileAtom } from "@/hooks/useProfile";
 import { useNavigate } from "react-router-dom";
 import BannerImgSelector from "@/components/BannerImgSelector";
 import ProfileImgSelector from "@/components/ProfileImgSelector";
+import KeyLogo from "@/components/KeyLogo";
+import { useAtom } from "jotai";
 
 const profileSchema = z.object({
   name: z.string().min(2).max(50),
@@ -28,6 +30,8 @@ export default function CreateProfile() {
   const web5Context = useContext(Web5Context);
   const { createProfile } = useProfile();
   const navigate = useNavigate();
+
+  const [, setShowedCreated] = useAtom(showedCreatedProfileAtom);
   const [bannerImg, setBannerImg] = useState<File | null>(null);
 
   // 1. Define your form.
@@ -80,6 +84,10 @@ export default function CreateProfile() {
     }
   }
 
+  useEffect(() => {
+    setShowedCreated(true);
+  }, []);
+
   return (
     <div className="h-screen w-screen flex items-center justify-center ">
       <Form {...form}>
@@ -89,9 +97,11 @@ export default function CreateProfile() {
         >
           <div className="w-full flex items-center flex-col flex-1">
             <div className="mt-[25%] flex flex-col items-center w-full ">
-              <h3 className="text-4xl text-center font-semibold tracking-tight">
-                Create your digital profile
-              </h3>
+              <div className="flex flex-col items-center gap-4">
+                <h3 className="text-4xl text-center font-semibold tracking-tight">
+                  Create your digital profile
+                </h3>
+              </div>
 
               <div className="flex flex-col items-center gap-2 mt-12">
                 {/* <BannerImgSelector file={bannerImg} setFile={setBannerImg} /> */}
@@ -114,7 +124,16 @@ export default function CreateProfile() {
             </div>
           </div>
 
-          <div className="w-full mb-[20px] min-h-[75px]">
+          <div className="w-full mb-[20px] min-h-[125px] gap-4 flex flex-col ">
+            <Button
+              type="submit"
+              className="w-full"
+              variant={"outline"}
+              onClick={() => navigate("/")}
+            >
+              Do this later
+            </Button>
+
             <Button type="submit" className="w-full">
               Continue
             </Button>

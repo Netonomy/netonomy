@@ -1,6 +1,6 @@
 import { Chat } from "@/components/Chat";
 import { useEffect } from "react";
-import useProfile from "@/hooks/useProfile";
+import useProfile, { showedCreatedProfileAtom } from "@/hooks/useProfile";
 import { Outlet, useNavigate } from "react-router-dom";
 import TopLoader from "@/components/TopLoader";
 import { useAtom } from "jotai";
@@ -13,8 +13,10 @@ export function Home() {
 
   const [loading] = useAtom(loadingAtom);
 
+  const [showedCreated] = useAtom(showedCreatedProfileAtom);
+
   useEffect(() => {
-    if (!profile && fetched) navigate("/profile");
+    if (!profile && fetched && !showedCreated) navigate("/create-profile");
   }, [profile, fetched]);
 
   return (

@@ -5,9 +5,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <Web5Provider>
-      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-        {children}
-      </ThemeProvider>
+      {/* <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme"> */}
+      {children}
+      {/* </ThemeProvider> */}
     </Web5Provider>
   );
 }
