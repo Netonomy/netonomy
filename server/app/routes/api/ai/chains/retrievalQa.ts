@@ -193,6 +193,13 @@ export default Router({ mergeParams: true }).post(
             );
             console.log(`Found ${relevantDocs.length} relevant documents`);
             const serialized = formatDocumentsAsString(relevantDocs);
+
+            // Make sure serialized is not too long, no more than 8000 tokens
+            // If its longer than 8000 tokens, then cut it off
+            if (serialized.length > 8000) {
+              return serialized.substring(0, 8000);
+            }
+
             return serialized;
           },
         },

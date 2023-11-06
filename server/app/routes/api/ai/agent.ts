@@ -13,6 +13,7 @@ import { getJson } from "serpapi";
 
 import Joi from "joi";
 import vectorStore from "../../../config/vectorStore.js";
+import { loadYoutubeVideoToMemory } from "./loadYoutubeVideoToMemory.js";
 
 const schema = Joi.object({
   messageHistory: Joi.array().items(
@@ -174,10 +175,23 @@ export default Router({ mergeParams: true }).post(
         },
       });
 
+      // Youtube watcher tool
+      const youtubeWatcherTool = new DynamicTool({
+        name: "youtube-watcher",
+        description:
+          "Youtube Watcher - use this tool when you need to watch a youtube video. The input should be the youtube video url",
+        func: async (input: string) => {
+          const docs = await loadYoutubeVideoToMemory(input, did);
+
+          return JSON.stringify(docs);
+        },
+      });
+
       // give the agent the tools it needs
 
       const tools = [
         // new WebBrowser({ model, embeddings }),
+        youtubeWatcherTool,
         new Calculator(),
         knowledgeBaseTool,
         new SerpAPI(process.env.SERPAPI_API_KEY, {

@@ -29,7 +29,9 @@
     "pdf-parse": "^1.1.1",
     "serpapi": "^2.0.0",
     "swagger-jsdoc": "^6.2.5",
-    "swagger-ui-express": "^4.6.0"
+    "swagger-ui-express": "^4.6.0",
+    "youtube-transcript": "^1.0.6",
+    "youtubei.js": "^7.0.0"
   },
   "devDependencies": {
     "@types/compression": "^1.7.3",
