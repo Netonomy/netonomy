@@ -18,18 +18,18 @@ const useWeb5Store = create<Web5State>((set, get) => ({
   did: null,
   connect: async () => {
     try {
+      // Connect to Web5
       const { web5, did } = await Web5.connect({
         techPreview: {
-          dwnEndpoints: [],
+          dwnEndpoints: ["http://localhost:3100"],
         },
         // sync: "1000",
       });
 
-      console.log(did);
-
+      // Set the Web5 instance and DID
       set({ web5, did });
-      console.log("connected to web5");
 
+      // Configure protocols
       get().configureProtocols();
     } catch (err) {
       console.error(err);

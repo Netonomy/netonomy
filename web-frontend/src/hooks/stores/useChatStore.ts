@@ -3,6 +3,7 @@ import useWeb5Store from "./useWeb5Store";
 import useProfileStore from "./useProfileStore";
 import { ChangeEvent } from "react";
 
+// Type definition for the chat state
 interface ChatState {
   messages: ChatMessage[];
   input: string;
@@ -27,6 +28,17 @@ interface ChatState {
   };
 }
 
+/**
+ * Zustand store for managing chat state and actions.
+ *
+ * @property {ChatMessage[]} messages - Array of chat messages.
+ * @property {string} input - Current input in the chat box.
+ * @property {boolean} generatingResponse - Flag indicating if a response is being generated.
+ * @property {AIConversation[]} conversations - Array of AI conversations.
+ * @property {AIConversation | null} currentConversation - Current active AI conversation.
+ * @property {string | null} recordId - ID of the current record.
+ * @property {Object} actions - Object containing actions for manipulating the chat state.
+ */
 const useChatStore = create<ChatState>((set, get) => ({
   messages: [] as ChatMessage[],
   input: "",
@@ -62,8 +74,6 @@ const useChatStore = create<ChatState>((set, get) => ({
           id: "",
         };
 
-        console.log(conversation);
-
         // Create the conversation
         const { record } = await web5.dwn.records.create({
           data: conversation,
@@ -71,8 +81,6 @@ const useChatStore = create<ChatState>((set, get) => ({
             schema: "https://netonomy.io/AIConversation",
           },
         });
-
-        console.log(record);
 
         if (!record) return;
 

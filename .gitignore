@@ -1,2 +1,4 @@
 models/
 chroma-data/
+terminal/
+.dwn-data/

@@ -78,27 +78,6 @@ export async function loadYoutubeVideoToMemory(url: string, did: string) {
     return newDoc;
   });
 
-  // Split the docs out into more docs, the pageContent property can't be too long
-  docs = docs.flatMap((doc) => {
-    const pageContent = doc.pageContent;
-    const pageContentLength = pageContent.length;
-    const maxPageContentLength = 10000;
-    const maxPages = Math.ceil(pageContentLength / maxPageContentLength);
-
-    const newDocs = [];
-    for (let i = 0; i < maxPages; i++) {
-      const start = i * maxPageContentLength;
-      const end = (i + 1) * maxPageContentLength;
-      const newDoc = {
-        ...doc,
-        pageContent: pageContent.substring(start, end),
-      };
-      newDocs.push(newDoc);
-    }
-
-    return newDocs;
-  });
-
   await vectorStore.addDocuments(docs);
 
   return docs;

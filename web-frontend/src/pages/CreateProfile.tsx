@@ -121,7 +121,7 @@ export default function CreateProfile() {
 
           <div className="w-full mb-[20px] min-h-[125px] gap-4 flex flex-col ">
             <Button
-              type="submit"
+              type="button"
               className="w-full"
               variant={"outline"}
               onClick={() => navigate("/")}

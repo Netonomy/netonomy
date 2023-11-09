@@ -114,14 +114,13 @@ export function Chat() {
             <div className="absolute flex flex-col items-center gap-4 w-[95%] p-4 justify-center h-[80%] z-30">
               <div className="flex flex-col gap-4 items-center">
                 <div className="h-[200px] w-[200px] rounded-full overflow-hidden relative">
-                  <img
+                  {/* <img
                     src="/aiSelf3.png"
                     height={200}
                     width={200}
                     alt="agent-ring"
-                  />
+                  /> */}
 
-                  {/* 
                   <img
                     src="/agent.svg"
                     height={200}
@@ -135,7 +134,7 @@ export function Chat() {
                     width={200}
                     alt="agent-ring"
                     className="absolute top-0 left-0 right-0 bottom-0 m-auto"
-                  /> */}
+                  />
                 </div>
 
                 <div className="gap-2 flex flex-col">
