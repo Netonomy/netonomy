@@ -12,8 +12,7 @@ import { RingLoader } from "react-spinners";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import useChat, { contextStringAtom, recordIdAtom } from "@/hooks/useChat";
-import { useAtom } from "jotai";
+import useChatStore from "@/hooks/stores/useChatStore";
 // Set the worker source for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -23,10 +22,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 export default function PdfViewer() {
   const navigate = useNavigate();
   const { recordId } = useParams();
-
-  const [, setRecordId] = useAtom(recordIdAtom);
-
-  //   const { setContext } = useChat();
+  const setRecordId = useChatStore((state) => state.actions.setRecordId);
 
   const { blob, file } = useFile(recordId!);
   const [numPages, setNumPages] = useState<number>();

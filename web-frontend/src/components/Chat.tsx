@@ -2,25 +2,22 @@ import { Fragment, useEffect, useRef } from "react";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Loader2, PlusIcon, SendIcon } from "lucide-react";
-import useChat, { currentConversationAtom } from "@/hooks/useChat";
 import { Card, CardContent } from "./ui/card";
 import ReactMarkdown from "react-markdown";
 import { oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { useAtom } from "jotai";
+import useChatStore from "@/hooks/stores/useChatStore";
 
 export function Chat() {
-  const {
-    resetChat,
-    input,
-    setInput,
-    handleInputChange,
-    handleSubmit,
-    generating,
-  } = useChat();
-
-  const [conversation] = useAtom(currentConversationAtom);
-
+  const input = useChatStore((state) => state.input);
+  const setInput = useChatStore((state) => state.actions.setInput);
+  const generating = useChatStore((state) => state.generatingResponse);
+  const conversation = useChatStore((state) => state.currentConversation);
+  const resetChat = useChatStore((state) => state.actions.resetChat);
+  const handleSubmit = useChatStore((state) => state.actions.handleSubmit);
+  const handleInputChange = useChatStore(
+    (state) => state.actions.handleInputChange
+  );
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
