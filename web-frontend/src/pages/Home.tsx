@@ -1,22 +1,18 @@
 import { Chat } from "@/components/Chat";
 import { useEffect } from "react";
-import useProfile, { showedCreatedProfileAtom } from "@/hooks/useProfile";
 import { Outlet, useNavigate } from "react-router-dom";
 import TopLoader from "@/components/TopLoader";
-import { useAtom } from "jotai";
-import { loadingAtom } from "@/state/loadingAtom";
-import KeyLogo from "@/components/KeyLogo";
+import useProfileStore from "@/hooks/stores/useProfileStore";
 
 export function Home() {
   const navigate = useNavigate();
-  const { profile, fetched } = useProfile();
-
-  const [loading] = useAtom(loadingAtom);
-
-  const [showedCreated] = useAtom(showedCreatedProfileAtom);
+  const profile = useProfileStore((state) => state.profile);
+  const fetched = useProfileStore((state) => state.fetched);
 
   useEffect(() => {
-    if (!profile && fetched && !showedCreated) navigate("/create-profile");
+    console.log("profile", profile);
+    console.log("fetched", fetched);
+    if (!profile && fetched) navigate("/create-profile");
   }, [profile, fetched]);
 
   return (

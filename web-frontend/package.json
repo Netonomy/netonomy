@@ -23,6 +23,7 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^10.16.4",
     "jotai": "^2.4.3",
+    "langchain": "^0.0.182-rc.1",
     "localforage": "^1.10.0",
     "lucide-react": "^0.288.0",
     "match-sorter": "^6.3.1",

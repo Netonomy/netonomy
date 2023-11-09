@@ -1,9 +1,8 @@
-import { loadingAtom } from "@/state/loadingAtom";
-import { useAtom } from "jotai";
+import useLoadingStore from "@/hooks/stores/useLoadingStore";
 import BarLoader from "react-spinners/BarLoader";
 
 export default function TopLoader() {
-  const [loading] = useAtom(loadingAtom);
+  const loading = useLoadingStore((state) => state.loading);
 
   return (
     <BarLoader

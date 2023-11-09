@@ -20,6 +20,9 @@ import vectorStore from "../../../config/vectorStore.js";
 import { loadYoutubeVideoToMemory } from "./loadYoutubeVideoToMemory.js";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { z } from "zod";
+import axios from "axios";
+import { Document } from "langchain/document";
+import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 
 const schema = Joi.object({
   messageHistory: Joi.array().items(
@@ -90,8 +93,8 @@ export default Router({ mergeParams: true }).post(
       // Select model
       const model = new ChatOpenAI({
         temperature: 0,
-        modelName: "gpt-4",
-        streaming: true,
+        modelName: "gpt-4-1106-preview",
+        // streaming: true,
         // configuration: {
         //   baseURL: process.env.OPENAI_BASE_URL,
         //   apiKey: process.env.PERPLEXITY_API_KEY,
@@ -125,9 +128,9 @@ export default Router({ mergeParams: true }).post(
         metadata: filter,
       });
       const knowledgeBaseTool = new ChainTool({
-        name: "knowledgeBase",
+        name: "brain-knowledge-base",
         description:
-          "Knowledge Base - use this tool when you need to search your knowledge base for an answer. This hold all the information you have stored in your brain.",
+          "Brain Knowledge Base - use this tool to lookup info from your brain.",
         chain: chain,
       });
 
@@ -141,39 +144,87 @@ export default Router({ mergeParams: true }).post(
       const embeddings = new OpenAIEmbeddings();
       const browser = new WebBrowser({ model, embeddings });
 
-      const customSearchTool = new DynamicTool({
+      const customSearchTool = new DynamicStructuredTool({
         name: "internet-access",
         description:
-          "Internet Access - use this tool when you need to search the internet for an answer. The input will be the search query so make to input the right query.",
-        func: async (input: string) => {
+          "Internet Access - use this tool when you need to search the internet for an answer.",
+        schema: z.object({
+          query: z
+            .string()
+            .describe("The search query to put into the web browser"),
+          question: z
+            .string()
+            .describe("The question you want answered from the search query"),
+        }),
+        func: async ({ query, question }) => {
           try {
             // Get top links from serp api
             const res = await getJson({
               engine: "google",
               api_key: process.env.SERPAPI_API_KEY,
-              q: input,
+              q: query,
               location: "Austin, Texas",
             });
 
             // Get the top 4 links
             const topLinks = res.organic_results
-              .slice(0, 1)
+              .slice(0, 4)
               .map((result: any) => result.link);
 
-            let toolResponse = "";
+            let docs: Document[] = [];
 
             // Browse each link to try and find an answer
             for (const link of topLinks) {
               console.log(link);
-              const result = await browser.call(`"${link}","${input}"`);
-              console.log(result);
+              const loader = new CheerioWebBaseLoader(link);
 
-              toolResponse += result;
+              const newDocs = await loader.load();
+              console.log(docs);
+
+              // Add new docs to docs
+              docs = [...docs, ...newDocs];
             }
 
-            console.log(res.organic_results);
+            // Split the docs out into more docs, the pageContent property can't be too long
+            docs = docs.flatMap((doc) => {
+              const pageContent = doc.pageContent;
+              const pageContentLength = pageContent.length;
+              const maxPageContentLength = 10000;
+              const maxPages = Math.ceil(
+                pageContentLength / maxPageContentLength
+              );
 
-            return toolResponse;
+              const newDocs = [];
+              for (let i = 0; i < maxPages; i++) {
+                const start = i * maxPageContentLength;
+                const end = (i + 1) * maxPageContentLength;
+                const newDoc = {
+                  ...doc,
+                  pageContent: pageContent.substring(start, end),
+                };
+                newDocs.push(newDoc);
+              }
+
+              return newDocs;
+            });
+
+            // Load the docs into the vector store
+            const vectorStore = await MemoryVectorStore.fromDocuments(
+              docs,
+              new OpenAIEmbeddings()
+            );
+
+            // Search the vector store for the input
+            const searchResults = await vectorStore.similaritySearch(question);
+            const toolResponse = JSON.stringify(searchResults);
+
+            // Make sure the tool response is not too long
+            // Trim it if it is too long, 100k max
+            if (toolResponse.length > 100000) {
+              return toolResponse.slice(0, 100000);
+            }
+
+            return JSON.stringify(searchResults);
           } catch (err) {
             console.log(err);
             return "Sorry, I could not find an answer to your question. Please try again.";
@@ -206,8 +257,8 @@ export default Router({ mergeParams: true }).post(
 
           // Make sure the string is not too long
           // If it is too long, then cut it off
-          if (str.length > 8000) {
-            return str.slice(0, 8000);
+          if (str.length > 128000) {
+            return str.slice(0, 128000);
           }
 
           return JSON.stringify(docs);
@@ -221,13 +272,13 @@ export default Router({ mergeParams: true }).post(
         youtubeWatcherTool,
         new Calculator(),
         knowledgeBaseTool,
-        new SerpAPI(process.env.SERPAPI_API_KEY, {
-          // currently not working , issue with langchain tool
-          location: "Washington,DC,United States",
-          hl: "en",
-          gl: "us",
-        }),
-        // customSearchTool,
+        // new SerpAPI(process.env.SERPAPI_API_KEY, {
+        //   // currently not working , issue with langchain tool
+        //   location: "Washington,DC,United States",
+        //   hl: "en",
+        //   gl: "us",
+        // }),
+        customSearchTool,
       ];
 
       // create the message history
@@ -242,22 +293,16 @@ export default Router({ mergeParams: true }).post(
           MessageRole.system,
           `You are the digital tertiary layer of ${
             profile.name
-          }'s brain. You are the digital representation of ${
+          }'s brain, this means you are a digital representation of ${
             profile.name
-          }'s intelligence.
-          If the user asks who or what you are, explain this to them.
-          When the user asks a question, you should answer it as if you are ${
+          }'s intelligence. If the user asks who or what you are, explain this to them. When the user asks a question, you should answer it as if you are ${
             profile.name
-          }.
-          Don't act as if you are a robot. Be human. Be ${profile.name}.
-          
-          This is currently a chat with you and ${profile.name}.
-
-          Here is their full profile:
-          ${JSON.stringify(profile)}
-
-          Be concise and to the point. Don't be too wordy. Don't be too short. Be just right.
-          Always responsd with markdown formatted text.`
+          }. Don't act as if you are a robot. Be human. Be ${profile.name}.
+Here is their full profile:
+${JSON.stringify(profile)}
+Always reference your memory first, then the internet or other sources if needed.
+Today is ${new Date().toLocaleDateString()}
+This is currently a chat between you and ${profile.name}.`
         ),
         ...pastMessages,
       ];
@@ -275,7 +320,18 @@ export default Router({ mergeParams: true }).post(
 
       const { input } = req.body;
 
-      const result = await executor.call({ input: input });
+      const result = await executor.call(
+        { input: input },
+        {
+          callbacks: [
+            {
+              handleAgentAction: (action, runId) => {},
+              handleAgentEnd(action, runId, parentRunId, tags) {},
+              handleToolStart: (tool, runId, parentRunId, tags) => {},
+            },
+          ],
+        }
+      );
 
       res.json({ result: result.output });
     } catch (err) {

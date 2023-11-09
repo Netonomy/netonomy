@@ -32,6 +32,13 @@ export function Chat() {
       const textAfterCaret = input.substring(caretPosition);
       if (setInput) {
         setInput(textBeforeCaret + "\n" + textAfterCaret);
+        // Set cursor position after state update
+        setTimeout(() => {
+          if (textAreaRef.current) {
+            textAreaRef.current.selectionStart = caretPosition + 1;
+            textAreaRef.current.selectionEnd = caretPosition + 1;
+          }
+        }, 0);
       }
     } else if (event.key === "Enter") {
       event.preventDefault();
@@ -107,23 +114,31 @@ export function Chat() {
           {(conversation?.messages.length === 1 ||
             conversation?.messages.length === 0 ||
             !conversation) && (
-            <div className="absolute flex flex-col items-center gap-4 w-[95%] p-4 justify-center h-[60%] z-30">
+            <div className="absolute flex flex-col items-center gap-4 w-[95%] p-4 justify-center h-[80%] z-30">
               <div className="flex flex-col gap-4 items-center">
-                <div className="h-[300px] w-[200px]">
+                <div className="h-[200px] w-[200px] rounded-full overflow-hidden relative">
+                  <img
+                    src="/aiSelf3.png"
+                    height={200}
+                    width={200}
+                    alt="agent-ring"
+                  />
+
+                  {/* 
                   <img
                     src="/agent.svg"
-                    height={175}
-                    width={175}
+                    height={200}
+                    width={200}
                     alt="agent-ring"
                     className="absolute top-0 left-0 right-0 bottom-0 m-auto"
                   />
                   <img
                     src="/agent-ring-2.svg"
-                    height={175}
-                    width={175}
+                    height={200}
+                    width={200}
                     alt="agent-ring"
                     className="absolute top-0 left-0 right-0 bottom-0 m-auto"
-                  />
+                  /> */}
                 </div>
 
                 <div className="gap-2 flex flex-col">
@@ -159,7 +174,7 @@ export function Chat() {
                       )}
                       {message.role === "assistant" && (
                         <div
-                          className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-black mr-auto max-w-[80%] lg:max-w-full whitespace-pre-wrap ${
+                          className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-black mr-auto max-w-[90%]  whitespace-pre-wrap ${
                             message.content === "" && "animate-bounce"
                           }`}
                         >
@@ -229,7 +244,7 @@ export function Chat() {
       {/** Input Form */}
       <form
         onSubmit={handleSubmit}
-        className="flex items-center relative h-auto w-full gap-2 z-20"
+        className="flex items-center relative h-auto w-full gap-2 z-20 max-w-[700px]"
       >
         <Textarea
           ref={textAreaRef}
@@ -240,7 +255,7 @@ export function Chat() {
           onKeyDown={handleKeyDown}
           disabled={generating}
           placeholder="Ask anything..."
-          className="min-h-[50px] h-10 max-h-[400px] pr-[58px] py-4 resize-none w-full text-md bg-white text-primary box-border rounded-xl shadow-lg"
+          className="min-h-[50px] h-10 max-h-[400px] pr-[58px] py-4 resize-none w-full text-md bg-white text-primary box-border rounded-xl shadow-lg overflow-hidden"
         />
 
         <Button

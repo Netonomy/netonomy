@@ -1,19 +1,20 @@
 import Web5Context, { collectionProtocolDefinition } from "@/Web5Provider";
-import { loadingAtom } from "@/state/loadingAtom";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { useContext, useEffect } from "react";
 import axios from "axios";
+import useLoadingStore from "./stores/useLoadingStore";
 
 // Atoms
 export const filesAtom = atomWithStorage<(DigitalDocument | Folder)[]>(
   "files",
   []
 );
+
 export default function useFolder(folderId?: string) {
   const web5Context = useContext(Web5Context);
   const [files, setFiles] = useAtom(filesAtom);
-  const [, setLoading] = useAtom(loadingAtom);
+  const setLoading = useLoadingStore((state) => state.setLoading);
 
   async function uploadFiles(files: FileList, folderId?: string) {
     if (web5Context.web5 && web5Context.did) {

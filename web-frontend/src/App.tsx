@@ -1,7 +1,6 @@
-import { useContext } from "react";
+import { useEffect } from "react";
 import "./globals.css";
 import { Home } from "./pages/Home";
-import Web5Context from "./Web5Provider";
 import { Splash } from "./pages/Splash";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import AiChatPage from "./pages/AiChatPage";
@@ -9,6 +8,7 @@ import CreateProfile from "./pages/CreateProfile";
 import PdfViewer from "./pages/PdfViewer";
 import WidgetDashboard from "./components/widgets/WidgetDashboard";
 import ProfilePage from "./pages/ProfilePage";
+import useWeb5Store from "./hooks/stores/useWeb5Store";
 
 const router = createBrowserRouter([
   {
@@ -40,11 +40,14 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const web5Context = useContext(Web5Context);
+  const web5 = useWeb5Store((state) => state.web5);
+  const connect = useWeb5Store((state) => state.connect);
 
-  return (
-    <>{web5Context.web5 ? <RouterProvider router={router} /> : <Splash />}</>
-  );
+  useEffect(() => {
+    if (!web5) connect();
+  }, []);
+
+  return <>{web5 ? <RouterProvider router={router} /> : <Splash />}</>;
 }
 
 export default App;

@@ -11,28 +11,23 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useContext, useEffect, useRef, useState } from "react";
-import Web5Context from "@/Web5Provider";
-import useProfile, { showedCreatedProfileAtom } from "@/hooks/useProfile";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BannerImgSelector from "@/components/BannerImgSelector";
 import ProfileImgSelector from "@/components/ProfileImgSelector";
-import KeyLogo from "@/components/KeyLogo";
-import { useAtom } from "jotai";
+// import KeyLogo from "@/components/KeyLogo";
+import useProfileStore from "@/hooks/stores/useProfileStore";
+import useWeb5Store from "@/hooks/stores/useWeb5Store";
 
 const profileSchema = z.object({
   name: z.string().min(2).max(50),
 });
 
 export default function CreateProfile() {
-  const inputref = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const web5Context = useContext(Web5Context);
-  const { createProfile } = useProfile();
   const navigate = useNavigate();
+  const web5 = useWeb5Store((state) => state.web5);
 
-  const [, setShowedCreated] = useAtom(showedCreatedProfileAtom);
-  const [bannerImg, setBannerImg] = useState<File | null>(null);
+  const createProfile = useProfileStore((state) => state.actions.createProfile);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof profileSchema>>({
@@ -46,13 +41,13 @@ export default function CreateProfile() {
   async function onSubmit(values: z.infer<typeof profileSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    if (file && web5Context.web5) {
+    if (file && web5) {
       // Convert file to blob
       const blob = new Blob([file], {
         type: "image/png",
       });
 
-      const record = await web5Context?.web5?.dwn.records.create({
+      const record = await web5.dwn.records.create({
         data: blob,
       });
 
@@ -85,7 +80,7 @@ export default function CreateProfile() {
   }
 
   useEffect(() => {
-    setShowedCreated(true);
+    // setShowedCreated(true);
   }, []);
 
   return (

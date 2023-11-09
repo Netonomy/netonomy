@@ -1,6 +1,5 @@
 import { Web5 } from "@web5/api/browser";
 import React, { useEffect, useState } from "react";
-import { saveAs } from "file-saver";
 
 // Create Web5 context
 const Web5Context = React.createContext<{ web5?: Web5; did?: string }>({});

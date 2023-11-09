@@ -21,7 +21,11 @@ export function SendDingDialog() {
   const [open, setOpen] = useState(false);
   const [sending, setSending] = useState(false);
 
-  const handleChange = () => setOpen(!open);
+  const handleChange = (e: any) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setOpen(!open);
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleChange}>
@@ -68,7 +72,9 @@ export function SendDingDialog() {
           <Button
             type="submit"
             disabled={sending}
-            onClick={async () => {
+            onClick={async (e) => {
+              e.stopPropagation();
+              e.preventDefault();
               // There must be a DID
               if (!did) return;
               setSending(true);
@@ -76,7 +82,7 @@ export function SendDingDialog() {
               await handleDing(did, note);
 
               setSending(false);
-              handleChange();
+              handleChange(e);
 
               // Reset the form
               setDid("");

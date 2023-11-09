@@ -8,7 +8,7 @@ export default function TappableCardWrapper({
   return (
     <motion.div
       className="box  flex  cursor-pointer"
-      whileHover={{ scale: 1.02, speed: 4 }}
+      whileHover={{ scale: 1.01, speed: 4 }}
       whileTap={{ scale: 1 }}
       transition={{ type: "spring", stiffness: 155, damping: 20 }}
     >
