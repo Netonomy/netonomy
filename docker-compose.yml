@@ -19,7 +19,7 @@ services:
     volumes:
       - ./web-frontend:/app
     depends_on:
-      - server 
+      - server
 
   server:
     build: ./server
@@ -38,3 +38,14 @@ services:
       - IS_PERSISTENT=TRUE
     ports:
       - 8000:8000
+
+  dwn-server:
+    image: ghcr.io/tbd54566975/dwn-server:main
+    ports:
+      - 3100:3100
+    volumes:
+      - ./.dwn-data/:/dwn-server/data
+    environment:
+      - DS_PORT=3100
+      - DS_MAX_RECORD_DATA_SIZE=100gb
+    platform: linux/amd64
