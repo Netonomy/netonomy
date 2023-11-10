@@ -33,7 +33,7 @@ const requestSchema = Joi.object({
  *       200:
  *         description: OK
  *     tags:
- *       - Ai
+ *       - AI
  */
 export default Router({ mergeParams: true }).post(
   "/ai/chatCompletion",
