@@ -39,6 +39,17 @@ services:
     ports:
       - 8000:8000
 
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./.postgresql/data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
   dwn-server:
     image: ghcr.io/tbd54566975/dwn-server:main
     ports:

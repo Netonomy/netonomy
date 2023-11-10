@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { challengeStore } from "./requestChallenge.js";
 import { server } from "@passwordless-id/webauthn";
+import pkg from "pg";
+const { Client } = pkg;
 
 /**
  * @swagger
@@ -55,6 +57,14 @@ export default Router({ mergeParams: true }).post(
 
       // Delete the challenge from the store
       delete challengeStore[did];
+
+      // Save the registration to the database
+      const client = new Client();
+      await client.connect();
+      const result = await client.query(
+        "INSERT INTO webauthn (credentialId, registration) VALUES ($1, $2)",
+        [registration.credential.id, JSON.stringify(registrationParsed)]
+      );
 
       res.status(200).json({
         message: "Challenge accepted",
