@@ -3,6 +3,7 @@ import Joi from "joi";
 import chromaClient from "../../../config/chomaClient.js";
 import { OpenAIEmbeddingFunction } from "chromadb";
 import openai from "../../../config/openai.js";
+import { authenticateToken } from "../../../middleware/auth.middleware.js";
 
 const requestSchema = Joi.object({
   collectionName: Joi.string().required(),
@@ -45,6 +46,7 @@ const requestSchema = Joi.object({
  */
 export default Router({ mergeParams: true }).post(
   "/chroma/queryCollection",
+  authenticateToken,
   async (req, res) => {
     try {
       // Validate the request body

@@ -20,6 +20,7 @@ import useWeb5Store from "@/hooks/stores/useWeb5Store";
 import { client } from "@passwordless-id/webauthn";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import useGlobalAppStateStore from "@/hooks/stores/useGlobalAppStateStore";
 
 const profileSchema = z.object({
   name: z.string().min(2).max(50),
@@ -30,6 +31,7 @@ export default function CreateProfile() {
   const navigate = useNavigate();
   const web5 = useWeb5Store((state) => state.web5);
   const did = useWeb5Store((state) => state.did);
+  const setToken = useGlobalAppStateStore((state) => state.actions.setToken);
 
   const createProfile = useProfileStore((state) => state.actions.createProfile);
 
@@ -71,27 +73,17 @@ export default function CreateProfile() {
       //   bannerRecordId = bannerRecord?.record?.id;
       // }
 
-      await createProfile({
-        name: values.name,
-        "@context": "https://schema.org",
-        "@type": "Person",
-        image: record?.record?.id,
-        // banner: bannerRecordId,
-      });
-
-      const isLocalAuth = await client.isLocalAuthenticator();
+      // const isLocalAuth = await client.isLocalAuthenticator();
 
       // Get challenge from server
       const challengeRes = await axios.post(
-        "http://localhost:3000/api/auth/requestChallenge",
+        `${import.meta.env.VITE_API_URL}/auth/requestChallenge`,
         {
           did,
         }
       );
       const challenge = challengeRes.data.challenge;
-      console.log(challenge);
 
-      console.log("isLocalAuth", isLocalAuth);
       const registration = await client.register(did, challenge, {
         authenticatorType: "auto",
         userVerification: "required",
@@ -101,11 +93,9 @@ export default function CreateProfile() {
         debug: false,
       });
 
-      console.log("registration", registration);
-
       // Send registration to server
       const registerRes = await axios.post(
-        "http://localhost:3000/api/auth/verify",
+        `${import.meta.env.VITE_API_URL}/auth/verify`,
         {
           did,
           registration,
@@ -113,10 +103,21 @@ export default function CreateProfile() {
       );
 
       if (registerRes.status === 200) {
-        console.log("registerRes", registerRes);
-      }
+        // Get bearer token
+        const token = registerRes.data.token;
+        setToken(token); // Set token in global state and local storage
 
-      // navigate("/");
+        // Create profile
+        await createProfile({
+          name: values.name,
+          "@context": "https://schema.org",
+          "@type": "Person",
+          image: record?.record?.id,
+          // banner: bannerRecordId,
+        });
+
+        navigate("/");
+      }
     }
   }
 

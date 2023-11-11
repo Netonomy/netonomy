@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Joi from "joi";
 import vectorStore from "../../../config/vectorStore.js";
+import { authenticateToken } from "../../../middleware/auth.middleware.js";
 
 const requestSchema = Joi.object({
   searchString: Joi.string().required(),
@@ -38,6 +39,7 @@ const requestSchema = Joi.object({
  */
 export default Router({ mergeParams: true }).post(
   "/chroma/search",
+  authenticateToken,
   async (req, res) => {
     try {
       // Validate the request body

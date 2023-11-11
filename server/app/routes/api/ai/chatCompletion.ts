@@ -2,6 +2,7 @@ import { Router } from "express";
 import Joi from "joi";
 import { ChatCompletionMessageParam } from "openai/resources/chat/index.js";
 import openai from "../../../config/openai.js";
+import { authenticateToken } from "../../../middleware/auth.middleware.js";
 
 const requestSchema = Joi.object({
   messages: Joi.array().required(),
@@ -37,6 +38,7 @@ const requestSchema = Joi.object({
  */
 export default Router({ mergeParams: true }).post(
   "/ai/chatCompletion",
+  authenticateToken,
   async (req, res) => {
     try {
       // Validate the request body

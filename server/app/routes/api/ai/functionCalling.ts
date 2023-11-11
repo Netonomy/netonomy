@@ -4,6 +4,7 @@ import Joi from "joi";
 import { v4 as uuid } from "uuid";
 import { queryCollection } from "../chroma/queryCollection.js";
 import openai from "../../../config/openai.js";
+import { authenticateToken } from "../../../middleware/auth.middleware.js";
 
 const functions = [
   {
@@ -71,6 +72,7 @@ const requestSchema = Joi.object({
  */
 export default Router({ mergeParams: true }).post(
   "/ai/functionCalling",
+  authenticateToken,
   async (req, res) => {
     try {
       // Validate the request body

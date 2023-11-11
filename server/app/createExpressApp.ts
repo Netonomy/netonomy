@@ -22,6 +22,15 @@ const options = {
       title: "Netonomy API",
       version: "1.0.0",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
   },
   apis: glob
     .sync("**/*.js", { cwd: `${__dirname}/routes/api/` })

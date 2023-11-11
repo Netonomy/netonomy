@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { server } from "@passwordless-id/webauthn";
 import pool from "../../../config/pgPool.js";
+import jwt from "jsonwebtoken";
 
 /**
  * @swagger
@@ -68,12 +69,14 @@ export default Router({ mergeParams: true }).post(
       await pool.query("DELETE FROM challenges WHERE did = $1", [did]);
 
       // Create a new user in the database
+      await pool.query("INSERT INTO users (did) VALUES ($1)", [did]);
+
+      // Get the id of the user
       const { rows: userRows } = await pool.query(
-        "INSERT INTO users (did) VALUES ($1)",
+        "SELECT * FROM users WHERE did = $1",
         [did]
       );
-      const user = userRows[0];
-      const userId = user.id;
+      const userId = userRows[0].id;
 
       // Store the credential key in the database for the user
       await pool.query(
@@ -81,9 +84,18 @@ export default Router({ mergeParams: true }).post(
         [userId, credentialId, credentialKey]
       );
 
+      // Create access token for the user
+      const accessToken = jwt.sign(
+        {
+          did,
+          userId,
+        },
+        process.env.TOKEN_SECRET as string
+      );
+
       res.status(200).json({
         message: "Challenge accepted",
-        registration: registrationParsed,
+        token: accessToken,
       });
     } catch (err) {
       console.error(err);
