@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { challengeStore } from "./requestChallenge.js";
+import pool from "../../../config/pgPool.js";
 
 /**
  * @swagger
@@ -29,19 +29,21 @@ export default Router({ mergeParams: true }).post(
       const { challenge } = req.body;
       if (!challenge) throw new Error("No challenge provided");
 
-      // Check if the challenge exists and is not expired
-      if (
-        !challengeStore[challenge] ||
-        challengeStore[challenge] < Date.now()
-      ) {
-        throw new Error("Invalid challenge");
-      }
+      // Check if the challenge exists in the database
+      const { rows } = await pool.query(
+        "SELECT * FROM challenges WHERE challenge = $1",
+        [challenge]
+      );
 
-      // Delete the challenge from the storej
-      delete challengeStore[challenge];
+      if (!rows.length) throw new Error("Challenge not found");
+
+      // Delete the challenge from the database
+      await pool.query("DELETE FROM challenges WHERE challenge = $1", [
+        challenge,
+      ]);
 
       res.status(200).json({
-        message: "Challenge accepted",
+        message: "Challenge consumed successfully",
       });
     } catch (err) {
       console.error(err);

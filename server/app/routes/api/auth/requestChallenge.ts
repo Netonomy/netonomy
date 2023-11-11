@@ -1,14 +1,6 @@
 import { Router } from "express";
 import crypto from "crypto";
-
-// A simple in-memory store for challenges
-export const challengeStore: Record<
-  string,
-  {
-    expirationDate: number;
-    challenge: string;
-  }
-> = {};
+import pool from "../../../config/pgPool.js";
 
 // Helper function to generate a secure challenge
 function generateChallenge() {
@@ -45,11 +37,11 @@ export default Router({ mergeParams: true }).post(
 
       const challenge = generateChallenge();
 
-      // Remember the challenge for 10 minutes
-      challengeStore[did] = {
-        expirationDate: Date.now() + 1000 * 60 * 10,
-        challenge,
-      };
+      // Store the challenge in the database, so we can verify it later
+      await pool.query(
+        "INSERT INTO challenges (did, challenge) VALUES ($1, $2)",
+        [did, challenge]
+      );
 
       res.json({
         challenge,

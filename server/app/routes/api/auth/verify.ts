@@ -1,8 +1,6 @@
 import { Router } from "express";
-import { challengeStore } from "./requestChallenge.js";
 import { server } from "@passwordless-id/webauthn";
-import pkg from "pg";
-const { Client } = pkg;
+import pool from "../../../config/pgPool.js";
 
 /**
  * @swagger
@@ -35,12 +33,21 @@ export default Router({ mergeParams: true }).post(
       if (!registration) throw new Error("No challenge provided");
       if (!did) throw new Error("No DID provided");
 
+      // Fetch the challenge from the database
+      const { rows } = await pool.query(
+        "SELECT * FROM challenges WHERE did = $1",
+        [did]
+      );
+
+      // Check if the challenge exists in the database
+      if (!rows.length) throw new Error("Challenge not found");
+
       // Check if the challenge is still valid
-      const challenge = challengeStore[did];
-      if (!challenge) throw new Error("Invalid challenge");
+      const challenge = rows[0];
+      const expirationDate = challenge.expirationDate;
 
       // Check if the challenge is not expired
-      if (challenge.expirationDate < Date.now()) {
+      if (expirationDate < Date.now()) {
         throw new Error("Challenge expired");
       }
 
@@ -54,16 +61,24 @@ export default Router({ mergeParams: true }).post(
         registration,
         expected
       );
+      const credentialKey = registrationParsed.credential;
+      const credentialId = credentialKey.id;
 
       // Delete the challenge from the store
-      delete challengeStore[did];
+      await pool.query("DELETE FROM challenges WHERE did = $1", [did]);
 
-      // Save the registration to the database
-      const client = new Client();
-      await client.connect();
-      const result = await client.query(
-        "INSERT INTO webauthn (credentialId, registration) VALUES ($1, $2)",
-        [registration.credential.id, JSON.stringify(registrationParsed)]
+      // Create a new user in the database
+      const { rows: userRows } = await pool.query(
+        "INSERT INTO users (did) VALUES ($1)",
+        [did]
+      );
+      const user = userRows[0];
+      const userId = user.id;
+
+      // Store the credential key in the database for the user
+      await pool.query(
+        "INSERT INTO credentials (user_id, credential_id, data) VALUES ($1, $2, $3)",
+        [userId, credentialId, credentialKey]
       );
 
       res.status(200).json({
