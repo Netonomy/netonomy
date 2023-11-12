@@ -16,16 +16,15 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const appState = JSON.parse(
-      localStorage.getItem("global-app-state") || "{}"
-    );
+    console.log(JSON.parse(localStorage.getItem("auth-state") || "{}"));
+    const appState = JSON.parse(localStorage.getItem("auth-state") || "{}");
 
-    if (appState?.token) {
+    if (appState?.state.token) {
       // Ensure config.headers is defined
       config.headers = config.headers || {};
 
       // Set the Authorization header on the config object
-      config.headers["Authorization"] = `Bearer ${appState.token}`;
+      config.headers["Authorization"] = `Bearer ${appState.state.token}`;
     }
     return config;
   },

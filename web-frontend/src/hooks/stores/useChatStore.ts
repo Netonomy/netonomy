@@ -2,7 +2,7 @@ import { create } from "zustand";
 import useWeb5Store from "./useWeb5Store";
 import useProfileStore from "./useProfileStore";
 import { ChangeEvent } from "react";
-import useGlobalAppStateStore from "./useAuthStore";
+import useAuthStore from "./useAuthStore";
 
 // Type definition for the chat state
 interface ChatState {
@@ -115,7 +115,7 @@ const useChatStore = create<ChatState>((set, get) => ({
       const did = useWeb5Store.getState().did;
       const profile = useProfileStore.getState().profile;
 
-      const accessToken = useGlobalAppStateStore.getState().token;
+      const accessToken = useAuthStore.getState().token;
 
       // Fetch request to send the messages
       const res = await fetch(`http://localhost:3000/api/ai/agent`, {

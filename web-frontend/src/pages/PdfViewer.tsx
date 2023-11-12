@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import useFile from "@/hooks/useFile";
 import { ArrowLeft, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,6 +12,7 @@ import { RingLoader } from "react-spinners";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import useChatStore from "@/hooks/stores/useChatStore";
+import useCollectionStore from "@/hooks/stores/useCollectionStore";
 // Set the worker source for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -23,10 +23,10 @@ export default function PdfViewer() {
   const navigate = useNavigate();
   const { recordId } = useParams();
   const setRecordId = useChatStore((state) => state.actions.setRecordId);
-
-  const { blob, file } = useFile(recordId!);
   const [numPages, setNumPages] = useState<number>();
   const [scale, setScale] = useState<number>(1);
+  const fetchFile = useCollectionStore((state) => state.actions.fetchFile);
+  const file = useCollectionStore((state) => state.file);
   // const [displayedPage, setDisplayedPage] = useState<number>(1);
 
   /**
@@ -53,6 +53,7 @@ export default function PdfViewer() {
 
   useEffect(() => {
     setRecordId(recordId!);
+    fetchFile(recordId!);
 
     return () => {
       setRecordId(null);
@@ -78,7 +79,7 @@ export default function PdfViewer() {
 
               <div className="flex flex-col flex-auto  ">
                 <div className="text-lg font-semibold truncate">
-                  {file?.name}
+                  {file?.data.name}
                 </div>
 
                 <p className="text-sm text-muted-foreground">
@@ -105,11 +106,11 @@ export default function PdfViewer() {
               </div>
             </div>
 
-            {blob && (
+            {file?.blob && (
               <AutoSizer>
                 {({ height, width }: { height: number; width: number }) => (
                   <Document
-                    file={URL.createObjectURL(blob)}
+                    file={URL.createObjectURL(file.blob)}
                     onLoadSuccess={onDocumentLoadSuccess}
                     loading={
                       <div

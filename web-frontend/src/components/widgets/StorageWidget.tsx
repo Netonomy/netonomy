@@ -26,6 +26,7 @@ export function StorageWidget() {
     (state) => state.actions.fetchFilesAndFolders
   );
   const fetchingCollection = useCollectionStore((state) => state.fetching);
+  const deleteItem = useCollectionStore((state) => state.actions.deleteItem);
 
   const [showCreateFolderDialog, setShowCreateFolderDialog] = useState(false);
 
@@ -148,7 +149,7 @@ export function StorageWidget() {
                             <DropdownMenuItem
                               onClick={(event) => {
                                 event.stopPropagation();
-                                // deleteFile(file.identifier);
+                                deleteItem(file.identifier);
                               }}
                               className="cursor-pointer roun"
                             >
@@ -193,7 +194,7 @@ export function StorageWidget() {
                             <DropdownMenuItem
                               onClick={(event) => {
                                 event.stopPropagation();
-                                // deleteFile(file.identifier);
+                                deleteItem(file.identifier);
                               }}
                               className="cursor-pointer roun"
                             >

@@ -1,4 +1,4 @@
-import Web5Context, { collectionProtocolDefinition } from "@/Web5Provider";
+import Web5Context from "@/Web5Provider";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { useContext, useEffect } from "react";

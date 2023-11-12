@@ -2,14 +2,21 @@ import { create } from "zustand";
 import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
 import { Record } from "@web5/api";
 import useLoadingStore from "./useLoadingStore";
+import api from "@/config/api";
 
 interface CollectionState {
   collection: Record | null;
   collectionItems: (DigitalDocument | Collection)[] | null;
   fetching: boolean;
+  file: {
+    data: DigitalDocument;
+    blob: Blob;
+  } | null;
   actions: {
     fetchFilesAndFolders: (parentId?: string) => Promise<void>;
     uploadFile: (file: File) => Promise<void>;
+    fetchFile: (recordId: string) => Promise<void>;
+    deleteItem: (recordId: string) => Promise<void>;
     createCollection: ({
       name,
       parentId,
@@ -24,6 +31,7 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
   collection: null,
   collectionItems: null,
   fetching: false,
+  file: null,
   actions: {
     fetchFilesAndFolders: async (parentId?: string) => {
       const web5 = useWeb5Store.getState().web5;
@@ -109,7 +117,8 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
     uploadFile: async (file: File) => {
       try {
         const web5 = useWeb5Store.getState().web5;
-        if (!web5) return;
+        const did = useWeb5Store.getState().did;
+        if (!web5 || !did) return;
 
         useLoadingStore.getState().setLoading(true);
 
@@ -162,6 +171,18 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
           set((state) => ({
             collectionItems: [data, ...(state.collectionItems ?? [])],
           }));
+
+          // Vectorize the file
+          // upload to chroma
+          const formData = new FormData();
+          formData.append("file", blob);
+          formData.append("did", did);
+          formData.append("recordId", record!.id);
+
+          // Upload to chroma
+          await api.post("/chroma/uploadFile", formData).catch((err) => {
+            console.error(err);
+          });
         }
       } catch (err) {
         console.log(err);
@@ -205,6 +226,64 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
           collectionItems: [data, ...(state.collectionItems ?? [])],
         }));
       }
+    },
+    fetchFile: async (recordId: string) => {
+      const web5 = useWeb5Store.getState().web5;
+      if (!web5) return;
+
+      set({ file: null });
+
+      web5.dwn.records
+        .read({
+          message: {
+            recordId,
+          },
+        })
+        .then(async ({ record }) => {
+          if (!record) return;
+
+          let data: DigitalDocument = await record.data.json();
+
+          // Fetch the file
+          const { record: blobRecord } = await web5.dwn.records.read({
+            message: {
+              recordId: data.url,
+            },
+          });
+          const blob = await blobRecord?.data.blob();
+
+          set({
+            file: {
+              data,
+              blob,
+            },
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    deleteItem: async (recordId: string) => {
+      const web5 = useWeb5Store.getState().web5;
+      if (!web5) return;
+
+      useLoadingStore.getState().setLoading(true);
+
+      // Delete the record
+      await web5.dwn.records.delete({
+        message: {
+          recordId,
+        },
+      });
+
+      // Remove the record from the collection items array
+      set((state) => ({
+        collectionItems: state.collectionItems?.filter(
+          (item) => item.identifier !== recordId
+        ),
+      }));
+
+      useLoadingStore.getState().setLoading(false);
     },
   },
 }));
