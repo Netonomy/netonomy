@@ -21,6 +21,7 @@ export function Home() {
   const setToken = useAuthStore((state) => state.actions.setToken);
 
   useEffect(() => {
+    console.log("profile", profile);
     if ((!profile && fetched) || !accessToken) navigate("/welcome");
   }, [profile, fetched]);
 

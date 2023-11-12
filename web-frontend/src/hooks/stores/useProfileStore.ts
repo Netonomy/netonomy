@@ -1,6 +1,5 @@
 import { create } from "zustand";
-import useWeb5Store from "./useWeb5Store";
-// import { persist } from "zustand/middleware";
+import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
 
 interface ProfileState {
   profile: Person | null;
@@ -9,7 +8,13 @@ interface ProfileState {
   actions: {
     setProfile: (profile: Person) => void;
     setFetched: (fetched: boolean) => void;
-    createProfile: (profile: Person) => Promise<void>;
+    createProfile: ({
+      name,
+      profileImg,
+    }: {
+      name: string;
+      profileImg: File;
+    }) => Promise<void>;
   };
 }
 
@@ -73,45 +78,59 @@ const useProfileStore = create<ProfileState>((set) => ({
   actions: {
     setProfile: (profile: Person) => set({ profile }),
     setFetched: (fetched: boolean) => set({ fetched }),
-    createProfile: async (profile: Person) => {
-      const web5 = useWeb5Store.getState().web5;
-      if (!web5) return;
+    createProfile: async ({
+      name,
+      profileImg,
+    }: {
+      name: string;
+      profileImg: File;
+    }) => {
+      try {
+        const web5 = useWeb5Store.getState().web5;
+        if (!web5) return;
 
-      const record = await web5.dwn.records.create({
-        data: profile,
-        message: {
-          schema: "https://schema.org/Person",
-        },
-      });
+        // Convert file to blob
+        const blob = new Blob([profileImg], {
+          type: "image/png",
+        });
 
-      if (record) {
-        // Load the profile image
-        if (profile.image) {
-          const image = await web5.dwn.records.read({
-            message: {
-              recordId: profile.image,
-            },
-          });
+        const { record: profileImgRecord } = await web5.dwn.records.create({
+          data: blob,
+          message: {
+            published: true,
+          },
+        });
 
-          const blob = await image?.record.data.blob();
+        const { record: profileRecord } = await web5.dwn.records.create({
+          data: {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            name,
+            image: profileImgRecord?.id,
+          },
+          message: {
+            schema: "https://schema.org/Person",
+            protocol: schemaOrgProtocolDefinition.protocol,
+            protocolPath: "person",
+            dataFormat: "application/json",
+            published: true,
+          },
+        });
 
-          profile.image = URL.createObjectURL(blob);
+        if (profileRecord) {
+          const profile: Person = {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            name,
+            image: URL.createObjectURL(blob),
+          };
+
+          set({ profile, fetched: true });
+        } else {
+          throw new Error("Profile creation failed");
         }
-
-        // Load the banner image
-        if (profile.banner) {
-          const banner = await web5.dwn.records.read({
-            message: {
-              recordId: profile.banner,
-            },
-          });
-
-          const blob = await banner?.record.data.blob();
-
-          profile.banner = URL.createObjectURL(blob);
-        }
-
-        set({ profile });
+      } catch (error) {
+        console.log(error);
       }
     },
   },

@@ -47,15 +47,6 @@ export default function CreateProfile() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     if (file && web5 && did) {
-      // Convert file to blob
-      const blob = new Blob([file], {
-        type: "image/png",
-      });
-
-      const record = await web5.dwn.records.create({
-        data: blob,
-      });
-
       // Convert banner file to blob
       // let bannerBlob: Blob | undefined;
       // let bannerRecordId: string | undefined;
@@ -103,10 +94,7 @@ export default function CreateProfile() {
         // Create profile
         await createProfile({
           name: values.name,
-          "@context": "https://schema.org",
-          "@type": "Person",
-          image: record?.record?.id,
-          // banner: bannerRecordId,
+          profileImg: file,
         });
 
         navigate("/");

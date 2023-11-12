@@ -113,4 +113,29 @@ export const dingerProtocolDefinition = {
   },
 };
 
-const protocols = [dingerProtocolDefinition];
+export const schemaOrgProtocolDefinition = {
+  protocol: "https://schema.org/protocol",
+  published: true,
+  types: {
+    person: {
+      schema: "https://schema.org/Person",
+      dataFormats: ["application/json"],
+    },
+  },
+  structure: {
+    person: {
+      $actions: [
+        {
+          who: "anyone",
+          can: "write",
+        },
+        {
+          who: "anyone",
+          can: "read",
+        },
+      ],
+    },
+  },
+};
+
+const protocols = [schemaOrgProtocolDefinition];
