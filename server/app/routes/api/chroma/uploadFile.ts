@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import Joi from "joi";
 import vectorStore from "../../../config/vectorStore.js";
+import { authenticateToken } from "../../../middleware/auth.middleware.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -56,6 +57,7 @@ const schema = Joi.object({
 export default Router({ mergeParams: true }).post(
   "/chroma/uploadFile",
   upload.single("file"),
+  authenticateToken,
   async (req, res) => {
     try {
       const { error } = schema.validate(req.body);

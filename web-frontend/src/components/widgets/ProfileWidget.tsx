@@ -98,7 +98,7 @@ export function ProfileWidet() {
             <EditingProfileForm />
           )}
 
-          {did ? (
+          {/* {did ? (
             <div className="flex items-center gap-2">
               🔑
               <p className="text-sm text-muted-foreground max-w-[250px] truncate">
@@ -126,18 +126,12 @@ export function ProfileWidet() {
             </div>
           ) : (
             <Skeleton className="h-6 w-[150px]" />
-          )}
+          )} */}
 
-          <div className="flex w-full items-center justify-center gap-4">
+          {/* <div className="flex w-full items-center justify-center gap-4">
             <SendDingDialog />
 
-            {/* <Button className="gap-2" size={"sm"}>
-              <>
-                <Share className="h-4 w-4" />
-                Share
-              </>
-            </Button> */}
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </TappableCardWrapper>

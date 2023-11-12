@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Joi from "joi";
 import openai from "../../../config/openai.js";
+import { authenticateToken } from "../../../middleware/auth.middleware.js";
 
 const requestSchema = Joi.object({
   prompt: Joi.string().required(),
@@ -25,10 +26,11 @@ const requestSchema = Joi.object({
  *       200:
  *         description: OK
  *     tags:
- *       - Ai
+ *       - AI
  */
 export default Router({ mergeParams: true }).post(
   "/ai/completetion",
+  authenticateToken,
   async (req, res) => {
     try {
       // Validate the request body

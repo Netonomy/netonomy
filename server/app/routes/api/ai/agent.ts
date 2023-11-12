@@ -23,6 +23,7 @@ import { z } from "zod";
 import axios from "axios";
 import { Document } from "langchain/document";
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
+import { authenticateToken } from "../../../middleware/auth.middleware.js";
 
 const schema = Joi.object({
   messageHistory: Joi.array().items(
@@ -78,6 +79,7 @@ const schema = Joi.object({
  */
 export default Router({ mergeParams: true }).post(
   "/ai/agent",
+  authenticateToken,
   async (req, res) => {
     try {
       // validate the request

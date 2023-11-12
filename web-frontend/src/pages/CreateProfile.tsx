@@ -14,9 +14,12 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileImgSelector from "@/components/ProfileImgSelector";
-// import KeyLogo from "@/components/KeyLogo";
 import useProfileStore from "@/hooks/stores/useProfileStore";
 import useWeb5Store from "@/hooks/stores/useWeb5Store";
+import { client } from "@passwordless-id/webauthn";
+import { v4 as uuidv4 } from "uuid";
+import useAuthStore from "@/hooks/stores/useAuthStore";
+import api from "@/config/api";
 
 const profileSchema = z.object({
   name: z.string().min(2).max(50),
@@ -26,6 +29,8 @@ export default function CreateProfile() {
   const [file, setFile] = useState<File | null>(null);
   const navigate = useNavigate();
   const web5 = useWeb5Store((state) => state.web5);
+  const did = useWeb5Store((state) => state.did);
+  const setToken = useAuthStore((state) => state.actions.setToken);
 
   const createProfile = useProfileStore((state) => state.actions.createProfile);
 
@@ -41,7 +46,7 @@ export default function CreateProfile() {
   async function onSubmit(values: z.infer<typeof profileSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    if (file && web5) {
+    if (file && web5 && did) {
       // Convert file to blob
       const blob = new Blob([file], {
         type: "image/png",
@@ -67,15 +72,45 @@ export default function CreateProfile() {
       //   bannerRecordId = bannerRecord?.record?.id;
       // }
 
-      await createProfile({
-        name: values.name,
-        "@context": "https://schema.org",
-        "@type": "Person",
-        image: record?.record?.id,
-        // banner: bannerRecordId,
+      // const isLocalAuth = await client.isLocalAuthenticator();
+
+      // Get challenge from server
+      const challengeRes = await api.post(`/auth/requestChallenge`, {
+        did,
+      });
+      const challenge = challengeRes.data.challenge;
+
+      const registration = await client.register(did, challenge, {
+        authenticatorType: "auto",
+        userVerification: "required",
+        // timeout: 60000,
+        attestation: false,
+        userHandle: uuidv4(),
+        debug: false,
       });
 
-      navigate("/");
+      // Send registration to server
+      const registerRes = await api.post(`/auth/verify`, {
+        did,
+        registration,
+      });
+
+      if (registerRes.status === 200) {
+        // Get bearer token
+        const token = registerRes.data.token;
+        setToken(token); // Set token in global state and local storage
+
+        // Create profile
+        await createProfile({
+          name: values.name,
+          "@context": "https://schema.org",
+          "@type": "Person",
+          image: record?.record?.id,
+          // banner: bannerRecordId,
+        });
+
+        navigate("/");
+      }
     }
   }
 
