@@ -7,9 +7,8 @@ import api from "@/config/api";
 interface AuthState {
   token: null | string;
   actions: {
-    setToken: (token: string) => void;
+    setToken: (token: string | null) => void;
     login: () => Promise<void>;
-    logout: () => void;
   };
 }
 
@@ -18,12 +17,10 @@ const useAuthStore = create(
     (set) => ({
       token: null,
       actions: {
-        setToken: (token: string) => {
+        setToken: (token: string | null) => {
           set({ token });
         },
-        logout: () => {
-          set({ token: null });
-        },
+
         login: async () => {
           try {
             const did = useWeb5Store.getState().did;
@@ -66,6 +63,17 @@ const useAuthStore = create(
     }),
     {
       name: "auth-state",
+      merge: (persistedState: any, currentState: AuthState) => {
+        // custom merge function
+        return {
+          ...currentState,
+          ...persistedState,
+          actions: {
+            ...currentState.actions,
+            ...(persistedState.actions || {}),
+          },
+        };
+      },
     }
   )
 );
