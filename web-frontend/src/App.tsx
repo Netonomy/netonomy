@@ -9,6 +9,7 @@ import PdfViewer from "./pages/PdfViewer";
 import WidgetDashboard from "./components/widgets/WidgetDashboard";
 import ProfilePage from "./pages/ProfilePage";
 import useWeb5Store from "./hooks/stores/useWeb5Store";
+import WelcomePage from "./pages/WelcomePage";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
         element: <PdfViewer />,
       },
     ],
+  },
+  {
+    path: "/welcome",
+    element: <WelcomePage />,
   },
   {
     path: "/create-profile",

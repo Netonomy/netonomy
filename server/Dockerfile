@@ -1,11 +1,11 @@
-FROM node:18.16.0
+FROM node:20-alpine
 WORKDIR /usr/src/app
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json and package-lock.json are copied
 COPY package.json ./
 
-RUN npm install 
+RUN npm install --legacy-peer-deps
 
 # Bundle app source
 COPY . .

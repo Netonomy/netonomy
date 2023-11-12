@@ -2,7 +2,7 @@ import { create } from "zustand";
 import useWeb5Store from "./useWeb5Store";
 import useProfileStore from "./useProfileStore";
 import { ChangeEvent } from "react";
-import useGlobalAppStateStore from "./useGlobalAppStateStore";
+import useGlobalAppStateStore from "./useAuthStore";
 
 // Type definition for the chat state
 interface ChatState {

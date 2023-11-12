@@ -3,16 +3,16 @@ import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import TopLoader from "@/components/TopLoader";
 import useProfileStore from "@/hooks/stores/useProfileStore";
+import useGlobalAppStateStore from "@/hooks/stores/useAuthStore";
 
 export function Home() {
   const navigate = useNavigate();
   const profile = useProfileStore((state) => state.profile);
   const fetched = useProfileStore((state) => state.fetched);
+  const accessToken = useGlobalAppStateStore((state) => state.token);
 
   useEffect(() => {
-    console.log("profile", profile);
-    console.log("fetched", fetched);
-    if (!profile && fetched) navigate("/create-profile");
+    if ((!profile && fetched) || !accessToken) navigate("/welcome");
   }, [profile, fetched]);
 
   return (

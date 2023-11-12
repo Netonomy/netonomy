@@ -35,6 +35,17 @@ export default Router({ mergeParams: true }).post(
       const { did } = req.body;
       if (!did) throw new Error("No DID provided");
 
+      // Check if the challenge exists in the database
+      const { rows } = await pool.query(
+        "SELECT * FROM challenges WHERE did = $1",
+        [did]
+      );
+      if (rows.length > 0) {
+        // Delete the challenge from the database
+        await pool.query("DELETE FROM challenges WHERE did = $1", [did]);
+      }
+
+      // Generate a challenge
       const challenge = generateChallenge();
 
       // Store the challenge in the database, so we can verify it later
@@ -43,8 +54,16 @@ export default Router({ mergeParams: true }).post(
         [did, challenge]
       );
 
+      // Check if the user exists in the database and join their credentials
+      const { rows: userRows } = await pool.query(
+        "SELECT users.*, credentials.* FROM users INNER JOIN credentials ON users.id = credentials.user_id WHERE users.did = $1",
+        [did]
+      );
+      const credentialIds = userRows.map((row: any) => row.credential_id);
+
       res.json({
         challenge,
+        credentialIds,
       });
     } catch (err) {
       console.error(err);

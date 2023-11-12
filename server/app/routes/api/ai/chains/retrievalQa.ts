@@ -215,7 +215,7 @@ export default Router({ mergeParams: true }).post(
           chatHistory.map((m: ChatCompletionMessageParam) => {
             if (m.role === "user") {
               return new HumanMessage({
-                content: m.content!,
+                content: m.content! as string,
               });
             } else if (m.role === "assistant") {
               return new AIMessage({

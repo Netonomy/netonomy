@@ -26,6 +26,8 @@ const useWeb5Store = create<Web5State>((set, get) => ({
         // sync: "1000",
       });
 
+      console.log(did);
+
       // Set the Web5 instance and DID
       set({ web5, did });
 

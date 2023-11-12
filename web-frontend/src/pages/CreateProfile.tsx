@@ -14,13 +14,12 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileImgSelector from "@/components/ProfileImgSelector";
-// import KeyLogo from "@/components/KeyLogo";
 import useProfileStore from "@/hooks/stores/useProfileStore";
 import useWeb5Store from "@/hooks/stores/useWeb5Store";
 import { client } from "@passwordless-id/webauthn";
 import { v4 as uuidv4 } from "uuid";
-import axios from "axios";
-import useGlobalAppStateStore from "@/hooks/stores/useGlobalAppStateStore";
+import useAuthStore from "@/hooks/stores/useAuthStore";
+import api from "@/config/api";
 
 const profileSchema = z.object({
   name: z.string().min(2).max(50),
@@ -31,7 +30,7 @@ export default function CreateProfile() {
   const navigate = useNavigate();
   const web5 = useWeb5Store((state) => state.web5);
   const did = useWeb5Store((state) => state.did);
-  const setToken = useGlobalAppStateStore((state) => state.actions.setToken);
+  const setToken = useAuthStore((state) => state.actions.setToken);
 
   const createProfile = useProfileStore((state) => state.actions.createProfile);
 
@@ -76,31 +75,25 @@ export default function CreateProfile() {
       // const isLocalAuth = await client.isLocalAuthenticator();
 
       // Get challenge from server
-      const challengeRes = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/requestChallenge`,
-        {
-          did,
-        }
-      );
+      const challengeRes = await api.post(`/auth/requestChallenge`, {
+        did,
+      });
       const challenge = challengeRes.data.challenge;
 
       const registration = await client.register(did, challenge, {
         authenticatorType: "auto",
         userVerification: "required",
-        timeout: 60000,
+        // timeout: 60000,
         attestation: false,
         userHandle: uuidv4(),
         debug: false,
       });
 
       // Send registration to server
-      const registerRes = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/verify`,
-        {
-          did,
-          registration,
-        }
-      );
+      const registerRes = await api.post(`/auth/verify`, {
+        did,
+        registration,
+      });
 
       if (registerRes.status === 200) {
         // Get bearer token
