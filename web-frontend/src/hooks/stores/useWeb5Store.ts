@@ -21,7 +21,8 @@ const useWeb5Store = create<Web5State>((set, get) => ({
       // Connect to Web5
       const { web5, did } = await Web5.connect({
         techPreview: {
-          dwnEndpoints: ["http://localhost:3100"],
+          // dwnEndpoints: ["http://localhost:3100"],
+          dwnEndpoints: [],
         },
         // sync: "1000",
       });
@@ -121,9 +122,65 @@ export const schemaOrgProtocolDefinition = {
       schema: "https://schema.org/Person",
       dataFormats: ["application/json"],
     },
+    collection: {
+      schema: "https://schema.org/Collection",
+      dataFormats: ["application/json"],
+    },
+    digitalDocument: {
+      schema: "https://schema.org/DigitalDocument",
+      dataFormats: ["application/json"],
+    },
   },
   structure: {
     person: {
+      $actions: [
+        {
+          who: "anyone",
+          can: "write",
+        },
+        {
+          who: "anyone",
+          can: "read",
+        },
+      ],
+    },
+    collection: {
+      $actions: [
+        {
+          who: "anyone",
+          can: "write",
+        },
+        {
+          who: "anyone",
+          can: "read",
+        },
+      ],
+      digitalDocument: {
+        $actions: [
+          {
+            who: "anyone",
+            can: "write",
+          },
+          {
+            who: "anyone",
+            can: "read",
+          },
+        ],
+      },
+      collection: {
+        $actions: [
+          {
+            who: "anyone",
+            can: "write",
+          },
+          {
+            who: "anyone",
+            can: "read",
+          },
+        ],
+      },
+    },
+    digitalDocument: {
       $actions: [
         {
           who: "anyone",

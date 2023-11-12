@@ -10,7 +10,7 @@ import {
 import { Input } from "./ui/input";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import useFolder from "@/hooks/useFiles";
+import useCollectionStore from "@/hooks/stores/useCollectionStore";
 
 export function CreateFolderDialog({
   open,
@@ -19,9 +19,11 @@ export function CreateFolderDialog({
   open: boolean;
   handleChange: () => void;
 }) {
-  const { createFolder } = useFolder();
   const [folderName, setFolderName] = useState("");
   const [sending, setSending] = useState(false);
+  const createCollection = useCollectionStore(
+    (state) => state.actions.createCollection
+  );
 
   return (
     <Dialog open={open} onOpenChange={handleChange}>
@@ -48,7 +50,9 @@ export function CreateFolderDialog({
               if (!folderName) return;
               setSending(true);
 
-              await createFolder(folderName);
+              await createCollection({
+                name: folderName,
+              });
 
               setSending(false);
               handleChange();

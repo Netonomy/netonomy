@@ -2,7 +2,6 @@ import { File, Folder, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Fragment, useEffect, useRef, useState } from "react";
-import useFiles, { filesAtom } from "@/hooks/useFiles";
 import { Input } from "../ui/input";
 import FileIcon from "../FileIcon";
 import {
@@ -13,25 +12,35 @@ import {
 } from "../ui/dropdown-menu";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CreateFolderDialog } from "../CreateFolderDialog";
-import { useAtom } from "jotai";
+import useCollectionStore from "@/hooks/stores/useCollectionStore";
+import { Skeleton } from "../ui/skeleton";
 
 export function StorageWidget() {
   const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
-  const { uploadFiles, deleteFile } = useFiles(
-    searchParams.get("folderId") || undefined
-  );
+  const folderId = searchParams.get("folderId");
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const [files] = useAtom(filesAtom);
+  const uploadFile = useCollectionStore((state) => state.actions.uploadFile);
+  const collectionItems = useCollectionStore((state) => state.collectionItems);
+  const fetchCollection = useCollectionStore(
+    (state) => state.actions.fetchFilesAndFolders
+  );
+  const fetchingCollection = useCollectionStore((state) => state.fetching);
 
   const [showCreateFolderDialog, setShowCreateFolderDialog] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    uploadFiles(files, searchParams.get("folderId") || undefined);
+
+    for (const file of files) {
+      uploadFile(file);
+    }
   };
+
+  useEffect(() => {
+    fetchCollection(folderId || undefined);
+  }, [folderId]);
 
   return (
     <div className="h-full w-full flex flex-1 flex-col items-center justify-center gap-4">
@@ -96,38 +105,39 @@ export function StorageWidget() {
       <Card className=" flex flex-col flex-1 rounded-xl shadow-lg w-full">
         <CardContent className="h-full w-full flex flex-1 p-4 overflow-y-auto max-h-[calc(100vh-135px)]">
           <div className="flex flex-col w-full">
-            {files.map((file, i) => {
-              const type = file["@type"];
-              const isFolder = type === "Collection";
+            {collectionItems &&
+              collectionItems.map((file, i) => {
+                const type = file["@type"];
+                const isFolder = type === "Collection";
 
-              return (
-                <Fragment key={file.identifier}>
-                  {!isFolder ? (
-                    <div
-                      key={i}
-                      className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
-                      onClick={() => {
-                        navigate(`/pdf/${file.identifier}`);
-                      }}
-                    >
-                      <FileIcon type={file.encodingFormat} />
+                return (
+                  <Fragment key={file.identifier}>
+                    {!isFolder ? (
+                      <div
+                        key={i}
+                        className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                        onClick={() => {
+                          navigate(`/pdf/${file.identifier}`);
+                        }}
+                      >
+                        <FileIcon type={file.encodingFormat} />
 
-                      <div className="flex flex-1 flex-col ml-4 gap-[2px]">
-                        <div className="text-md md:text-lg font-normal max-w-[221px] sm:max-w-[400px] xl:max-w-[400px] truncate">
-                          {file.name}
+                        <div className="flex flex-1 flex-col ml-4 gap-[2px]">
+                          <div className="text-md md:text-lg font-normal max-w-[221px] sm:max-w-[400px] xl:max-w-[400px] truncate">
+                            {file.name}
+                          </div>
+
+                          <small className="text-sm text-gray-500 font-medium leading-none">
+                            {new Date(file.datePublished).toLocaleDateString()}
+                          </small>
                         </div>
 
-                        <small className="text-sm text-gray-500 font-medium leading-none">
-                          {new Date(file.datePublished).toLocaleDateString()}
-                        </small>
-                      </div>
-
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <MoreHorizontal className="hover:bg-gray-200 dark:hover:opacity-80 dark:hover:hover:bg-[#0d0d0d] p-2 h-9 w-9 rounded-full" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="rounded-xl">
-                          {/* <DropdownMenuItem
+                        <DropdownMenu>
+                          <DropdownMenuTrigger>
+                            <MoreHorizontal className="hover:bg-gray-200 dark:hover:opacity-80 dark:hover:hover:bg-[#0d0d0d] p-2 h-9 w-9 rounded-full" />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="rounded-xl">
+                            {/* <DropdownMenuItem
                     onClick={(event) => {
                       event.stopPropagation();
                     }}
@@ -135,67 +145,80 @@ export function StorageWidget() {
                   >
                     <Pencil className="mr-2 h-4 w-4" /> Edit
                   </DropdownMenuItem> */}
-                          <DropdownMenuItem
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              deleteFile(file.identifier);
-                            }}
-                            className="cursor-pointer roun"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" /> Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  ) : (
-                    <div
-                      key={i}
-                      className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
-                      onClick={() => {
-                        setSearchParams({
-                          folderId: file.identifier,
-                        });
-                      }}
-                    >
-                      <FileIcon type={"folder"} />
+                            <DropdownMenuItem
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                // deleteFile(file.identifier);
+                              }}
+                              className="cursor-pointer roun"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" /> Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    ) : (
+                      <div
+                        key={i}
+                        className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                        onClick={() => {
+                          setSearchParams({
+                            folderId: file.identifier,
+                          });
+                        }}
+                      >
+                        <FileIcon type={"folder"} />
 
-                      <div className="flex flex-1 flex-col ml-4 gap-[2px]">
-                        <div className="text-md md:text-lg font-normal max-w-[221px] sm:max-w-[400px] xl:max-w-[400px] truncate">
-                          {file.name}
+                        <div className="flex flex-1 flex-col ml-4 gap-[2px]">
+                          <div className="text-md md:text-lg font-normal max-w-[221px] sm:max-w-[400px] xl:max-w-[400px] truncate">
+                            {file.name}
+                          </div>
+
+                          <small className="text-sm text-gray-500 font-medium leading-none">
+                            {file.dateCreated && (
+                              <>
+                                {new Date(
+                                  file.dateCreated
+                                ).toLocaleDateString()}
+                              </>
+                            )}
+                          </small>
                         </div>
 
-                        <small className="text-sm text-gray-500 font-medium leading-none">
-                          {file.dateCreated && (
-                            <>
-                              {new Date(file.dateCreated).toLocaleDateString()}
-                            </>
-                          )}
-                        </small>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger>
+                            <MoreHorizontal className="hover:bg-gray-200 dark:hover:opacity-80 dark:hover:hover:bg-[#0d0d0d] p-2 h-9 w-9 rounded-full" />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="rounded-xl">
+                            <DropdownMenuItem
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                // deleteFile(file.identifier);
+                              }}
+                              className="cursor-pointer roun"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" /> Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
+                    )}
+                  </Fragment>
+                );
+              })}
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <MoreHorizontal className="hover:bg-gray-200 dark:hover:opacity-80 dark:hover:hover:bg-[#0d0d0d] p-2 h-9 w-9 rounded-full" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="rounded-xl">
-                          <DropdownMenuItem
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              deleteFile(file.identifier);
-                            }}
-                            className="cursor-pointer roun"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" /> Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  )}
-                </Fragment>
-              );
-            })}
+            {fetchingCollection && (
+              <div className="flex flex-col items-center w-full gap-1">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    className="h-14 w-full rounded-lg flex flex-row items-center p-2 transition overflow-x-visible z-50"
+                  />
+                ))}
+              </div>
+            )}
 
-            {files.length === 0 && (
+            {collectionItems && collectionItems.length === 0 && (
               <div className="w-full h-[90%] flex items-center justify-center">
                 <div className="text-lg font-semibold">
                   No files uploaded yet
