@@ -6,6 +6,10 @@ import path from "path";
 import Joi from "joi";
 import vectorStore from "../../../config/vectorStore.js";
 import { authenticateToken } from "../../../middleware/auth.middleware.js";
+import {
+  UnstructuredLoader,
+  UnstructuredLoaderOptions,
+} from "langchain/document_loaders/fs/unstructured";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -84,37 +88,41 @@ export default Router({ mergeParams: true }).post(
         };
       }
 
-      if (file.mimetype === "application/pdf") {
-        const loader = new PDFLoader(file.path);
+      const options: UnstructuredLoaderOptions = {
+        apiKey: process.env.UNSTRUCTURED_API_KEY,
+        apiUrl: "http://unstructured-api:8000/general/v0/general",
+        // strategy: "hi_res",
+        // skipInferTableTypes: [],
+        // pdfInferTableStructure: true,
+        strategy: "fast",
+        coordinates: true,
+        chunkingStrategy: "by_title",
+      };
 
-        let docs = await loader.load();
-        docs = docs.map((doc) => {
-          doc.metadata = {
-            ...doc.metadata,
-            ...filter,
-          };
-          return doc;
-        });
+      const loader = new UnstructuredLoader(file.path, options);
 
-        await vectorStore.addDocuments(docs);
+      let docs = await loader.load();
+      docs = docs.map((doc) => {
+        doc.metadata = {
+          ...doc.metadata,
+          ...filter,
+        };
+        return doc;
+      });
 
-        fs.unlink(file.path, (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-        });
+      await vectorStore.addDocuments(docs);
 
-        return res.json({
-          status: "OK",
-          message: "Documents added to collection",
-        });
-      } else {
-        return res.status(400).json({
-          status: "FAILED",
-          message: "Invalid file type",
-        });
-      }
+      fs.unlink(file.path, (err) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+      });
+
+      return res.json({
+        status: "OK",
+        message: "Documents added to collection",
+      });
     } catch (err) {
       console.error(err);
 

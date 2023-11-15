@@ -97,7 +97,7 @@ const useChatStore = create<ChatState>((set, get) => ({
       set({ input: "" });
 
       // Update conversation to have empty AI response
-      const conversationWithEmptyAIResponse = {
+      let conversationWithEmptyAIResponse = {
         ...conversation,
         messages: [
           ...conversation.messages,
@@ -118,7 +118,7 @@ const useChatStore = create<ChatState>((set, get) => ({
       const accessToken = useAuthStore.getState().token;
 
       // Fetch request to send the messages
-      const res = await fetch(`http://localhost:3000/api/ai/agent`, {
+      fetch(`http://localhost:3000/api/ai/agent`, {
         method: "POST",
         body: JSON.stringify({
           messageHistory: conversation.messages,
@@ -133,28 +133,112 @@ const useChatStore = create<ChatState>((set, get) => ({
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-      });
+      })
+        .then(async (response) => {
+          set({ generatingResponse: false });
 
-      const json = await res.json();
-      const repsonse = json.result;
+          const reader = response.body?.getReader();
 
-      // Update the conversation with the response
-      const conversationWithResponse = {
-        ...conversation,
-        messages: [
-          ...conversation.messages,
-          {
-            role: MessageRole.assistant,
-            content: repsonse,
-          },
-        ],
-      };
-      conversation = conversationWithResponse;
-      set({ currentConversation: conversationWithResponse });
+          if (reader) {
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
 
-      get().actions.updateConversation(conversationWithResponse);
+                if (done) {
+                  // Set generating to false
+                  set({ generatingResponse: false });
+                  break;
+                }
 
-      set({ generatingResponse: false });
+                if (value) {
+                  const chunk = new TextDecoder().decode(value);
+
+                  // Code for function calling
+
+                  // Split the chunk by '}' and filter out any empty strings
+                  const jsonStrings = chunk
+                    .split("}")
+                    .filter((str) => str.trim() !== "");
+
+                  jsonStrings.forEach((jsonString) => {
+                    // Try to parse each JSON string
+                    let json: {
+                      type: string;
+                      token?: string;
+                      name?: string;
+                      action?: string;
+                    };
+                    try {
+                      json = JSON.parse(jsonString + "}");
+                    } catch (err) {
+                      console.error(`Unable to parse chunk as JSON: ${err}`);
+                      return;
+                    }
+
+                    // If its type message then update the messages
+                    if (json.type === "message" && json.token !== undefined) {
+                      set({ generatingResponse: false });
+                      // extract the token
+                      const { token } = json;
+                      console.log(token);
+
+                      set((state: any) => {
+                        // Create a copy of the current conversation
+                        let newConversation = { ...state.currentConversation };
+
+                        // Update the last message of the current conversation to have the new tokens from the server
+                        let lastMessageIndex =
+                          newConversation.messages!.length - 1;
+                        let lastMessage = {
+                          ...newConversation.messages![lastMessageIndex],
+                        };
+                        lastMessage.content += token;
+
+                        // Update the conversation
+                        newConversation.messages![lastMessageIndex] =
+                          lastMessage;
+
+                        // Return the new state
+                        return {
+                          ...state,
+                          currentConversation: newConversation,
+                        };
+                      });
+                    } else if (json.type === "agent_action") {
+                    } else if (json.type === "tool_end") {
+                    }
+                  });
+                }
+              }
+            } catch (err) {
+              console.error(`Unable to read chunk `);
+            }
+          }
+        })
+        .catch((err) => {
+          console.error(`Unable to send chat message: ${err}`);
+        });
+
+      // const json = await res.json();
+      // const repsonse = json.result;
+
+      // // Update the conversation with the response
+      // const conversationWithResponse = {
+      //   ...conversation,
+      //   messages: [
+      //     ...conversation.messages,
+      //     {
+      //       role: MessageRole.assistant,
+      //       content: repsonse,
+      //     },
+      //   ],
+      // };
+      // conversation = conversationWithResponse;
+      // set({ currentConversation: conversationWithResponse });
+
+      // get().actions.updateConversation(conversationWithResponse);
+
+      // set({ generatingResponse: false });
     },
     updateConversation: async (conversation: AIConversation) => {
       const web5 = useWeb5Store.getState().web5;

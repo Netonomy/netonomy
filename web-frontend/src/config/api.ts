@@ -19,7 +19,7 @@ api.interceptors.request.use(
     console.log(JSON.parse(localStorage.getItem("auth-state") || "{}"));
     const appState = JSON.parse(localStorage.getItem("auth-state") || "{}");
 
-    if (appState?.state.token) {
+    if (appState?.state && appState.state.token) {
       // Ensure config.headers is defined
       config.headers = config.headers || {};
 

@@ -36,7 +36,7 @@ export function ProfileWidet() {
     <TappableCardWrapper>
       <Card
         className="w-[425px] h-min rounded-xl shadow-lg"
-        onClick={() => navigate(`/profile/test`)}
+        onClick={() => navigate(`/profile/${did}`)}
       >
         <CardContent className="flex items-center justify-center gap-4 lg:flex-col p-4 relative">
           {!editng ? (
@@ -98,7 +98,7 @@ export function ProfileWidet() {
             <EditingProfileForm />
           )}
 
-          {/* {did ? (
+          {did ? (
             <div className="flex items-center gap-2">
               🔑
               <p className="text-sm text-muted-foreground max-w-[250px] truncate">
@@ -126,7 +126,7 @@ export function ProfileWidet() {
             </div>
           ) : (
             <Skeleton className="h-6 w-[150px]" />
-          )} */}
+          )}
 
           {/* <div className="flex w-full items-center justify-center gap-4">
             <SendDingDialog />

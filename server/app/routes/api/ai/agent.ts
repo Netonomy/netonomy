@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { initializeAgentExecutorWithOptions } from "langchain/agents";
+import {
+  AgentExecutor,
+  initializeAgentExecutorWithOptions,
+} from "langchain/agents";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { Calculator } from "langchain/tools/calculator";
 import { ChatMessageHistory } from "langchain/memory";
@@ -12,6 +15,7 @@ import {
   DynamicStructuredTool,
   DynamicTool,
   SerpAPI,
+  formatToOpenAITool,
 } from "langchain/tools";
 import { VectorDBQAChain } from "langchain/chains";
 import { getJson } from "serpapi";
@@ -24,6 +28,13 @@ import axios from "axios";
 import { Document } from "langchain/document";
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 import { authenticateToken } from "../../../middleware/auth.middleware.js";
+import { RunnableSequence } from "langchain/schema/runnable";
+import { formatToOpenAIToolMessages } from "langchain/agents/format_scratchpad/openai_tools";
+import {
+  OpenAIToolsAgentOutputParser,
+  type ToolsAgentStep,
+} from "langchain/agents/openai/output_parser";
+import { ChatPromptTemplate, MessagesPlaceholder } from "langchain/prompts";
 
 const schema = Joi.object({
   messageHistory: Joi.array().items(
@@ -79,7 +90,7 @@ const schema = Joi.object({
  */
 export default Router({ mergeParams: true }).post(
   "/ai/agent",
-  authenticateToken,
+  // authenticateToken,
   async (req, res) => {
     try {
       // validate the request
@@ -96,7 +107,7 @@ export default Router({ mergeParams: true }).post(
       const model = new ChatOpenAI({
         temperature: 0,
         modelName: "gpt-4-1106-preview",
-        // streaming: true,
+        streaming: true,
         // configuration: {
         //   baseURL: process.env.OPENAI_BASE_URL,
         //   apiKey: process.env.PERPLEXITY_API_KEY,
@@ -120,20 +131,20 @@ export default Router({ mergeParams: true }).post(
         };
       }
 
-      const retriever = vectorStore.asRetriever({
-        filter,
-      });
+      // const retriever = vectorStore.asRetriever({
+      //   // filter,
+      //   metadata: filter,
+      // });
 
       // Create chain for vector store
-      const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
-        returnSourceDocuments: true,
-        metadata: filter,
-      });
+      const chain = VectorDBQAChain.fromLLM(model, vectorStore);
       const knowledgeBaseTool = new ChainTool({
         name: "brain-knowledge-base",
         description:
-          "Brain Knowledge Base - use this tool to lookup info from your brain.",
+          "Brain Knowledge Base - use this tool to lookup info from your brain. This has all the information of the user's brain. (Documents, messages, photos, memories...)",
         chain: chain,
+        verbose: false,
+        metadata: filter,
       });
 
       const serp = new SerpAPI(process.env.SERPAPI_API_KEY, {
@@ -170,7 +181,7 @@ export default Router({ mergeParams: true }).post(
 
             // Get the top 4 links
             const topLinks = res.organic_results
-              .slice(0, 4)
+              .slice(0, 1)
               .map((result: any) => result.link);
 
             let docs: Document[] = [];
@@ -271,17 +282,22 @@ export default Router({ mergeParams: true }).post(
 
       const tools = [
         // new WebBrowser({ model, embeddings }),
-        youtubeWatcherTool,
+        // youtubeWatcherTool,
         new Calculator(),
         knowledgeBaseTool,
-        // new SerpAPI(process.env.SERPAPI_API_KEY, {
-        //   // currently not working , issue with langchain tool
-        //   location: "Washington,DC,United States",
-        //   hl: "en",
-        //   gl: "us",
-        // }),
-        customSearchTool,
+        new SerpAPI(process.env.SERPAPI_API_KEY, {
+          // currently not working , issue with langchain tool
+          location: "Washington,DC,United States",
+          hl: "en",
+          gl: "us",
+        }),
+        // customSearchTool,
       ];
+
+      // Convert to OpenAI tool format
+      const modelWithTools = model.bind({
+        tools: tools.map(formatToOpenAITool),
+      });
 
       // create the message history
       let pastMessages = messageHistory.map(
@@ -300,42 +316,111 @@ export default Router({ mergeParams: true }).post(
           }'s intelligence. If the user asks who or what you are, explain this to them. When the user asks a question, you should answer it as if you are ${
             profile.name
           }. Don't act as if you are a robot. Be human. Be ${profile.name}.
-Here is their full profile:
-${JSON.stringify(profile)}
-Always reference your memory first, then the internet or other sources if needed.
-Today is ${new Date().toLocaleDateString()}
-This is currently a chat between you and ${profile.name}.`
+        Here is their full profile:
+        ${JSON.stringify(profile)}
+        Always reference your memory first, then the internet or other sources if needed.
+        Today is ${new Date().toLocaleDateString()}
+        This is currently a on  between you and ${profile.name}.
+        
+        You do have the capability to search the internet and provide real time info.`
         ),
         ...pastMessages,
       ];
 
+      const prompt = ChatPromptTemplate.fromMessages([
+        ["ai", "You are a helpful assistant"],
+        ["human", "{input}"],
+        new MessagesPlaceholder("agent_scratchpad"),
+        new MessagesPlaceholder("chat_history"),
+      ]);
+
+      const memory = new BufferMemory({
+        memoryKey: "history", // The object key to store the memory under
+        inputKey: "question", // The object key for the input
+        outputKey: "answer", // The object key for the output
+        returnMessages: true,
+        chatHistory: new ChatMessageHistory(pastMessages),
+      });
+
+      const runnableAgent = RunnableSequence.from([
+        {
+          input: (i: { input: string; steps: ToolsAgentStep[] }) => i.input,
+          agent_scratchpad: (i: { input: string; steps: ToolsAgentStep[] }) =>
+            formatToOpenAIToolMessages(i.steps),
+          // Load memory here
+          chat_history: async (_: {
+            input: string;
+            steps: ToolsAgentStep[];
+          }) => {
+            const { history } = await memory.loadMemoryVariables({});
+            return history;
+          },
+        },
+        prompt,
+        modelWithTools,
+        new OpenAIToolsAgentOutputParser(),
+      ]).withConfig({ runName: "OpenAIToolsAgent" });
+
       // init executor
-      const executor = await initializeAgentExecutorWithOptions(tools, model, {
-        agentType: "openai-functions",
-        verbose: true,
-        memory: new BufferMemory({
-          returnMessages: true,
-          memoryKey: "chat_history",
-          chatHistory: new ChatMessageHistory(pastMessages),
-        }),
+      const executor = AgentExecutor.fromAgentAndTools({
+        agent: runnableAgent,
+        tools,
+        verbose: false,
       });
 
       const { input } = req.body;
 
-      const result = await executor.call(
-        { input: input },
+      await executor.stream(
+        { input },
         {
           callbacks: [
             {
-              handleAgentAction: (action, runId) => {},
-              handleAgentEnd(action, runId, parentRunId, tags) {},
-              handleToolStart: (tool, runId, parentRunId, tags) => {},
+              handleAgentAction: (action, runId) => {
+                console.log("handleAgentAction");
+                console.log(action);
+                console.log(runId);
+
+                res.write(
+                  JSON.stringify({
+                    type: "agent_action",
+                    action,
+                  })
+                );
+              },
+
+              handleToolEnd: (output, runId) => {
+                console.log("tool end");
+                console.log(output);
+                console.log(runId);
+
+                res.write(
+                  JSON.stringify({
+                    type: "tool_end",
+                    output,
+                  })
+                );
+              },
+
+              handleLLMNewToken: (token) => {
+                // console.log("handleLLMNewToken");
+                // console.log(token);
+                res.write(
+                  JSON.stringify({
+                    type: "message",
+                    token,
+                  })
+                );
+              },
+              handleAgentEnd: (action) => {
+                // console.log("handleAgentEnd");
+                res.end();
+              },
             },
           ],
         }
       );
 
-      res.json({ result: result.output });
+      // res.json({ result: result.output });
     } catch (err) {
       console.log(err);
 

@@ -27,13 +27,16 @@ const useProfileStore = create<ProfileState>((set) => ({
   fetched: false,
   fetchProfile: async () => {
     const web5 = useWeb5Store.getState().web5;
-    if (!web5) return;
+    const did = useWeb5Store.getState().did;
+    if (!web5 || !did) return;
 
     // Fetch the profile
     const { records } = await web5.dwn.records.query({
       message: {
         filter: {
           schema: "https://schema.org/Person",
+          protocol: schemaOrgProtocolDefinition.protocol,
+          dataFormat: "application/json",
         },
       },
     });
@@ -46,7 +49,7 @@ const useProfileStore = create<ProfileState>((set) => ({
       if (profile.image) {
         const image = await web5.dwn.records.read({
           message: {
-            recordId: profile.image,
+            recordId: profile.image as string,
           },
         });
 
@@ -116,6 +119,8 @@ const useProfileStore = create<ProfileState>((set) => ({
             published: true,
           },
         });
+
+        await profileRecord?.send(useWeb5Store.getState().did!);
 
         if (profileRecord) {
           const profile: Person = {

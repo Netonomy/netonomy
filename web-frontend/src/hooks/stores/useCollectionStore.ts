@@ -37,10 +37,10 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
       const web5 = useWeb5Store.getState().web5;
       if (!web5) return;
 
-      set({ fetching: true });
+      // set({ fetching: true });
 
-      // Set the collection items to null
-      set({ collectionItems: null });
+      // // Set the collection items to null
+      // set({ collectionItems: null });
 
       // If parentId is provided, fetch the collection
       if (parentId) {
@@ -92,6 +92,9 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
             parentId: parentId || undefined,
             protocol: schemaOrgProtocolDefinition.protocol,
             schema: "https://schema.org/DigitalDocument",
+            protocolPath: parentId
+              ? "collection/digitalDocument"
+              : "digitalDocument",
           },
         },
       });
@@ -175,12 +178,12 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
           // Vectorize the file
           // upload to chroma
           const formData = new FormData();
-          formData.append("file", blob);
+          formData.append("file", file);
           formData.append("did", did);
           formData.append("recordId", record!.id);
 
           // Upload to chroma
-          await api.post("/chroma/uploadFile", formData).catch((err) => {
+          api.post("/chroma/uploadFile", formData).catch((err) => {
             console.error(err);
           });
         }

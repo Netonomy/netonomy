@@ -63,7 +63,7 @@ export function Home() {
         </div> */}
 
         <div className={`h-full w-full flex items-center p-14 gap-10 relative`}>
-          <div className="flex flex-1 w-full flex-row items-center mb-4 h-full">
+          <div className="flex flex-1 w-full flex-row items-center h-full">
             <Outlet />
           </div>
 

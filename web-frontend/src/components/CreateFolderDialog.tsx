@@ -28,7 +28,7 @@ export function CreateFolderDialog({
     <Dialog open={open} onOpenChange={handleChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create a Folder</DialogTitle>
+          <DialogTitle>Create a folder</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <Input

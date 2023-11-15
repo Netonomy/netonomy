@@ -1,7 +1,7 @@
 import { File, Folder, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import FileIcon from "../FileIcon";
 import {
@@ -14,6 +14,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { CreateFolderDialog } from "../CreateFolderDialog";
 import useCollectionStore from "@/hooks/stores/useCollectionStore";
 import { Skeleton } from "../ui/skeleton";
+import { useDropzone } from "react-dropzone";
 
 export function StorageWidget() {
   const navigate = useNavigate();
@@ -38,6 +39,17 @@ export function StorageWidget() {
       uploadFile(file);
     }
   };
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    for (const file of acceptedFiles) {
+      uploadFile(file);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    noClick: true,
+  });
 
   useEffect(() => {
     fetchCollection(folderId || undefined);
@@ -103,7 +115,12 @@ export function StorageWidget() {
         </>
       </div>
 
-      <Card className=" flex flex-col flex-1 rounded-xl shadow-lg w-full">
+      <Card
+        {...getRootProps()}
+        className={`flex flex-1  shadow-lg rounded-xl w-full ${
+          isDragActive ? "bg-gray-100 dark:bg-[#1d1d1d]" : ""
+        }`}
+      >
         <CardContent className="h-full w-full flex flex-1 p-4 overflow-y-auto max-h-[calc(100vh-135px)]">
           <div className="flex flex-col w-full">
             {collectionItems &&
@@ -118,7 +135,13 @@ export function StorageWidget() {
                         key={i}
                         className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
                         onClick={() => {
-                          navigate(`/pdf/${file.identifier}`);
+                          if (file.encodingFormat === "application/pdf")
+                            navigate(`/pdf/${file.identifier}`);
+                          else if (
+                            file.encodingFormat === "image/png" ||
+                            file.encodingFormat === "image/jpeg"
+                          ) {
+                          }
                         }}
                       >
                         <FileIcon type={file.encodingFormat} />
