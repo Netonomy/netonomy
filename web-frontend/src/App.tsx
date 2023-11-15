@@ -10,6 +10,7 @@ import WidgetDashboard from "./components/widgets/WidgetDashboard";
 import ProfilePage from "./pages/ProfilePage";
 import useWeb5Store from "./hooks/stores/useWeb5Store";
 import WelcomePage from "./pages/WelcomePage";
+import ImageViewer from "./pages/ImageViewer";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "/pdf/:recordId",
         element: <PdfViewer />,
+      },
+      {
+        path: "/image/:recordId",
+        element: <ImageViewer />,
       },
     ],
   },

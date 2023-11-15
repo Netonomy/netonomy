@@ -12,6 +12,7 @@ interface CollectionState {
     data: DigitalDocument;
     blob: Blob;
   } | null;
+  fetchingFile: boolean;
   actions: {
     fetchFilesAndFolders: (parentId?: string) => Promise<void>;
     uploadFile: (file: File) => Promise<void>;
@@ -32,6 +33,7 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
   collectionItems: null,
   fetching: false,
   file: null,
+  fetchingFile: false,
   actions: {
     fetchFilesAndFolders: async (parentId?: string) => {
       const web5 = useWeb5Store.getState().web5;
@@ -234,7 +236,7 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
       const web5 = useWeb5Store.getState().web5;
       if (!web5) return;
 
-      set({ file: null });
+      set({ file: null, fetchingFile: true });
 
       web5.dwn.records
         .read({
@@ -260,6 +262,7 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
               data,
               blob,
             },
+            fetchingFile: false,
           });
         })
         .catch((err) => {

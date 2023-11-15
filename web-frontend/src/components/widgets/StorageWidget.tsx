@@ -141,6 +141,7 @@ export function StorageWidget() {
                             file.encodingFormat === "image/png" ||
                             file.encodingFormat === "image/jpeg"
                           ) {
+                            navigate(`/image/${file.identifier}`);
                           }
                         }}
                       >
