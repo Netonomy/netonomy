@@ -48,19 +48,12 @@ const useProfileStore = create<ProfileState>((set) => ({
 
       if (!isOwnerProfile) queryOptions["from"] = did;
 
-      console.log(queryOptions);
-
       // Fetch the profile
       const { records } = await web5.dwn.records.query(queryOptions);
-
-      console.log("Fetched profile");
-      console.log(records);
-      console.log(records?.length);
 
       // If the profile exists, load it
       if (records && records?.length > 0) {
         const profile = await records[0].data.json();
-        console.log(profile);
 
         const profileImgQueryOptions: any = {
           message: {
@@ -76,29 +69,12 @@ const useProfileStore = create<ProfileState>((set) => ({
         if (profile.image) {
           const image = await web5.dwn.records.read(profileImgQueryOptions);
 
-          console.log("Fetched profile image");
-          console.log(image);
-
           const blob = await image?.record.data.blob();
 
           const url = URL.createObjectURL(blob);
           profile.image = url;
         } else {
         }
-
-        // Load the banner image
-        //   if (profile.banner) {
-        //     const banner = await web5.dwn.records.read({
-        //       message: {
-        //         recordId: profile.banner,
-        //       },
-        //     });
-
-        //     const blob = await banner?.record.data.blob();
-
-        //     profile.banner = URL.createObjectURL(blob);
-        //   }
-
         // Set the profile
         set({ profile });
       }
