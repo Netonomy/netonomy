@@ -3,6 +3,7 @@ import useWeb5Store from "./useWeb5Store";
 import useProfileStore from "./useProfileStore";
 import { ChangeEvent } from "react";
 import useAuthStore from "./useAuthStore";
+import api from "@/config/api";
 
 // Type definition for the chat state
 interface ChatState {
@@ -115,130 +116,139 @@ const useChatStore = create<ChatState>((set, get) => ({
       const did = useWeb5Store.getState().did;
       const profile = useProfileStore.getState().profile;
 
-      const accessToken = useAuthStore.getState().token;
+      // const accessToken = useAuthStore.getState().token;
 
-      // Fetch request to send the messages
-      fetch(`http://localhost:3000/api/ai/agent`, {
-        method: "POST",
-        body: JSON.stringify({
-          messageHistory: conversation.messages,
-          input: question,
-          did: did,
-          recordId: get().recordId || undefined,
-          profile: {
-            name: profile?.name,
-          },
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+      console.log("ABOUT TO SEND MESSAGE");
+      const res = await api.post("/ai/agent", {
+        messageHistory: [],
+        input: question,
+        did: did,
+        recordId: get().recordId || undefined,
+        profile: {
+          name: profile?.name,
         },
-      })
-        .then(async (response) => {
-          set({ generatingResponse: false });
-
-          const reader = response.body?.getReader();
-
-          if (reader) {
-            try {
-              while (true) {
-                const { done, value } = await reader.read();
-
-                if (done) {
-                  // Set generating to false
-                  set({ generatingResponse: false });
-                  break;
-                }
-
-                if (value) {
-                  const chunk = new TextDecoder().decode(value);
-
-                  // Code for function calling
-
-                  // Split the chunk by '}' and filter out any empty strings
-                  const jsonStrings = chunk
-                    .split("}")
-                    .filter((str) => str.trim() !== "");
-
-                  jsonStrings.forEach((jsonString) => {
-                    // Try to parse each JSON string
-                    let json: {
-                      type: string;
-                      token?: string;
-                      name?: string;
-                      action?: string;
-                    };
-                    try {
-                      json = JSON.parse(jsonString + "}");
-                    } catch (err) {
-                      console.error(`Unable to parse chunk as JSON: ${err}`);
-                      return;
-                    }
-
-                    // If its type message then update the messages
-                    if (json.type === "message" && json.token !== undefined) {
-                      set({ generatingResponse: false });
-                      // extract the token
-                      const { token } = json;
-                      console.log(token);
-
-                      set((state: any) => {
-                        // Create a copy of the current conversation
-                        let newConversation = { ...state.currentConversation };
-
-                        // Update the last message of the current conversation to have the new tokens from the server
-                        let lastMessageIndex =
-                          newConversation.messages!.length - 1;
-                        let lastMessage = {
-                          ...newConversation.messages![lastMessageIndex],
-                        };
-                        lastMessage.content += token;
-
-                        // Update the conversation
-                        newConversation.messages![lastMessageIndex] =
-                          lastMessage;
-
-                        // Return the new state
-                        return {
-                          ...state,
-                          currentConversation: newConversation,
-                        };
-                      });
-                    } else if (json.type === "agent_action") {
-                    } else if (json.type === "tool_end") {
-                    }
-                  });
-                }
-              }
-            } catch (err) {
-              console.error(`Unable to read chunk `);
-            }
-          }
-        })
-        .catch((err) => {
-          console.error(`Unable to send chat message: ${err}`);
-        });
-
-      // const json = await res.json();
-      // const repsonse = json.result;
-
-      // // Update the conversation with the response
-      // const conversationWithResponse = {
-      //   ...conversation,
-      //   messages: [
-      //     ...conversation.messages,
-      //     {
-      //       role: MessageRole.assistant,
-      //       content: repsonse,
+      });
+      // Fetch request to send the messages
+      // const res = await fetch(`http://localhost:3000/api/ai/agent`, {
+      //   method: "POST",
+      //   body: JSON.stringify({
+      //     messageHistory: conversation.messages,
+      //     input: question,
+      //     did: did,
+      //     recordId: get().recordId || undefined,
+      //     profile: {
+      //       name: profile?.name,
       //     },
-      //   ],
-      // };
-      // conversation = conversationWithResponse;
-      // set({ currentConversation: conversationWithResponse });
+      //   }),
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${accessToken}`,
+      //   },
+      // });
+      // .then(async (response) => {
+      //   set({ generatingResponse: false });
 
-      // get().actions.updateConversation(conversationWithResponse);
+      //   const reader = response.body?.getReader();
 
-      // set({ generatingResponse: false });
+      //   if (reader) {
+      //     try {
+      //       while (true) {
+      //         const { done, value } = await reader.read();
+
+      //         if (done) {
+      //           // Set generating to false
+      //           set({ generatingResponse: false });
+      //           break;
+      //         }
+
+      //         if (value) {
+      //           const chunk = new TextDecoder().decode(value);
+
+      //           // Code for function calling
+
+      //           // Split the chunk by '}' and filter out any empty strings
+      //           const jsonStrings = chunk
+      //             .split("}")
+      //             .filter((str) => str.trim() !== "");
+
+      //           jsonStrings.forEach((jsonString) => {
+      //             // Try to parse each JSON string
+      //             let json: {
+      //               type: string;
+      //               token?: string;
+      //               name?: string;
+      //               action?: string;
+      //             };
+      //             try {
+      //               json = JSON.parse(jsonString + "}");
+      //             } catch (err) {
+      //               console.error(`Unable to parse chunk as JSON: ${err}`);
+      //               return;
+      //             }
+
+      //             // If its type message then update the messages
+      //             if (json.type === "message" && json.token !== undefined) {
+      //               set({ generatingResponse: false });
+      //               // extract the token
+      //               const { token } = json;
+      //               console.log(token);
+
+      //               set((state: any) => {
+      //                 // Create a copy of the current conversation
+      //                 let newConversation = { ...state.currentConversation };
+
+      //                 // Update the last message of the current conversation to have the new tokens from the server
+      //                 let lastMessageIndex =
+      //                   newConversation.messages!.length - 1;
+      //                 let lastMessage = {
+      //                   ...newConversation.messages![lastMessageIndex],
+      //                 };
+      //                 lastMessage.content += token;
+
+      //                 // Update the conversation
+      //                 newConversation.messages![lastMessageIndex] =
+      //                   lastMessage;
+
+      //                 // Return the new state
+      //                 return {
+      //                   ...state,
+      //                   currentConversation: newConversation,
+      //                 };
+      //               });
+      //             } else if (json.type === "agent_action") {
+      //             } else if (json.type === "tool_end") {
+      //             }
+      //           });
+      //         }
+      //       }
+      //     } catch (err) {
+      //       console.error(`Unable to read chunk `);
+      //     }
+      //   }
+      // })
+      // .catch((err) => {
+      //   console.error(`Unable to send chat message: ${err}`);
+      // });
+
+      const repsonse = res.data.result;
+
+      // Update the conversation with the response
+      const conversationWithResponse = {
+        ...conversation,
+        messages: [
+          ...conversation.messages,
+          {
+            role: MessageRole.assistant,
+            content: repsonse,
+          },
+        ],
+      };
+      conversation = conversationWithResponse;
+      set({ currentConversation: conversationWithResponse });
+
+      get().actions.updateConversation(conversationWithResponse);
+
+      set({ generatingResponse: false });
     },
     updateConversation: async (conversation: AIConversation) => {
       const web5 = useWeb5Store.getState().web5;
@@ -247,7 +257,9 @@ const useChatStore = create<ChatState>((set, get) => ({
       // Update the conversation
       const { record } = await web5.dwn.records.read({
         message: {
-          recordId: conversation.id,
+          filter: {
+            recordId: conversation.id,
+          },
         },
       });
 
@@ -260,35 +272,42 @@ const useChatStore = create<ChatState>((set, get) => ({
     },
     handleSubmit: async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      e.stopPropagation();
+      const { input, generatingResponse, actions } = get();
 
-      // If there no user input then don't send messages
-      if (get().input === "") return;
+      console.log("SUBMITTING");
 
-      // If there is no current conversation then create one
-      let conversation;
-      if (!get().currentConversation) {
-        conversation = await get().actions.createConversation({
-          role: MessageRole.user,
-          content: get().input,
-          datePublished: new Date().toISOString(),
-        });
+      // Prevent submission if a response is already being generated or input is empty
+      if (generatingResponse || input === "") return;
+
+      // Set generatingResponse to true to indicate submission process has started
+      set({ generatingResponse: true });
+
+      // If there is no current conversation, create one
+      let conversation = get().currentConversation;
+      if (!conversation) {
+        conversation =
+          (await actions.createConversation({
+            role: MessageRole.user,
+            content: input,
+            datePublished: new Date().toISOString(),
+          })) || null;
         if (conversation) set({ currentConversation: conversation });
       } else {
         // Add the user message to the current conversation
-        conversation = get().currentConversation;
-        if (conversation) {
-          conversation.messages.push({
-            role: MessageRole.user,
-            content: get().input,
-            datePublished: new Date().toISOString(),
-          });
-          set({ currentConversation: conversation });
-        }
+        conversation.messages.push({
+          role: MessageRole.user,
+          content: input,
+          datePublished: new Date().toISOString(),
+        });
       }
 
-      // Send the messages
-      get().actions.sendMessage(conversation!, get().input); // Send the new messages
+      // Send the message
+      if (conversation) {
+        actions.sendMessage(conversation, input);
+      }
+
+      // Reset the input field after sending the message
+      actions.setInput("");
     },
     handleInputChange: (
       e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>

@@ -106,8 +106,9 @@ export default Router({ mergeParams: true }).post(
       // Select model
       const model = new ChatOpenAI({
         temperature: 0,
-        modelName: "gpt-4-1106-preview",
+        modelName: "gpt-4",
         streaming: true,
+        maxTokens: 100,
         // configuration: {
         //   baseURL: process.env.OPENAI_BASE_URL,
         //   apiKey: process.env.PERPLEXITY_API_KEY,
@@ -322,7 +323,11 @@ export default Router({ mergeParams: true }).post(
         Today is ${new Date().toLocaleDateString()}
         This is currently a on  between you and ${profile.name}.
         
-        You do have the capability to search the internet and provide real time info.`
+        You do have the capability to search the internet and provide real time info.
+        
+        Sometimes the user may be looking at a particular image or file, just search your memory based on what they ask.
+        
+        Be short and concise with your answers. Don't be too verbose. Less is more.`
         ),
         ...pastMessages,
       ];
@@ -365,62 +370,62 @@ export default Router({ mergeParams: true }).post(
       const executor = AgentExecutor.fromAgentAndTools({
         agent: runnableAgent,
         tools,
-        verbose: false,
+        verbose: true,
       });
 
       const { input } = req.body;
 
-      await executor.stream(
-        { input },
-        {
-          callbacks: [
-            {
-              handleAgentAction: (action, runId) => {
-                console.log("handleAgentAction");
-                console.log(action);
-                console.log(runId);
+      const result = await executor.invoke(
+        { input }
+        // {
+        //   callbacks: [
+        //     {
+        //       handleAgentAction: (action, runId) => {
+        //         console.log("handleAgentAction");
+        //         console.log(action);
+        //         console.log(runId);
 
-                res.write(
-                  JSON.stringify({
-                    type: "agent_action",
-                    action,
-                  })
-                );
-              },
+        //         res.write(
+        //           JSON.stringify({
+        //             type: "agent_action",
+        //             action,
+        //           })
+        //         );
+        //       },
 
-              handleToolEnd: (output, runId) => {
-                console.log("tool end");
-                console.log(output);
-                console.log(runId);
+        //       handleToolEnd: (output, runId) => {
+        //         console.log("tool end");
+        //         console.log(output);
+        //         console.log(runId);
 
-                res.write(
-                  JSON.stringify({
-                    type: "tool_end",
-                    output,
-                  })
-                );
-              },
+        //         res.write(
+        //           JSON.stringify({
+        //             type: "tool_end",
+        //             output,
+        //           })
+        //         );
+        //       },
 
-              handleLLMNewToken: (token) => {
-                // console.log("handleLLMNewToken");
-                // console.log(token);
-                res.write(
-                  JSON.stringify({
-                    type: "message",
-                    token,
-                  })
-                );
-              },
-              handleAgentEnd: (action) => {
-                // console.log("handleAgentEnd");
-                res.end();
-              },
-            },
-          ],
-        }
+        //       handleLLMNewToken: (token) => {
+        //         // console.log("handleLLMNewToken");
+        //         // console.log(token);
+        //         res.write(
+        //           JSON.stringify({
+        //             type: "message",
+        //             token,
+        //           })
+        //         );
+        //       },
+        //       handleAgentEnd: (action) => {
+        //         // console.log("handleAgentEnd");
+        //         res.end();
+        //       },
+        //     },
+        //   ],
+        // }
       );
 
-      // res.json({ result: result.output });
+      return res.status(200).json({ result: result.output });
     } catch (err) {
       console.log(err);
 

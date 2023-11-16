@@ -61,7 +61,7 @@ const schema = Joi.object({
 export default Router({ mergeParams: true }).post(
   "/chroma/uploadFile",
   upload.single("file"),
-  authenticateToken,
+  // authenticateToken,
   async (req, res) => {
     try {
       const { error } = schema.validate(req.body);
