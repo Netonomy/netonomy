@@ -5,22 +5,23 @@ import { useEffect, useState } from "react";
 import { CheckCircle, CopyIcon, Pencil, X } from "lucide-react";
 import useDinger from "@/hooks/useDinger";
 import { DingsDialog } from "../DingsDialog";
-import { SendDingDialog } from "../SendDingDialog";
 import TappableCardWrapper from "../TappableCardWrapper";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EditingProfileForm from "../EditingProfileForm";
 import useWeb5Store from "@/hooks/stores/useWeb5Store";
 import useProfileStore from "@/hooks/stores/useProfileStore";
 
 export function ProfileWidet() {
   const navigate = useNavigate();
+  const { did } = useParams();
   const profile = useProfileStore((state) => state.profile);
   const profileFetched = useProfileStore((state) => state.fetched);
   const fetchProfile = useProfileStore((state) => state.fetchProfile);
+  const usersDid = useWeb5Store((state) => state.did);
 
   const [copied, setCopied] = useState(false);
 
-  const did = useWeb5Store((state) => state.did);
+  // const did = useWeb5Store((state) => state.did);
 
   const [editng, setEditing] = useState(false);
 
@@ -28,7 +29,7 @@ export function ProfileWidet() {
 
   useEffect(() => {
     if (!profileFetched) {
-      fetchProfile();
+      fetchProfile(did || undefined);
     }
   }, []);
 
@@ -36,7 +37,7 @@ export function ProfileWidet() {
     <TappableCardWrapper>
       <Card
         className="w-[425px] h-min rounded-xl shadow-lg"
-        onClick={() => navigate(`/profile/${did}`)}
+        onClick={() => navigate(`/profile/${usersDid}`)}
       >
         <CardContent className="flex items-center justify-center gap-4 lg:flex-col p-4 relative">
           {!editng ? (
@@ -98,7 +99,7 @@ export function ProfileWidet() {
             <EditingProfileForm />
           )}
 
-          {did ? (
+          {usersDid ? (
             <div className="flex items-center gap-2">
               🔑
               <p className="text-sm text-muted-foreground max-w-[250px] truncate">
@@ -113,8 +114,8 @@ export function ProfileWidet() {
                     event.stopPropagation();
                     event.preventDefault();
 
-                    if (did) {
-                      navigator.clipboard.writeText(did).then(() => {
+                    if (usersDid) {
+                      navigator.clipboard.writeText(usersDid).then(() => {
                         setCopied(true);
 
                         setTimeout(() => setCopied(false), 3000);

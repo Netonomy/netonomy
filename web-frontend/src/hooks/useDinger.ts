@@ -1,12 +1,12 @@
-import Web5Context, { dingerProtocolDefinition } from "@/Web5Provider";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
+import useWeb5Store, { dingerProtocolDefinition } from "./stores/useWeb5Store";
 
 const dingsAtom = atomWithStorage<Ding[]>("dings", []);
 
 export default function useDinger() {
-  const web5Context = useContext(Web5Context);
+  const web5 = useWeb5Store((state) => state.web5);
   const [dings, setDings] = useAtom(dingsAtom);
 
   /**
@@ -15,7 +15,7 @@ export default function useDinger() {
    * If it does, it calls the handleDing function.
    */
   async function handleDing(did: string, note?: string) {
-    if (!web5Context.web5) return;
+    if (!web5) return;
 
     if (did.length === 0) {
       return;
@@ -27,7 +27,7 @@ export default function useDinger() {
     }
 
     try {
-      const { record, status } = await web5Context.web5.dwn.records.write({
+      const { record, status } = await web5.dwn.records.write({
         data: ding,
         message: {
           protocol: dingerProtocolDefinition.protocol,
@@ -66,12 +66,12 @@ export default function useDinger() {
    * Converts the records to JSON and adds them to the dings array.
    */
   async function fetchDings() {
-    if (!web5Context.web5) return;
+    if (!web5) return;
 
     console.log("Fetching dings...");
 
     // Fetch the dings
-    const { records } = await web5Context.web5.dwn.records.query({
+    const { records } = await web5.dwn.records.query({
       message: {
         filter: {
           protocol: dingerProtocolDefinition.protocol,
@@ -103,7 +103,7 @@ export default function useDinger() {
   }
 
   useEffect(() => {
-    fetchDings();
+    // fetchDings();
   }, []);
 
   return { dings, handleDing };
