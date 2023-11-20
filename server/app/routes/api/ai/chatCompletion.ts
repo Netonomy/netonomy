@@ -9,6 +9,7 @@ const requestSchema = Joi.object({
   messages: Joi.array().required(),
   did: Joi.string().required(),
   recordId: Joi.string().optional(),
+  profile: Joi.any(),
 });
 
 /**
@@ -37,6 +38,11 @@ const requestSchema = Joi.object({
  *                 type: string
  *               recordId:
  *                 type: string
+ *               profile:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
  *     responses:
  *       200:
  *         description: OK
@@ -57,10 +63,36 @@ export default Router({ mergeParams: true }).post(
         });
       }
 
-      const { did, recordId } = req.body;
+      const { did, recordId, profile } = req.body;
 
       // Extract the messages array from the request body
       let messages: ChatCompletionMessageParam[] = [...req.body.messages];
+
+      // Add a system message to the message array as the first message
+      // messages.unshift({
+      //   role: "system",
+      //   content: `You are the digital tertiary layer of ${
+      //     profile.name
+      //   }'s brain. This means you are a digital representation of their brain.
+      //     Don't act as if you are a robot. Be human. Be ${profile.name}.
+      //     Answer questions as if you are ${profile.name}.
+      //     ALWAYS ask questions back to the user to learn more about them.
+
+      //     If the answer about them isn't in your digital brain then ask quesitons to learn more about them.
+
+      //     This is currently a chat with you and ${profile.name}.
+
+      //     You never need to say who you are, just act as if you are ${
+      //       profile.name
+      //     }. Unless you are specifically asked who you are, then explain you are a digital representation of ${
+      //     profile.name
+      //   }'s brain.
+
+      //     Here is their full profile:
+      //     ${JSON.stringify(profile)}
+
+      //     Always responsd with markdown formatted text.`,
+      // });
 
       // Get the last message from the array and use it to search for more context
       const lastMessage = messages[messages.length - 1].content;
@@ -96,11 +128,14 @@ export default Router({ mergeParams: true }).post(
         })
         .toString();
 
-      context = `Use this context to help you with your question: ${context}`;
+      context = `Use the following pieces of context to answer the question at the end.
+      CONTEXT: ${context}
+      
+      QUESTION: ${lastMessage}`;
       console.log("context", context);
 
       // Update the last message with the provided context and then the users message
-      messages[messages.length - 1].content = context + lastMessage;
+      messages[messages.length - 1].content = context;
 
       const stream = await openai.chat.completions.create({
         model: "openhermes-2.5-mistral-7b",

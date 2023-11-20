@@ -30,7 +30,7 @@ const requestSchema = Joi.object({
  */
 export default Router({ mergeParams: true }).post(
   "/ai/completetion",
-  authenticateToken,
+  // authenticateToken,
   async (req, res) => {
     try {
       // Validate the request body
@@ -46,7 +46,7 @@ export default Router({ mergeParams: true }).post(
       prompt = `<s>[INST] ${prompt} [/INST]`;
 
       const stream = await openai.completions.create({
-        model: "mistral-7",
+        model: "mistral-7b-instruct",
         prompt,
         stream: true,
         stop: "</s>",
