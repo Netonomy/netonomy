@@ -3,9 +3,12 @@ import Joi from "joi";
 import { ChatCompletionMessageParam } from "openai/resources/chat/index.js";
 import openai from "../../../config/openai.js";
 import { authenticateToken } from "../../../middleware/auth.middleware.js";
+import vectorStore from "../../../config/vectorStore.js";
 
 const requestSchema = Joi.object({
   messages: Joi.array().required(),
+  did: Joi.string().required(),
+  recordId: Joi.string().optional(),
 });
 
 /**
@@ -30,6 +33,10 @@ const requestSchema = Joi.object({
  *                       type: string
  *                     content:
  *                       type: string
+ *               did:
+ *                 type: string
+ *               recordId:
+ *                 type: string
  *     responses:
  *       200:
  *         description: OK
@@ -38,7 +45,7 @@ const requestSchema = Joi.object({
  */
 export default Router({ mergeParams: true }).post(
   "/ai/chatCompletion",
-  authenticateToken,
+  // authenticateToken,
   async (req, res) => {
     try {
       // Validate the request body
@@ -50,15 +57,56 @@ export default Router({ mergeParams: true }).post(
         });
       }
 
+      const { did, recordId } = req.body;
+
       // Extract the messages array from the request body
       let messages: ChatCompletionMessageParam[] = [...req.body.messages];
 
+      // Get the last message from the array and use it to search for more context
+      const lastMessage = messages[messages.length - 1].content;
+
+      // Create the filter to use for the retriever
+      let filter: any = {
+        did,
+      };
+      if (recordId) {
+        filter = {
+          $and: [
+            {
+              did: did,
+            },
+            {
+              recordId: recordId,
+            },
+          ],
+        };
+      }
+
+      // Seach vector storage for more context
+      const docs = await vectorStore.similaritySearch(
+        lastMessage!.toString(),
+        10,
+        filter
+      );
+
+      // Convert the docs into context, stringifying the content
+      let context = docs
+        .map((doc) => {
+          return doc.pageContent.toString();
+        })
+        .toString();
+
+      context = `Use this context to help you with your question: ${context}`;
+      console.log("context", context);
+
+      // Update the last message with the provided context and then the users message
+      messages[messages.length - 1].content = context + lastMessage;
+
       const stream = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "openhermes-2.5-mistral-7b",
         messages,
         stream: true,
         temperature: 0,
-        max_tokens: 2000,
       });
 
       // Send the response back to the client

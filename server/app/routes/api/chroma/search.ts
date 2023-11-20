@@ -39,7 +39,7 @@ const requestSchema = Joi.object({
  */
 export default Router({ mergeParams: true }).post(
   "/chroma/search",
-  authenticateToken,
+  // authenticateToken,
   async (req, res) => {
     try {
       // Validate the request body
