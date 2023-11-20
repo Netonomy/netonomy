@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef } from "react";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { Loader2, PlusIcon, SendIcon } from "lucide-react";
+import { AlertCircle, Loader2, PlusIcon, SendIcon } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import ReactMarkdown from "react-markdown";
 import { oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
@@ -15,6 +15,7 @@ export function Chat() {
   const conversation = useChatStore((state) => state.currentConversation);
   const resetChat = useChatStore((state) => state.actions.resetChat);
   const handleSubmit = useChatStore((state) => state.actions.handleSubmit);
+  const error = useChatStore((state) => state.error);
   const handleInputChange = useChatStore(
     (state) => state.actions.handleInputChange
   );
@@ -58,7 +59,7 @@ export function Chat() {
   }, [generating]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center gap-4">
+    <div className="h-full w-full flex flex-col items-center gap-4 row-span-5 col-span-1">
       {/* <TappableCardWrapper> */}
       <Card
         className="relative flex flex-col items-center flex-1 w-full h-full rounded-xl overflow-hidden shadow-lg"
@@ -70,7 +71,7 @@ export function Chat() {
             <div className="h-full w-full flex items-center justify-between p-6">
               <div className="w-[10%]"></div>
               <div className="flex items-center gap-2 w-[80%] justify-center relative ">
-                {conversation && conversation.messages.length > 1 && (
+                {conversation && conversation.messages.length > 0 && (
                   <>
                     <img
                       src="/agent.svg"
@@ -91,7 +92,7 @@ export function Chat() {
               </div>
 
               <div className="w-[10%]">
-                {conversation && conversation.messages.length > 1 && (
+                {conversation && conversation.messages.length > 0 && (
                   <Button
                     onClick={async () => {
                       resetChat();
@@ -108,9 +109,7 @@ export function Chat() {
           </div>
 
           {/** Info Message when chat is empty */}
-          {(conversation?.messages.length === 1 ||
-            conversation?.messages.length === 0 ||
-            !conversation) && (
+          {(conversation?.messages.length === 0 || !conversation) && (
             <div className="absolute flex flex-col items-center gap-4 w-[95%] p-4 justify-center h-[80%] z-30">
               <div className="flex flex-col gap-4 items-center">
                 <div className="h-[200px] w-[200px] rounded-full overflow-hidden relative">
@@ -156,6 +155,15 @@ export function Chat() {
           <div className="flex flex-1 h flex-col items-center w-full  relative overflow-y-auto max-h-[calc(100vh-135px)]">
             <div className="flex flex-1 flex-col items-center w-full relative overflow-y-auto">
               <div className="h-full w-full p-4 flex overflow-y-auto flex-col-reverse z-30 pt-[60px]">
+                {error && (
+                  <div
+                    className={`my-2 p-3 rounded-2xl bg-red-500 text-secondary mr-auto max-w-[90%] whitespace-pre-wrap flex gap-1`}
+                  >
+                    <AlertCircle />
+                    {error}
+                  </div>
+                )}
+
                 {conversation?.messages
                   .slice()
                   .reverse()
@@ -170,8 +178,8 @@ export function Chat() {
                       )}
                       {message.role === "assistant" && (
                         <div
-                          className={`my-2 p-3 rounded-2xl inline-block bg-primary text-secondary mr-auto max-w-[90%]  whitespace-pre-wrap ${
-                            message.content === "" && "animate-bounce"
+                          className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-primary dark:bg-primary dark:text-secondary mr-auto max-w-[90%]  whitespace-pre-wrap ${
+                            generating && "animate-bounce"
                           }`}
                         >
                           <ReactMarkdown

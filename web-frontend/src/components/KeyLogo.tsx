@@ -10,22 +10,15 @@ export default function KeyLogo({
   const theme = useTheme();
   let logoSrc;
 
-  switch (theme.theme) {
+  switch (theme) {
     case "light":
-      logoSrc = "/keyLogo.svg";
+      logoSrc = "/keyLogoBlack.png";
       break;
     case "dark":
       logoSrc = "/keyLogoWhite1.png";
       break;
-    case "system":
-      // Determine if the system theme is light or dark
-      const isSystemDark =
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches;
-      logoSrc = isSystemDark ? "/keyLogoWhite1.png" : "/keyLogo.svg";
-      break;
     default:
-      logoSrc = "/keyLogo.svg";
+      logoSrc = "/keyLogoBlack.png";
   }
 
   return (

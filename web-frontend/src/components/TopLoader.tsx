@@ -12,7 +12,7 @@ export default function TopLoader() {
       height={4}
       width={"100%"}
       loading={loading}
-      color={`${theme.theme === "light" ? "#000" : "#fff"}`}
+      color={`${theme === "light" ? "#000" : "#fff"}`}
     />
   );
 }

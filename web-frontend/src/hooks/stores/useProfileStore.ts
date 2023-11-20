@@ -52,6 +52,8 @@ const useProfileStore = create<ProfileState>((set) => ({
       // Fetch the profile
       const { records } = await web5.dwn.records.query(queryOptions);
 
+      console.log(records);
+
       // If the profile exists, load it
       if (records && records?.length > 0) {
         const profile = await records[0].data.json();

@@ -37,7 +37,9 @@ export default function ProfilePage() {
         )}
       </Button>
 
-      <ProfileWidet />
+      <div className="w-[425px]">
+        <ProfileWidet />
+      </div>
     </div>
   );
 }

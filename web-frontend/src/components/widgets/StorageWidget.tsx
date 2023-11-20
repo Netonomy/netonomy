@@ -1,6 +1,5 @@
 import { File, Folder, MoreHorizontal, Plus, Trash2 } from "lucide-react";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import FileIcon from "../FileIcon";
@@ -15,6 +14,7 @@ import { CreateFolderDialog } from "../CreateFolderDialog";
 import useCollectionStore from "@/hooks/stores/useCollectionStore";
 import { Skeleton } from "../ui/skeleton";
 import { useDropzone } from "react-dropzone";
+import TappableCardWrapper from "../TappableCardWrapper";
 
 export function StorageWidget() {
   const navigate = useNavigate();
@@ -28,11 +28,6 @@ export function StorageWidget() {
   );
   const fetchingCollection = useCollectionStore((state) => state.fetching);
   const deleteItem = useCollectionStore((state) => state.actions.deleteItem);
-  const searchString = useCollectionStore((state) => state.searchStr);
-  const handleSearch = useCollectionStore(
-    (state) => state.actions.handleSearch
-  );
-
   const [showCreateFolderDialog, setShowCreateFolderDialog] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +45,7 @@ export function StorageWidget() {
     }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, isDragActive } = useDropzone({
     onDrop,
     noClick: true,
   });
@@ -60,73 +55,65 @@ export function StorageWidget() {
   }, [folderId]);
 
   return (
-    <div className="h-full w-full flex flex-1 flex-col items-center justify-center gap-4">
-      <div className="w-full flex gap-4">
-        <Input
-          placeholder="Search"
-          className="w-full shadow-lg  rounded-xl"
-          value={searchString}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-
-        <CreateFolderDialog
-          open={showCreateFolderDialog}
-          handleChange={() =>
-            setShowCreateFolderDialog(!showCreateFolderDialog)
-          }
-        />
-
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <div
-              onClick={() => {
-                inputRef.current?.click();
-              }}
-              className="rounded-xl shadow-lg  hover:bg-gray-100 dark:hover:bg-[#1d1d1d] p-2 h-9 w-9 flex items-center justify-center border border-gray-200 dark:border-[#1d1d1d]"
-            >
-              <Plus className="h-4 w-4" />
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="rounded-xl">
-            <DropdownMenuItem
-              className="rounded-xl"
-              onClick={() => setShowCreateFolderDialog(true)}
-            >
-              <Folder className="mr-2 h-4 w-4" />
-              <span>Folder</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="rounded-xl"
-              onClick={() => {
-                inputRef.current?.click();
-              }}
-            >
-              <File className="mr-2 h-4 w-4" />
-              <span>File</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <>
-          <Input
-            type="file"
-            multiple
-            id="my-input"
-            className="hidden"
-            ref={inputRef}
-            onChange={handleChange}
-          />
-        </>
-      </div>
-
+    <div className="flex flex-col items-center col-span-1 row-span-3 ">
+      <CreateFolderDialog
+        open={showCreateFolderDialog}
+        handleChange={() => setShowCreateFolderDialog(!showCreateFolderDialog)}
+      />
       <Card
         {...getRootProps()}
-        className={`flex flex-1  shadow-lg rounded-xl w-full ${
+        className={`flex flex-col shadow-lg rounded-xl w-full min-h-[525px] max-h-[525px] ${
           isDragActive ? "bg-gray-100 dark:bg-[#1d1d1d]" : ""
         }`}
       >
-        <CardContent className="h-full w-full flex flex-1 p-4 overflow-y-auto max-h-[calc(100vh-170px)]">
-          <div className="flex flex-col w-full">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Storage</CardTitle>
+          <div className="">
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <div
+                  onClick={() => {
+                    inputRef.current?.click();
+                  }}
+                  className="rounded-full bg-secondary p-1 h-6 w-6 flex items-center justify-center"
+                >
+                  <Plus className="h-5 w-5" />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="rounded-xl">
+                <DropdownMenuItem
+                  className="rounded-xl"
+                  onClick={() => setShowCreateFolderDialog(true)}
+                >
+                  <Folder className="mr-2 h-4 w-4" />
+                  <span>Folder</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="rounded-xl"
+                  onClick={() => {
+                    inputRef.current?.click();
+                  }}
+                >
+                  <File className="mr-2 h-4 w-4" />
+                  <span>File</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <>
+              <Input
+                type="file"
+                multiple
+                id="my-input"
+                className="hidden"
+                ref={inputRef}
+                onChange={handleChange}
+              />
+            </>
+          </div>
+        </CardHeader>
+        <CardContent className="w-full flex overflow-y-auto relative">
+          <div className="flex flex-col w-full relative">
             {collectionItems &&
               collectionItems.map((file, i) => {
                 const type = file["@type"];
@@ -166,14 +153,6 @@ export function StorageWidget() {
                             <MoreHorizontal className="hover:bg-gray-200 dark:hover:opacity-80 dark:hover:hover:bg-[#0d0d0d] p-2 h-9 w-9 rounded-full" />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="rounded-xl">
-                            {/* <DropdownMenuItem
-                    onClick={(event) => {
-                      event.stopPropagation();
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <Pencil className="mr-2 h-4 w-4" /> Edit
-                  </DropdownMenuItem> */}
                             <DropdownMenuItem
                               onClick={(event) => {
                                 event.stopPropagation();

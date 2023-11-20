@@ -12,6 +12,7 @@ interface ChatState {
   generatingResponse: boolean;
   conversations: AIConversation[];
   currentConversation: AIConversation | null;
+  error: string | null;
   recordId: string | null;
   actions: {
     setInput: (input: string) => void;
@@ -47,6 +48,7 @@ const useChatStore = create<ChatState>((set, get) => ({
   generatingResponse: false,
   conversations: [] as AIConversation[],
   currentConversation: null,
+  error: null,
   recordId: null,
   actions: {
     setInput: (input: string) => set({ input }),
@@ -62,6 +64,7 @@ const useChatStore = create<ChatState>((set, get) => ({
         input: "",
         generatingResponse: false,
         currentConversation: null,
+        error: null,
       }),
     createConversation: async (initalMessage: ChatMessage) => {
       try {
@@ -134,6 +137,17 @@ const useChatStore = create<ChatState>((set, get) => ({
       })
         .then(async (response) => {
           set({ generatingResponse: false });
+
+          if (response.status !== 200) {
+            console.error(`Unable to send chat message. Try again later.`);
+            set({
+              error: "Unable to send message at this time.",
+              generatingResponse: false,
+              currentConversation: conversation,
+            });
+            return;
+          }
+
           const reader = response.body?.getReader();
 
           if (reader) {

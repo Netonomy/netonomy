@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import TopLoader from "@/components/TopLoader";
 import useProfileStore from "@/hooks/stores/useProfileStore";
-import { Button } from "@/components/ui/button";
 import { LogOut, MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
@@ -12,6 +11,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useAuthStore from "@/hooks/stores/useAuthStore";
+import { ProfileWidet } from "@/components/widgets/ProfileWidget";
+import CredentialsWidget from "@/components/widgets/CredentialsWidget";
+import { StorageWidget } from "@/components/widgets/StorageWidget";
+import FinancesWidget from "@/components/widgets/FinancesWidget";
 
 export function Home() {
   const navigate = useNavigate();
@@ -56,12 +59,12 @@ export function Home() {
         </div> */}
 
         <div className={`h-full w-full flex items-center p-14 gap-10 relative`}>
-          <div className="flex flex-1 w-full flex-row items-center h-full">
-            <Outlet />
-          </div>
-
-          <div className="w-[475px] h-full hidden lg:flex">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-dashboardLg grid-rows-5 w-full h-full">
+            <ProfileWidet />
+            <StorageWidget />
             <Chat />
+            <CredentialsWidget />
+            <FinancesWidget />
           </div>
         </div>
       </div>

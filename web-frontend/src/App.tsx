@@ -21,15 +21,15 @@ const router = createBrowserRouter([
         path: "/",
         element: <WidgetDashboard />,
       },
-      {
-        path: "/pdf/:recordId",
-        element: <PdfViewer />,
-      },
-      {
-        path: "/image/:recordId",
-        element: <ImageViewer />,
-      },
     ],
+  },
+  {
+    path: "/pdf/:recordId",
+    element: <PdfViewer />,
+  },
+  {
+    path: "/image/:recordId",
+    element: <ImageViewer />,
   },
   {
     path: "/welcome",

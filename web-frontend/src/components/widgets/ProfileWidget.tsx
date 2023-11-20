@@ -3,8 +3,6 @@ import { Avatar, AvatarImage } from "../ui/avatar";
 import { Skeleton } from "../ui/skeleton";
 import { useEffect, useState } from "react";
 import { CheckCircle, CopyIcon, Pencil, X } from "lucide-react";
-import useDinger from "@/hooks/useDinger";
-import { DingsDialog } from "../DingsDialog";
 import TappableCardWrapper from "../TappableCardWrapper";
 import { useNavigate, useParams } from "react-router-dom";
 import EditingProfileForm from "../EditingProfileForm";
@@ -18,14 +16,8 @@ export function ProfileWidet() {
   const profileFetched = useProfileStore((state) => state.fetched);
   const fetchProfile = useProfileStore((state) => state.fetchProfile);
   const usersDid = useWeb5Store((state) => state.did);
-
   const [copied, setCopied] = useState(false);
-
-  // const did = useWeb5Store((state) => state.did);
-
   const [editng, setEditing] = useState(false);
-
-  const { dings } = useDinger();
 
   useEffect(() => {
     if (!profileFetched) {
@@ -34,12 +26,12 @@ export function ProfileWidet() {
   }, []);
 
   return (
-    <TappableCardWrapper>
+    <div className="row-span-2 col-span-1 w-full flex items-center justify-center relative">
       <Card
-        className="w-[425px] h-min rounded-xl shadow-lg"
+        className="h-full w-full rounded-xl shadow-lg"
         onClick={() => navigate(`/profile/${usersDid}`)}
       >
-        <CardContent className="flex items-center justify-center gap-4 lg:flex-col p-4 relative">
+        <CardContent className="flex h-full items-center justify-center gap-4 lg:flex-col p-4 relative">
           {!editng ? (
             <div
               className="absolute top-4 right-4"
@@ -68,7 +60,7 @@ export function ProfileWidet() {
 
           {!editng ? (
             <>
-              <div className="h-12 w-12 lg:h-40 lg:w-40 relative">
+              <div className="h-12 w-12 lg:h-44 lg:w-44 relative">
                 <Avatar className="h-full w-full">
                   {profileFetched ? (
                     <>{profile?.image && <AvatarImage src={profile.image} />}</>
@@ -80,8 +72,6 @@ export function ProfileWidet() {
               {profile?.name?.split(" ")[1]?.charAt(0)}
             </AvatarFallback> */}
                 </Avatar>
-
-                {dings.length > 0 && <DingsDialog />}
               </div>
 
               {profileFetched && profile ? (
@@ -135,6 +125,6 @@ export function ProfileWidet() {
           </div> */}
         </CardContent>
       </Card>
-    </TappableCardWrapper>
+    </div>
   );
 }

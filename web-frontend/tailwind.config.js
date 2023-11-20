@@ -73,6 +73,14 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      gridTemplateColumns: {
+        dashboardLg: "1fr 1.45fr 1fr",
+      },
+      gridRow: {
+        "span-1.5": "span 1.5 / span 1.5",
+        "span-2.5": "span 2.5 / span 2.5",
+        "span-3.5": "span 3.5 / span 3.5",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

@@ -69,5 +69,21 @@ export const useTheme = () => {
   if (context === undefined)
     throw new Error("useTheme must be used within a ThemeProvider");
 
+  switch (context.theme) {
+    case "light":
+      return "light";
+    case "dark":
+      return "dark";
+    case "system":
+      // Determine if the system theme is light or dark
+      const isSystemDark =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      context.theme = isSystemDark ? "dark" : "light";
+      return context.theme;
+    default:
+      context.theme = "light";
+  }
+
   return context;
 };
