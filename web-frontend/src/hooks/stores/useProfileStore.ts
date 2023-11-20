@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
+import { RecordsQueryRequest, RecordsReadRequest } from "@web5/api";
 
 interface ProfileState {
   profile: Person | null;
@@ -36,7 +37,7 @@ const useProfileStore = create<ProfileState>((set) => ({
     }
 
     try {
-      const queryOptions: any = {
+      const queryOptions: RecordsQueryRequest = {
         message: {
           filter: {
             schema: "https://schema.org/Person",
@@ -55,7 +56,7 @@ const useProfileStore = create<ProfileState>((set) => ({
       if (records && records?.length > 0) {
         const profile = await records[0].data.json();
 
-        const profileImgQueryOptions: any = {
+        const profileImgQueryOptions: RecordsReadRequest = {
           message: {
             filter: {
               recordId: profile.image,

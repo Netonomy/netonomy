@@ -125,6 +125,7 @@ const useChatStore = create<ChatState>((set, get) => ({
           messages: conversation.messages,
           did: did,
           recordId: get().recordId || undefined,
+          profile,
         }),
         headers: {
           "Content-Type": "application/json",

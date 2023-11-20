@@ -1,8 +1,10 @@
 import useLoadingStore from "@/hooks/stores/useLoadingStore";
 import BarLoader from "react-spinners/BarLoader";
+import { useTheme } from "./theme-provider";
 
 export default function TopLoader() {
   const loading = useLoadingStore((state) => state.loading);
+  const theme = useTheme();
 
   return (
     <BarLoader
@@ -10,7 +12,7 @@ export default function TopLoader() {
       height={4}
       width={"100%"}
       loading={loading}
-      color={"#000"}
+      color={`${theme.theme === "light" ? "#000" : "#fff"}`}
     />
   );
 }

@@ -7,6 +7,8 @@ import api from "@/config/api";
 interface CollectionState {
   collection: Record | null;
   collectionItems: (DigitalDocument | Collection)[] | null;
+  filteredCollectionItems: (DigitalDocument | Collection)[] | null;
+  searchStr: string;
   fetching: boolean;
   file: {
     data: DigitalDocument;
@@ -25,12 +27,15 @@ interface CollectionState {
       name: string;
       parentId?: string;
     }) => Promise<void>;
+    handleSearch: (searchStr: string) => void;
   };
 }
 
 const useCollectionStore = create<CollectionState>((set, get) => ({
   collection: null,
   collectionItems: null,
+  filteredCollectionItems: null,
+  searchStr: "",
   fetching: false,
   file: null,
   fetchingFile: false,
@@ -300,6 +305,25 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
       }));
 
       useLoadingStore.getState().setLoading(false);
+    },
+    handleSearch: (searchStr: string) => {
+      set({ searchStr });
+
+      if (searchStr === "") {
+        set({ filteredCollectionItems: null });
+      } else {
+        const filteredCollectionItems = get().collectionItems?.filter(
+          (item) => {
+            if (item["@type"] === "DigitalDocument") {
+              return item.name.toLowerCase().includes(searchStr.toLowerCase());
+            } else {
+              return item.name.toLowerCase().includes(searchStr.toLowerCase());
+            }
+          }
+        );
+
+        set({ filteredCollectionItems });
+      }
     },
   },
 }));

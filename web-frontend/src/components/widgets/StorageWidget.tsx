@@ -28,6 +28,10 @@ export function StorageWidget() {
   );
   const fetchingCollection = useCollectionStore((state) => state.fetching);
   const deleteItem = useCollectionStore((state) => state.actions.deleteItem);
+  const searchString = useCollectionStore((state) => state.searchStr);
+  const handleSearch = useCollectionStore(
+    (state) => state.actions.handleSearch
+  );
 
   const [showCreateFolderDialog, setShowCreateFolderDialog] = useState(false);
 
@@ -58,7 +62,12 @@ export function StorageWidget() {
   return (
     <div className="h-full w-full flex flex-1 flex-col items-center justify-center gap-4">
       <div className="w-full flex gap-4">
-        <Input placeholder="Search" className="w-full shadow-lg  rounded-xl" />
+        <Input
+          placeholder="Search"
+          className="w-full shadow-lg  rounded-xl"
+          value={searchString}
+          onChange={(e) => handleSearch(e.target.value)}
+        />
 
         <CreateFolderDialog
           open={showCreateFolderDialog}
@@ -116,7 +125,7 @@ export function StorageWidget() {
           isDragActive ? "bg-gray-100 dark:bg-[#1d1d1d]" : ""
         }`}
       >
-        <CardContent className="h-full w-full flex flex-1 p-4 overflow-y-auto max-h-[calc(100vh-135px)]">
+        <CardContent className="h-full w-full flex flex-1 p-4 overflow-y-auto max-h-[calc(100vh-170px)]">
           <div className="flex flex-col w-full">
             {collectionItems &&
               collectionItems.map((file, i) => {
