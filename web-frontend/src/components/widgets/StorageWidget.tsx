@@ -72,16 +72,14 @@ export function StorageWidget() {
 
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Button
-              variant="outline"
-              size="icon"
+            <div
               onClick={() => {
                 inputRef.current?.click();
               }}
-              className="rounded-xl shadow-lg bg-white"
+              className="rounded-xl shadow-lg bg-white hover:bg-gray-100 dark:hover:bg-[#1d1d1d] p-2 h-9 w-9 flex items-center justify-center border border-gray-200 dark:border-[#1d1d1d]"
             >
               <Plus className="h-4 w-4" />
-            </Button>
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="rounded-xl">
             <DropdownMenuItem

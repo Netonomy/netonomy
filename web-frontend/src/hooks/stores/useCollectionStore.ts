@@ -48,7 +48,9 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
       if (parentId) {
         const { record } = await web5.dwn.records.read({
           message: {
-            recordId: parentId,
+            filter: {
+              recordId: parentId,
+            },
           },
         });
 
@@ -70,9 +72,6 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
           },
         },
       });
-
-      console.log(`Collections:`);
-      console.log(collectionRecords);
 
       if (collectionRecords && collectionRecords.length > 0) {
         // Loop through the collections
@@ -100,9 +99,6 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
           },
         },
       });
-
-      console.log(`Collection items:`);
-      console.log(collectionItems);
 
       if (collectionItems && collectionItems.length > 0) {
         // Loop through the collection items
@@ -166,8 +162,6 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
             contextId: get().collection?.contextId || undefined,
           },
         });
-
-        console.log(`Created digital document: ${record?.id}`);
 
         // Update the collection items array
         if (record) {
@@ -241,7 +235,9 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
       web5.dwn.records
         .read({
           message: {
-            recordId,
+            filter: {
+              recordId,
+            },
           },
         })
         .then(async ({ record }) => {
@@ -252,7 +248,9 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
           // Fetch the file
           const { record: blobRecord } = await web5.dwn.records.read({
             message: {
-              recordId: data.url,
+              filter: {
+                recordId: data.url,
+              },
             },
           });
           const blob = await blobRecord?.data.blob();

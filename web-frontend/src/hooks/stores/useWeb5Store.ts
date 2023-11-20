@@ -22,12 +22,9 @@ const useWeb5Store = create<Web5State>((set, get) => ({
       const { web5, did } = await Web5.connect({
         techPreview: {
           dwnEndpoints: ["http://localhost:3100"],
-          // dwnEndpoints: [],
         },
         // sync: "1000",
       });
-
-      console.log(did);
 
       // Set the Web5 instance and DID
       set({ web5, did });
@@ -54,14 +51,14 @@ const useWeb5Store = create<Web5State>((set, get) => ({
 
       if (status.code !== 200) {
         alert("Failed to query protocols. check console");
-        console.error("Failed to query protocols", status);
+        // console.error("Failed to query protocols", status);
 
         return;
       }
 
       // protocol already exists
       if (protocols.length > 0) {
-        console.log("protocol already exists");
+        // console.log("protocol already exists");
       }
 
       // configure protocol on local DWN
@@ -71,12 +68,11 @@ const useWeb5Store = create<Web5State>((set, get) => ({
             definition: p,
           },
         });
-      console.log("configure protocol local status", configureStatus);
+      // console.log("configure protocol local status", configureStatus);
 
-      console.log(did);
       // configure protocol on remote DWN, because sync may not have occured yet
       const { status: remoteConfigureStatus } = await protocol!.send(did);
-      console.log("configure protocol remote status", remoteConfigureStatus);
+      // console.log("configure protocol remote status", remoteConfigureStatus);
     }
   },
 }));

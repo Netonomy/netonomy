@@ -245,7 +245,6 @@ export function Chat() {
         <Textarea
           ref={textAreaRef}
           value={input}
-          contentEditable
           role="textbox"
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}

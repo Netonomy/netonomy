@@ -145,7 +145,7 @@ const useProfileStore = create<ProfileState>((set) => ({
           throw new Error("Profile creation failed");
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     },
   },

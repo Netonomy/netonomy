@@ -21,7 +21,6 @@ export function Home() {
   const setToken = useAuthStore((state) => state.actions.setToken);
 
   useEffect(() => {
-    console.log("profile", profile);
     if ((!profile && fetched) || !accessToken) navigate("/welcome");
   }, [profile, fetched]);
 
@@ -30,16 +29,10 @@ export function Home() {
       <TopLoader />
       <div className={`h-screen w-screen flex flex-col items-center relative`}>
         <DropdownMenu>
-          <DropdownMenuTrigger className="absolute top-2 right-14 z-30 rounded-xl">
-            <Button
-              variant={"ghost"}
-              onClick={() => {}}
-              size={"icon"}
-              className="rounded-xl"
-            >
-              {/* <LogOut className="w-3 h-3" /> */}
+          <DropdownMenuTrigger className="absolute top-2 right-14 z-30 rounded-xl ">
+            <div className="h-10 w-10 flex items-center justify-center hover:bg-primary-foreground rounded-xl">
               <MoreHorizontal className="w-3 h-3" />
-            </Button>
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="rounded-xl">
             <DropdownMenuItem
