@@ -113,6 +113,18 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
         }
       }
 
+      // Sort the collection items by date created
+      items.sort((a, b) => {
+        if (a.dateCreated && b.dateCreated) {
+          return (
+            new Date(b.dateCreated).getTime() -
+            new Date(a.dateCreated).getTime()
+          );
+        } else {
+          return 0;
+        }
+      });
+
       set({ collectionItems: items, fetching: false });
     },
     uploadFile: async (file: File) => {

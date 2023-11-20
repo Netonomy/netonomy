@@ -170,7 +170,7 @@ export function Chat() {
                       )}
                       {message.role === "assistant" && (
                         <div
-                          className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-black mr-auto max-w-[90%]  whitespace-pre-wrap ${
+                          className={`my-2 p-3 rounded-2xl inline-block bg-primary text-secondary mr-auto max-w-[90%]  whitespace-pre-wrap ${
                             message.content === "" && "animate-bounce"
                           }`}
                         >
@@ -250,7 +250,7 @@ export function Chat() {
           onKeyDown={handleKeyDown}
           disabled={generating}
           placeholder="Ask anything..."
-          className="min-h-[50px] h-10 max-h-[400px] pr-[58px] py-4 resize-none w-full text-md bg-white text-primary box-border rounded-xl shadow-lg overflow-hidden"
+          className="min-h-[50px] h-10 max-h-[400px] pr-[58px] py-4 resize-none w-full text-md  text-primary box-border rounded-xl shadow-lg overflow-hidden"
         />
 
         <Button

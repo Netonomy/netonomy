@@ -58,10 +58,7 @@ export function StorageWidget() {
   return (
     <div className="h-full w-full flex flex-1 flex-col items-center justify-center gap-4">
       <div className="w-full flex gap-4">
-        <Input
-          placeholder="Search"
-          className="w-full shadow-lg bg-white rounded-xl"
-        />
+        <Input placeholder="Search" className="w-full shadow-lg  rounded-xl" />
 
         <CreateFolderDialog
           open={showCreateFolderDialog}
@@ -76,7 +73,7 @@ export function StorageWidget() {
               onClick={() => {
                 inputRef.current?.click();
               }}
-              className="rounded-xl shadow-lg bg-white hover:bg-gray-100 dark:hover:bg-[#1d1d1d] p-2 h-9 w-9 flex items-center justify-center border border-gray-200 dark:border-[#1d1d1d]"
+              className="rounded-xl shadow-lg  hover:bg-gray-100 dark:hover:bg-[#1d1d1d] p-2 h-9 w-9 flex items-center justify-center border border-gray-200 dark:border-[#1d1d1d]"
             >
               <Plus className="h-4 w-4" />
             </div>

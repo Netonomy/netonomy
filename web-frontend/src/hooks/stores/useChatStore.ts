@@ -116,18 +116,82 @@ const useChatStore = create<ChatState>((set, get) => ({
       const did = useWeb5Store.getState().did;
       const profile = useProfileStore.getState().profile;
 
+      const accessToken = useAuthStore.getState().token;
+
+      // Fetch request to send the messages
+      fetch(`${import.meta.env.VITE_API_URL}/ai/chatCompletion`, {
+        method: "POST",
+        body: JSON.stringify({
+          messages: conversation.messages,
+          did: did,
+          recordId: get().recordId || undefined,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then(async (response) => {
+          set({ generatingResponse: false });
+          const reader = response.body?.getReader();
+
+          if (reader) {
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+
+                if (done) {
+                  // Set generating to false
+                  set({ generatingResponse: false });
+                  break;
+                }
+
+                if (value) {
+                  const chunk = new TextDecoder().decode(value);
+
+                  // Update AI message with new tokens
+                  set((state: any) => {
+                    // Create a copy of the current conversation
+                    let newConversation = { ...state.currentConversation };
+
+                    // Update the last message of the current conversation to have the new tokens from the server
+                    let lastMessageIndex = newConversation.messages!.length - 1;
+                    let lastMessage = {
+                      ...newConversation.messages![lastMessageIndex],
+                    };
+                    lastMessage.content += chunk;
+
+                    // Update the conversation
+                    newConversation.messages![lastMessageIndex] = lastMessage;
+
+                    // Return the new state
+                    return {
+                      ...state,
+                      currentConversation: newConversation,
+                    };
+                  });
+                }
+              }
+            } catch (err) {
+              console.error(`Unable to read chunk `);
+            }
+          }
+        })
+        .catch((err) => {
+          console.error(`Unable to send chat message: ${err}`);
+        });
+
       // const accessToken = useAuthStore.getState().token;
 
-      console.log("ABOUT TO SEND MESSAGE");
-      const res = await api.post("/ai/agent", {
-        messageHistory: [],
-        input: question,
-        did: did,
-        recordId: get().recordId || undefined,
-        profile: {
-          name: profile?.name,
-        },
-      });
+      // const res = await api.post("/ai/agent", {
+      //   messageHistory: [],
+      //   input: question,
+      //   did: did,
+      //   recordId: get().recordId || undefined,
+      //   profile: {
+      //     name: profile?.name,
+      //   },
+      // });
       // Fetch request to send the messages
       // const res = await fetch(`http://localhost:3000/api/ai/agent`, {
       //   method: "POST",
@@ -230,25 +294,25 @@ const useChatStore = create<ChatState>((set, get) => ({
       //   console.error(`Unable to send chat message: ${err}`);
       // });
 
-      const repsonse = res.data.result;
+      // const repsonse = res.data.result;
 
-      // Update the conversation with the response
-      const conversationWithResponse = {
-        ...conversation,
-        messages: [
-          ...conversation.messages,
-          {
-            role: MessageRole.assistant,
-            content: repsonse,
-          },
-        ],
-      };
-      conversation = conversationWithResponse;
-      set({ currentConversation: conversationWithResponse });
+      // // Update the conversation with the response
+      // const conversationWithResponse = {
+      //   ...conversation,
+      //   messages: [
+      //     ...conversation.messages,
+      //     {
+      //       role: MessageRole.assistant,
+      //       content: repsonse,
+      //     },
+      //   ],
+      // };
+      // conversation = conversationWithResponse;
+      // set({ currentConversation: conversationWithResponse });
 
-      get().actions.updateConversation(conversationWithResponse);
+      // get().actions.updateConversation(conversationWithResponse);
 
-      set({ generatingResponse: false });
+      // set({ generatingResponse: false });
     },
     updateConversation: async (conversation: AIConversation) => {
       const web5 = useWeb5Store.getState().web5;
