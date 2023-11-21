@@ -1,9 +1,11 @@
 import { create } from "zustand";
 import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
-import { RecordsQueryRequest, RecordsReadRequest } from "@web5/api";
+import { Record, RecordsQueryRequest, RecordsReadRequest } from "@web5/api";
+import { Person } from "@/types/Person";
 
 interface ProfileState {
   profile: Person | null;
+  profileRecord: Record | null;
   fetched: boolean;
   fetchProfile: (did?: string) => Promise<void>;
   actions: {
@@ -16,6 +18,8 @@ interface ProfileState {
       name: string;
       profileImg: File;
     }) => Promise<void>;
+    createConnection: (did: string) => Promise<void>;
+    isOwnerProfile: (did: string) => boolean;
   };
 }
 
@@ -25,6 +29,7 @@ interface ProfileState {
  */
 const useProfileStore = create<ProfileState>((set) => ({
   profile: null,
+  profileRecord: null,
   fetched: false,
   fetchProfile: async (did?: string) => {
     const web5 = useWeb5Store.getState().web5;
@@ -52,10 +57,9 @@ const useProfileStore = create<ProfileState>((set) => ({
       // Fetch the profile
       const { records } = await web5.dwn.records.query(queryOptions);
 
-      console.log(records);
-
       // If the profile exists, load it
       if (records && records?.length > 0) {
+        set({ profileRecord: records[0] });
         const profile = await records[0].data.json();
 
         const profileImgQueryOptions: RecordsReadRequest = {
@@ -151,17 +155,44 @@ const useProfileStore = create<ProfileState>((set) => ({
         console.error(error);
       }
     },
+    createConnection: async (did: string) => {
+      const web5 = useWeb5Store.getState().web5;
+      if (!web5) return;
+
+      try {
+        // Get the profile record
+        const { profileRecord } = useProfileStore.getState();
+
+        // Update the follows array of the profile record
+        const data = await profileRecord?.data.json();
+        if (data.follows) data.follows.push(did);
+        else data.follows = [did];
+
+        console.log(data);
+
+        // Update the profile record
+        const updateRes = await profileRecord?.update({
+          data,
+          published: true,
+        });
+
+        console.log(updateRes);
+
+        // Update the profile record and person state
+        if (updateRes?.status.code === 200)
+          set({ profileRecord, profile: data });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    isOwnerProfile: (did: string) => {
+      if (!did || did === "") return true;
+      const usersDid = useWeb5Store.getState().did;
+      if (!usersDid) return false;
+
+      return usersDid === did;
+    },
   },
 }));
 
 export default useProfileStore;
-
-type Person = {
-  name: string;
-  "@context": string;
-  "@type": string;
-  email?: string;
-  image?: string;
-  url?: string;
-  banner?: string;
-};

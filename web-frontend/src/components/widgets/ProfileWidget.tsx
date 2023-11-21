@@ -8,6 +8,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import EditingProfileForm from "../EditingProfileForm";
 import useWeb5Store from "@/hooks/stores/useWeb5Store";
 import useProfileStore from "@/hooks/stores/useProfileStore";
+import { Button } from "../ui/button";
+import { ConnectionsDialog } from "../ConnectionsDialog";
 
 export function ProfileWidet() {
   const navigate = useNavigate();
@@ -16,8 +18,38 @@ export function ProfileWidet() {
   const profileFetched = useProfileStore((state) => state.fetched);
   const fetchProfile = useProfileStore((state) => state.fetchProfile);
   const usersDid = useWeb5Store((state) => state.did);
+  const connections = useProfileStore((state) => state.profile?.follows);
   const [copied, setCopied] = useState(false);
   const [editng, setEditing] = useState(false);
+  const [showConnectionsDialog, setShowConenctionsDialog] = useState(false);
+  const [shouldNavigate, setShouldNavigate] = useState(true);
+  const isOwnersProfile = useProfileStore(
+    (state) => state.actions.isOwnerProfile
+  );
+  const createConnection = useProfileStore(
+    (state) => state.actions.createConnection
+  );
+  const [creatingConnection, setCreatingConnection] = useState(false);
+
+  const handleCardClick = () => {
+    if (shouldNavigate) {
+      navigate(`/profile/${usersDid}`);
+    }
+  };
+
+  const handleConnectionsClick = (e: any) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setShouldNavigate(false);
+    setShowConenctionsDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setShowConenctionsDialog(false);
+    setTimeout(() => {
+      setShouldNavigate(true);
+    }, 1500);
+  };
 
   useEffect(() => {
     if (!profileFetched) {
@@ -27,69 +59,72 @@ export function ProfileWidet() {
 
   return (
     <div className="row-span-2 col-span-1 w-full flex items-center justify-center relative">
-      <Card
-        className="h-full w-full rounded-xl shadow-lg"
-        onClick={() => navigate(`/profile/${usersDid}`)}
-      >
-        <CardContent className="flex h-full items-center justify-center gap-4 lg:flex-col p-4 relative">
-          {!editng ? (
-            <div
-              className="absolute top-4 right-4"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
+      <TappableCardWrapper>
+        <Card
+          className="h-full w-full rounded-xl shadow-lg"
+          onClick={handleCardClick}
+        >
+          <CardContent className="flex h-full items-center justify-center gap-4 lg:flex-col p-4 relative">
+            {!editng ? (
+              <div
+                className="absolute top-4 right-4"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
 
-                setEditing(true);
-              }}
-            >
-              <Pencil className="w-5 h-5" />
-            </div>
-          ) : (
-            <div
-              className="absolute top-4 right-4"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
+                  setEditing(true);
+                }}
+              >
+                <Pencil className="w-5 h-5" />
+              </div>
+            ) : (
+              <div
+                className="absolute top-4 right-4"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
 
-                setEditing(false);
-              }}
-            >
-              <X className="w-5 h-5" />
-            </div>
-          )}
+                  setEditing(false);
+                }}
+              >
+                <X className="w-5 h-5" />
+              </div>
+            )}
 
-          {!editng ? (
-            <>
-              <div className="h-12 w-12 lg:h-44 lg:w-44 relative">
-                <Avatar className="h-full w-full">
-                  {profileFetched ? (
-                    <>{profile?.image && <AvatarImage src={profile.image} />}</>
-                  ) : (
-                    <Skeleton className="h-full w-full" />
-                  )}
-                  {/* <AvatarFallback>
+            {!editng ? (
+              <>
+                <div className="h-12 w-12 lg:h-44 lg:w-44 relative">
+                  <Avatar className="h-full w-full">
+                    {profileFetched ? (
+                      <>
+                        {profile?.image && <AvatarImage src={profile.image} />}
+                      </>
+                    ) : (
+                      <Skeleton className="h-full w-full" />
+                    )}
+                    {/* <AvatarFallback>
               {profile?.name?.split(" ")[0]?.charAt(0)}
               {profile?.name?.split(" ")[1]?.charAt(0)}
             </AvatarFallback> */}
-                </Avatar>
-              </div>
-
-              {profileFetched && profile ? (
-                <div className="flex gap-2">
-                  {/* <div className="font-light text-[31px]">Hello </div> */}
-                  <div className="font-semibold text-[31px]">
-                    {profile.name}
-                  </div>
+                  </Avatar>
                 </div>
-              ) : (
-                <Skeleton className="h-6 w-[150px]" />
-              )}
-            </>
-          ) : (
-            <EditingProfileForm />
-          )}
 
-          {usersDid ? (
+                {profileFetched && profile ? (
+                  <div className="flex gap-2">
+                    {/* <div className="font-light text-[31px]">Hello </div> */}
+                    <div className="font-semibold text-[31px]">
+                      {profile.name}
+                    </div>
+                  </div>
+                ) : (
+                  <Skeleton className="h-6 w-[150px]" />
+                )}
+              </>
+            ) : (
+              <EditingProfileForm />
+            )}
+
+            {/* {usersDid ? (
             <div className="flex items-center gap-2">
               🔑
               <p className="text-sm text-muted-foreground max-w-[250px] truncate">
@@ -117,14 +152,41 @@ export function ProfileWidet() {
             </div>
           ) : (
             <Skeleton className="h-6 w-[150px]" />
-          )}
+          )} */}
 
-          {/* <div className="flex w-full items-center justify-center gap-4">
-            <SendDingDialog />
+            {isOwnersProfile(did || "") ? (
+              <Button
+                variant={"ghost"}
+                size={"sm"}
+                onClick={handleConnectionsClick}
+              >
+                <p className="text-sm text-muted-foreground">
+                  {connections?.length || 0} Connections
+                </p>
+              </Button>
+            ) : (
+              <Button
+                disabled={creatingConnection}
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
 
-          </div> */}
-        </CardContent>
-      </Card>
+                  setCreatingConnection(true);
+                  if (did) await createConnection(did);
+                  setCreatingConnection(false);
+                }}
+              >
+                Follow
+              </Button>
+            )}
+
+            <ConnectionsDialog
+              open={showConnectionsDialog}
+              handleChange={handleCloseDialog}
+            />
+          </CardContent>
+        </Card>
+      </TappableCardWrapper>
     </div>
   );
 }
