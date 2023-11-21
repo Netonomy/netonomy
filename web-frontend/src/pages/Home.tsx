@@ -64,7 +64,7 @@ export function Home() {
             <StorageWidget />
             <Chat />
             <CredentialsWidget />
-            <FinancesWidget />
+            {/* <FinancesWidget /> */}
           </div>
         </div>
       </div>

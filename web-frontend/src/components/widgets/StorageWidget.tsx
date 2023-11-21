@@ -55,14 +55,14 @@ export function StorageWidget() {
   }, [folderId]);
 
   return (
-    <div className="flex flex-col items-center col-span-1 row-span-3 ">
+    <div className="flex flex-col items-center col-span-1 row-span-5">
       <CreateFolderDialog
         open={showCreateFolderDialog}
         handleChange={() => setShowCreateFolderDialog(!showCreateFolderDialog)}
       />
       <Card
         {...getRootProps()}
-        className={`flex flex-col shadow-lg rounded-xl w-full min-h-[525px] max-h-[525px] ${
+        className={`flex flex-col shadow-lg rounded-xl w-full h-full ${
           isDragActive ? "bg-gray-100 dark:bg-[#1d1d1d]" : ""
         }`}
       >
