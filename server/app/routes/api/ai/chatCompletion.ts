@@ -99,11 +99,19 @@ export default Router({ mergeParams: true }).post(
 
       // Check if we need to query the vector storage for more context
       const retrievalNeededRes = await openai.chat.completions.create({
-        model: "mistral-7b-instruct",
+        model: "codellama-34b-instruct",
         messages: [
           {
             role: "user",
-            content: `You are a system to analyze a message and deciede whether you need to query a vector database to retrieve more context or information. Output yes to retrieve more context or no to not retrieve more context. Only output yes or no. Here is the message you need to analyze: ${lastMessage}`,
+            content: `You are a system to analyze a message and deciede whether you need to query a vector database to retrieve more context or information. Output yes to retrieve more context or no to not retrieve more context. Only output 'yes' or 'no'. 
+            
+            MESSAGE: What are some of quinn's favorite things to do?
+
+            OUTPUT: yes
+            
+            MESSAGE: ${lastMessage}
+            
+            OUTPUT: `,
           },
         ],
         temperature: 0,
@@ -133,7 +141,7 @@ export default Router({ mergeParams: true }).post(
         // Seach vector storage for more context
         const docs = await vectorStore.similaritySearch(
           lastMessage!.toString(),
-          10,
+          4,
           filter
         );
 
@@ -148,6 +156,8 @@ export default Router({ mergeParams: true }).post(
       CONTEXT: ${context}
       
       QUESTION: ${lastMessage}`;
+
+        console.log(context);
 
         // Update the last message with the provided context and then the users message
         messages[messages.length - 1].content = context;
