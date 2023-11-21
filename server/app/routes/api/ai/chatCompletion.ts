@@ -51,7 +51,7 @@ const requestSchema = Joi.object({
  */
 export default Router({ mergeParams: true }).post(
   "/ai/chatCompletion",
-  // authenticateToken,
+  authenticateToken,
   async (req, res) => {
     try {
       // Validate the request body
@@ -97,48 +97,64 @@ export default Router({ mergeParams: true }).post(
       // Get the last message from the array and use it to search for more context
       const lastMessage = messages[messages.length - 1].content;
 
-      // Create the filter to use for the retriever
-      let filter: any = {
-        did,
-      };
-      if (recordId) {
-        filter = {
-          $and: [
-            {
-              did: did,
-            },
-            {
-              recordId: recordId,
-            },
-          ],
+      // Check if we need to query the vector storage for more context
+      const retrievalNeededRes = await openai.chat.completions.create({
+        model: "mistral-7b-instruct",
+        messages: [
+          {
+            role: "user",
+            content: `You are a system to analyze a message and deciede whether you need to query a vector database to retrieve more context or information. Output yes to retrieve more context or no to not retrieve more context. Only output yes or no. Here is the message you need to analyze: ${lastMessage}`,
+          },
+        ],
+        temperature: 0,
+      });
+
+      const retrivalNeeded =
+        retrievalNeededRes.choices[0].message.content === "yes";
+
+      if (retrivalNeeded) {
+        // Create the filter to use for the retriever
+        let filter: any = {
+          did,
         };
-      }
+        if (recordId) {
+          filter = {
+            $and: [
+              {
+                did: did,
+              },
+              {
+                recordId: recordId,
+              },
+            ],
+          };
+        }
 
-      // Seach vector storage for more context
-      const docs = await vectorStore.similaritySearch(
-        lastMessage!.toString(),
-        10,
-        filter
-      );
+        // Seach vector storage for more context
+        const docs = await vectorStore.similaritySearch(
+          lastMessage!.toString(),
+          10,
+          filter
+        );
 
-      // Convert the docs into context, stringifying the content
-      let context = docs
-        .map((doc) => {
-          return doc.pageContent.toString();
-        })
-        .toString();
+        // Convert the docs into context, stringifying the content
+        let context = docs
+          .map((doc) => {
+            return doc.pageContent.toString();
+          })
+          .toString();
 
-      context = `Use the following pieces of context to answer the question at the end.
+        context = `Use the following pieces of context to answer the question at the end.
       CONTEXT: ${context}
       
       QUESTION: ${lastMessage}`;
-      console.log("context", context);
 
-      // Update the last message with the provided context and then the users message
-      messages[messages.length - 1].content = context;
+        // Update the last message with the provided context and then the users message
+        messages[messages.length - 1].content = context;
+      }
 
       const stream = await openai.chat.completions.create({
-        model: "openhermes-2.5-mistral-7b",
+        model: "pplx-70b-chat-alpha",
         messages,
         stream: true,
         temperature: 0,
@@ -146,7 +162,6 @@ export default Router({ mergeParams: true }).post(
 
       // Send the response back to the client
       for await (const part of stream) {
-        process.stdout.write(part.choices[0]?.delta?.content || "");
         res.write(part.choices[0]?.delta?.content || "");
       }
 
@@ -154,7 +169,7 @@ export default Router({ mergeParams: true }).post(
     } catch (err) {
       console.error(err);
 
-      return res.json({
+      return res.status(400).json({
         status: "FAILED",
         message: err as any,
       });
