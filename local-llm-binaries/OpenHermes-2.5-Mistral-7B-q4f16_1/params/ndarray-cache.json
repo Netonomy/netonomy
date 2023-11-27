@@ -1,0 +1,4395 @@
+{
+    "metadata": {
+        "ParamSize": 327
+    },
+    "records": [
+        {
+            "dataPath": "params_shard_0.bin",
+            "format": "raw-shard",
+            "nbytes": 65540096,
+            "records": [
+                {
+                    "name": "param_0",
+                    "shape": [
+                        32002,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 65540096,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "11f06ce8d415c6f48b1f1a118404eae4"
+        },
+        {
+            "dataPath": "params_shard_1.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_6",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "61bb8ac970dd884ad0443b56f9e0552b"
+        },
+        {
+            "dataPath": "params_shard_2.bin",
+            "format": "raw-shard",
+            "nbytes": 31785472,
+            "records": [
+                {
+                    "name": "param_1",
+                    "shape": [
+                        32002,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192512,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_2",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 8192512
+                },
+                {
+                    "name": "param_3",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 20775424
+                },
+                {
+                    "name": "param_4",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 22348288
+                },
+                {
+                    "name": "param_5",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 30736896
+                }
+            ],
+            "md5sum": "0c6a254237b09ea79d15ae326ac4a7a0"
+        },
+        {
+            "dataPath": "params_shard_3.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_8",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "a800de2d9fa04552652e3ba8db4bd089"
+        },
+        {
+            "dataPath": "params_shard_4.bin",
+            "format": "raw-shard",
+            "nbytes": 25182208,
+            "records": [
+                {
+                    "name": "param_7",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_9",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 7340032
+                },
+                {
+                    "name": "param_10",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_11",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11018240
+                },
+                {
+                    "name": "param_12",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 11026432
+                },
+                {
+                    "name": "param_13",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 23609344
+                }
+            ],
+            "md5sum": "5d8b135831b736248767090fa8a12a02"
+        },
+        {
+            "dataPath": "params_shard_5.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_16",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "fa9b2156cc904dbdb8ac1cd75ad24ad5"
+        },
+        {
+            "dataPath": "params_shard_6.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_18",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "127f1b94254db6180d8be6e33fdd5e13"
+        },
+        {
+            "dataPath": "params_shard_7.bin",
+            "format": "raw-shard",
+            "nbytes": 33046528,
+            "records": [
+                {
+                    "name": "param_14",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_15",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 8388608
+                },
+                {
+                    "name": "param_17",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 9437184
+                },
+                {
+                    "name": "param_19",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 16777216
+                },
+                {
+                    "name": "param_20",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20447232
+                },
+                {
+                    "name": "param_21",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20455424
+                },
+                {
+                    "name": "param_22",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 20463616
+                }
+            ],
+            "md5sum": "d0b9296e60b7cd3e75954ac6a8a14e49"
+        },
+        {
+            "dataPath": "params_shard_8.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_26",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "73623a7b82217a29709edc6c8644bf42"
+        },
+        {
+            "dataPath": "params_shard_9.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_28",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "395aad380c4683b108ff305774b71371"
+        },
+        {
+            "dataPath": "params_shard_10.bin",
+            "format": "raw-shard",
+            "nbytes": 22036480,
+            "records": [
+                {
+                    "name": "param_23",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_24",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 1572864
+                },
+                {
+                    "name": "param_25",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 9961472
+                },
+                {
+                    "name": "param_27",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_29",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 18350080
+                },
+                {
+                    "name": "param_30",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22020096
+                },
+                {
+                    "name": "param_31",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22028288
+                }
+            ],
+            "md5sum": "184f3ca9627905a4aebe343003be64d7"
+        },
+        {
+            "dataPath": "params_shard_11.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_36",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "8f48cd3f49aa019dc03933312372c4a8"
+        },
+        {
+            "dataPath": "params_shard_12.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_38",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "c200f74380b2c2c11fed772024e3af0e"
+        },
+        {
+            "dataPath": "params_shard_13.bin",
+            "format": "raw-shard",
+            "nbytes": 30932992,
+            "records": [
+                {
+                    "name": "param_32",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_33",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 12582912
+                },
+                {
+                    "name": "param_34",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 14155776
+                },
+                {
+                    "name": "param_35",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 22544384
+                },
+                {
+                    "name": "param_37",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 23592960
+                }
+            ],
+            "md5sum": "f70867ee3030cb6be1f77d3781464ced"
+        },
+        {
+            "dataPath": "params_shard_14.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_46",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "1661e826bbd90751fea143a905c75288"
+        },
+        {
+            "dataPath": "params_shard_15.bin",
+            "format": "raw-shard",
+            "nbytes": 27279360,
+            "records": [
+                {
+                    "name": "param_39",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_40",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3670016
+                },
+                {
+                    "name": "param_41",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3678208
+                },
+                {
+                    "name": "param_42",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 3686400
+                },
+                {
+                    "name": "param_43",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 16269312
+                },
+                {
+                    "name": "param_44",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 17842176
+                },
+                {
+                    "name": "param_45",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 26230784
+                }
+            ],
+            "md5sum": "3fc032be6a12e404e1ebdd17f85333fc"
+        },
+        {
+            "dataPath": "params_shard_16.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_48",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "c6b0848ca4b09941ba2e8e45f25dc9b1"
+        },
+        {
+            "dataPath": "params_shard_17.bin",
+            "format": "raw-shard",
+            "nbytes": 25182208,
+            "records": [
+                {
+                    "name": "param_47",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_49",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 7340032
+                },
+                {
+                    "name": "param_50",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_51",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11018240
+                },
+                {
+                    "name": "param_52",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 11026432
+                },
+                {
+                    "name": "param_53",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 23609344
+                }
+            ],
+            "md5sum": "83f55d32907c00cdb5b7e3c7e87c79e5"
+        },
+        {
+            "dataPath": "params_shard_18.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_56",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "6f540c304cd4f3ec978ee98684d5750c"
+        },
+        {
+            "dataPath": "params_shard_19.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_58",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "a97bffb8ff5dac162673ecb22c3fcde8"
+        },
+        {
+            "dataPath": "params_shard_20.bin",
+            "format": "raw-shard",
+            "nbytes": 33046528,
+            "records": [
+                {
+                    "name": "param_54",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_55",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 8388608
+                },
+                {
+                    "name": "param_57",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 9437184
+                },
+                {
+                    "name": "param_59",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 16777216
+                },
+                {
+                    "name": "param_60",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20447232
+                },
+                {
+                    "name": "param_61",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20455424
+                },
+                {
+                    "name": "param_62",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 20463616
+                }
+            ],
+            "md5sum": "4910a4e8254802c0e5bc1a4ea46532c7"
+        },
+        {
+            "dataPath": "params_shard_21.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_66",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "4e31330bebd058efb530c167f561f3f9"
+        },
+        {
+            "dataPath": "params_shard_22.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_68",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "212ca6757e432f4ecd0e71b580cbec6b"
+        },
+        {
+            "dataPath": "params_shard_23.bin",
+            "format": "raw-shard",
+            "nbytes": 22036480,
+            "records": [
+                {
+                    "name": "param_63",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_64",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 1572864
+                },
+                {
+                    "name": "param_65",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 9961472
+                },
+                {
+                    "name": "param_67",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_69",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 18350080
+                },
+                {
+                    "name": "param_70",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22020096
+                },
+                {
+                    "name": "param_71",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22028288
+                }
+            ],
+            "md5sum": "8fed3dd2f1ebd06d0776748b2674625d"
+        },
+        {
+            "dataPath": "params_shard_24.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_76",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "647513430538bad5577583bb738d08a8"
+        },
+        {
+            "dataPath": "params_shard_25.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_78",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "b1b54eacf59dddc2869cc5d102371bfa"
+        },
+        {
+            "dataPath": "params_shard_26.bin",
+            "format": "raw-shard",
+            "nbytes": 30932992,
+            "records": [
+                {
+                    "name": "param_72",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_73",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 12582912
+                },
+                {
+                    "name": "param_74",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 14155776
+                },
+                {
+                    "name": "param_75",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 22544384
+                },
+                {
+                    "name": "param_77",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 23592960
+                }
+            ],
+            "md5sum": "88f49b6500580493a26e6a8afa685946"
+        },
+        {
+            "dataPath": "params_shard_27.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_86",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "e0071322d3b3a2fdc55c9d349cd51d8e"
+        },
+        {
+            "dataPath": "params_shard_28.bin",
+            "format": "raw-shard",
+            "nbytes": 27279360,
+            "records": [
+                {
+                    "name": "param_79",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_80",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3670016
+                },
+                {
+                    "name": "param_81",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3678208
+                },
+                {
+                    "name": "param_82",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 3686400
+                },
+                {
+                    "name": "param_83",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 16269312
+                },
+                {
+                    "name": "param_84",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 17842176
+                },
+                {
+                    "name": "param_85",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 26230784
+                }
+            ],
+            "md5sum": "965ece5dc37ba69ad7a8fff2a1d894e9"
+        },
+        {
+            "dataPath": "params_shard_29.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_88",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "ab7b6ca1ecc795ec5698d78efbae72d8"
+        },
+        {
+            "dataPath": "params_shard_30.bin",
+            "format": "raw-shard",
+            "nbytes": 25182208,
+            "records": [
+                {
+                    "name": "param_87",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_89",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 7340032
+                },
+                {
+                    "name": "param_90",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_91",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11018240
+                },
+                {
+                    "name": "param_92",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 11026432
+                },
+                {
+                    "name": "param_93",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 23609344
+                }
+            ],
+            "md5sum": "981a3f6a19704ed238439cfdd49ae2b8"
+        },
+        {
+            "dataPath": "params_shard_31.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_96",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "f80f06a2b7bea31bee75a99e63ec77f9"
+        },
+        {
+            "dataPath": "params_shard_32.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_98",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "c722e6873e05533f191279204ea5f3cc"
+        },
+        {
+            "dataPath": "params_shard_33.bin",
+            "format": "raw-shard",
+            "nbytes": 33046528,
+            "records": [
+                {
+                    "name": "param_94",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_95",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 8388608
+                },
+                {
+                    "name": "param_97",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 9437184
+                },
+                {
+                    "name": "param_99",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 16777216
+                },
+                {
+                    "name": "param_100",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20447232
+                },
+                {
+                    "name": "param_101",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20455424
+                },
+                {
+                    "name": "param_102",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 20463616
+                }
+            ],
+            "md5sum": "3e420a8f0e950e31b03d798860ab69b7"
+        },
+        {
+            "dataPath": "params_shard_34.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_106",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "226cf37a86a3fcc94ea75bb42d967c47"
+        },
+        {
+            "dataPath": "params_shard_35.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_108",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "8e0093b739ef75b1346d400778d8fdeb"
+        },
+        {
+            "dataPath": "params_shard_36.bin",
+            "format": "raw-shard",
+            "nbytes": 22036480,
+            "records": [
+                {
+                    "name": "param_103",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_104",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 1572864
+                },
+                {
+                    "name": "param_105",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 9961472
+                },
+                {
+                    "name": "param_107",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_109",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 18350080
+                },
+                {
+                    "name": "param_110",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22020096
+                },
+                {
+                    "name": "param_111",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22028288
+                }
+            ],
+            "md5sum": "c8625ce7cc1e474986346bf547abef0a"
+        },
+        {
+            "dataPath": "params_shard_37.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_116",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "6744bc0b9a73182b59cdf751d64e957e"
+        },
+        {
+            "dataPath": "params_shard_38.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_118",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "6c1a40f9dc3c542bc5fffd4da59dc090"
+        },
+        {
+            "dataPath": "params_shard_39.bin",
+            "format": "raw-shard",
+            "nbytes": 30932992,
+            "records": [
+                {
+                    "name": "param_112",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_113",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 12582912
+                },
+                {
+                    "name": "param_114",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 14155776
+                },
+                {
+                    "name": "param_115",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 22544384
+                },
+                {
+                    "name": "param_117",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 23592960
+                }
+            ],
+            "md5sum": "80e5b8922accb6630844eccf909b0169"
+        },
+        {
+            "dataPath": "params_shard_40.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_126",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "2161be262aec0b53658faf5dc6d552fb"
+        },
+        {
+            "dataPath": "params_shard_41.bin",
+            "format": "raw-shard",
+            "nbytes": 27279360,
+            "records": [
+                {
+                    "name": "param_119",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_120",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3670016
+                },
+                {
+                    "name": "param_121",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3678208
+                },
+                {
+                    "name": "param_122",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 3686400
+                },
+                {
+                    "name": "param_123",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 16269312
+                },
+                {
+                    "name": "param_124",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 17842176
+                },
+                {
+                    "name": "param_125",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 26230784
+                }
+            ],
+            "md5sum": "a23f82f8599c591fe74d94e7e3d127dc"
+        },
+        {
+            "dataPath": "params_shard_42.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_128",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "d83059d96f2369b875d33a7006a879c4"
+        },
+        {
+            "dataPath": "params_shard_43.bin",
+            "format": "raw-shard",
+            "nbytes": 25182208,
+            "records": [
+                {
+                    "name": "param_127",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_129",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 7340032
+                },
+                {
+                    "name": "param_130",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_131",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11018240
+                },
+                {
+                    "name": "param_132",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 11026432
+                },
+                {
+                    "name": "param_133",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 23609344
+                }
+            ],
+            "md5sum": "383756ecdcba190a0594e7d7cf5c50b9"
+        },
+        {
+            "dataPath": "params_shard_44.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_136",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "897af274a2d4f0be6c9a464452ab83b7"
+        },
+        {
+            "dataPath": "params_shard_45.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_138",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "d7aa45799e665eb16870ca246c83fcaa"
+        },
+        {
+            "dataPath": "params_shard_46.bin",
+            "format": "raw-shard",
+            "nbytes": 33046528,
+            "records": [
+                {
+                    "name": "param_134",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_135",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 8388608
+                },
+                {
+                    "name": "param_137",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 9437184
+                },
+                {
+                    "name": "param_139",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 16777216
+                },
+                {
+                    "name": "param_140",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20447232
+                },
+                {
+                    "name": "param_141",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20455424
+                },
+                {
+                    "name": "param_142",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 20463616
+                }
+            ],
+            "md5sum": "72f540a4e2479460cbfa73057af49667"
+        },
+        {
+            "dataPath": "params_shard_47.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_146",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "922d465024939168c8fe336c5d0f8a66"
+        },
+        {
+            "dataPath": "params_shard_48.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_148",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "5728ef052dda48a55905e1fde9fed822"
+        },
+        {
+            "dataPath": "params_shard_49.bin",
+            "format": "raw-shard",
+            "nbytes": 22036480,
+            "records": [
+                {
+                    "name": "param_143",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_144",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 1572864
+                },
+                {
+                    "name": "param_145",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 9961472
+                },
+                {
+                    "name": "param_147",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_149",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 18350080
+                },
+                {
+                    "name": "param_150",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22020096
+                },
+                {
+                    "name": "param_151",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22028288
+                }
+            ],
+            "md5sum": "eb6cfb6615d5aebc64bcde1798e56484"
+        },
+        {
+            "dataPath": "params_shard_50.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_156",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "cf8bd6274b787ba7e8d1dde4667c6e5b"
+        },
+        {
+            "dataPath": "params_shard_51.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_158",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "3ff51ce5d89c4f214343d8d618166049"
+        },
+        {
+            "dataPath": "params_shard_52.bin",
+            "format": "raw-shard",
+            "nbytes": 30932992,
+            "records": [
+                {
+                    "name": "param_152",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_153",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 12582912
+                },
+                {
+                    "name": "param_154",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 14155776
+                },
+                {
+                    "name": "param_155",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 22544384
+                },
+                {
+                    "name": "param_157",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 23592960
+                }
+            ],
+            "md5sum": "316eccbf1457c68c19fe1ae4231a5f48"
+        },
+        {
+            "dataPath": "params_shard_53.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_166",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "3d7f1cd7a42d4cde286941011ae75da1"
+        },
+        {
+            "dataPath": "params_shard_54.bin",
+            "format": "raw-shard",
+            "nbytes": 27279360,
+            "records": [
+                {
+                    "name": "param_159",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_160",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3670016
+                },
+                {
+                    "name": "param_161",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3678208
+                },
+                {
+                    "name": "param_162",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 3686400
+                },
+                {
+                    "name": "param_163",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 16269312
+                },
+                {
+                    "name": "param_164",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 17842176
+                },
+                {
+                    "name": "param_165",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 26230784
+                }
+            ],
+            "md5sum": "e63129125be4a90bbeba432daa853032"
+        },
+        {
+            "dataPath": "params_shard_55.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_168",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "926917e73547d80eaf66d4d4cd70c34d"
+        },
+        {
+            "dataPath": "params_shard_56.bin",
+            "format": "raw-shard",
+            "nbytes": 25182208,
+            "records": [
+                {
+                    "name": "param_167",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_169",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 7340032
+                },
+                {
+                    "name": "param_170",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_171",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11018240
+                },
+                {
+                    "name": "param_172",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 11026432
+                },
+                {
+                    "name": "param_173",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 23609344
+                }
+            ],
+            "md5sum": "7d6dafa52586ccf192370b6b1209bf5f"
+        },
+        {
+            "dataPath": "params_shard_57.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_176",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "697ce68923ec37aa7cb13e0056a07844"
+        },
+        {
+            "dataPath": "params_shard_58.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_178",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "cb199d781cdfec9b7435a6d3c6c80bef"
+        },
+        {
+            "dataPath": "params_shard_59.bin",
+            "format": "raw-shard",
+            "nbytes": 33046528,
+            "records": [
+                {
+                    "name": "param_174",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_175",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 8388608
+                },
+                {
+                    "name": "param_177",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 9437184
+                },
+                {
+                    "name": "param_179",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 16777216
+                },
+                {
+                    "name": "param_180",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20447232
+                },
+                {
+                    "name": "param_181",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20455424
+                },
+                {
+                    "name": "param_182",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 20463616
+                }
+            ],
+            "md5sum": "d05ef7f16e31260088a7f959718f1420"
+        },
+        {
+            "dataPath": "params_shard_60.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_186",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "7c2ed7e032d4bf130afee2e05aa38cff"
+        },
+        {
+            "dataPath": "params_shard_61.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_188",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "480e8259aed4f3b6e71c23c4cdf42a74"
+        },
+        {
+            "dataPath": "params_shard_62.bin",
+            "format": "raw-shard",
+            "nbytes": 22036480,
+            "records": [
+                {
+                    "name": "param_183",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_184",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 1572864
+                },
+                {
+                    "name": "param_185",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 9961472
+                },
+                {
+                    "name": "param_187",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_189",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 18350080
+                },
+                {
+                    "name": "param_190",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22020096
+                },
+                {
+                    "name": "param_191",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22028288
+                }
+            ],
+            "md5sum": "890ddcd6bdc9da39308b0dbec2544286"
+        },
+        {
+            "dataPath": "params_shard_63.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_196",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "eae435026869f7103d2742a3f4e571fe"
+        },
+        {
+            "dataPath": "params_shard_64.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_198",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "dd5e82cfb8f20ff96f78bc3f95a573db"
+        },
+        {
+            "dataPath": "params_shard_65.bin",
+            "format": "raw-shard",
+            "nbytes": 30932992,
+            "records": [
+                {
+                    "name": "param_192",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_193",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 12582912
+                },
+                {
+                    "name": "param_194",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 14155776
+                },
+                {
+                    "name": "param_195",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 22544384
+                },
+                {
+                    "name": "param_197",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 23592960
+                }
+            ],
+            "md5sum": "eeaead87d0824e5e56276471a822b2c5"
+        },
+        {
+            "dataPath": "params_shard_66.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_206",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "130004078c3c1a6a5b3334766c1124d6"
+        },
+        {
+            "dataPath": "params_shard_67.bin",
+            "format": "raw-shard",
+            "nbytes": 27279360,
+            "records": [
+                {
+                    "name": "param_199",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_200",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3670016
+                },
+                {
+                    "name": "param_201",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3678208
+                },
+                {
+                    "name": "param_202",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 3686400
+                },
+                {
+                    "name": "param_203",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 16269312
+                },
+                {
+                    "name": "param_204",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 17842176
+                },
+                {
+                    "name": "param_205",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 26230784
+                }
+            ],
+            "md5sum": "fa43d6e7901cfcd508d79af92f0f208d"
+        },
+        {
+            "dataPath": "params_shard_68.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_208",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "f8782bb07d24a91951599c8c72738c92"
+        },
+        {
+            "dataPath": "params_shard_69.bin",
+            "format": "raw-shard",
+            "nbytes": 25182208,
+            "records": [
+                {
+                    "name": "param_207",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_209",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 7340032
+                },
+                {
+                    "name": "param_210",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_211",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11018240
+                },
+                {
+                    "name": "param_212",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 11026432
+                },
+                {
+                    "name": "param_213",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 23609344
+                }
+            ],
+            "md5sum": "05562fe768e46bdbf3f6f5ee18105e70"
+        },
+        {
+            "dataPath": "params_shard_70.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_216",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "80dde6179d09acdc4848d853e60c743e"
+        },
+        {
+            "dataPath": "params_shard_71.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_218",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "b12334d185c707d3fd6a7601d67ac4f1"
+        },
+        {
+            "dataPath": "params_shard_72.bin",
+            "format": "raw-shard",
+            "nbytes": 33046528,
+            "records": [
+                {
+                    "name": "param_214",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_215",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 8388608
+                },
+                {
+                    "name": "param_217",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 9437184
+                },
+                {
+                    "name": "param_219",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 16777216
+                },
+                {
+                    "name": "param_220",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20447232
+                },
+                {
+                    "name": "param_221",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20455424
+                },
+                {
+                    "name": "param_222",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 20463616
+                }
+            ],
+            "md5sum": "35cfd161f27d5ed13eda33e67338331e"
+        },
+        {
+            "dataPath": "params_shard_73.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_226",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "b9976cf0e8a2f9bd0d224468d81fddfe"
+        },
+        {
+            "dataPath": "params_shard_74.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_228",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "46963df2a30dc03b7455f431ea109557"
+        },
+        {
+            "dataPath": "params_shard_75.bin",
+            "format": "raw-shard",
+            "nbytes": 22036480,
+            "records": [
+                {
+                    "name": "param_223",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_224",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 1572864
+                },
+                {
+                    "name": "param_225",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 9961472
+                },
+                {
+                    "name": "param_227",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_229",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 18350080
+                },
+                {
+                    "name": "param_230",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22020096
+                },
+                {
+                    "name": "param_231",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22028288
+                }
+            ],
+            "md5sum": "16e7d1e0c57a5cc8c2b96d9d6cd323a7"
+        },
+        {
+            "dataPath": "params_shard_76.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_236",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "871446de38dcdc9f739d111ec108c85e"
+        },
+        {
+            "dataPath": "params_shard_77.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_238",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "0802e4e8132cb67bdaf3daad71525847"
+        },
+        {
+            "dataPath": "params_shard_78.bin",
+            "format": "raw-shard",
+            "nbytes": 30932992,
+            "records": [
+                {
+                    "name": "param_232",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_233",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 12582912
+                },
+                {
+                    "name": "param_234",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 14155776
+                },
+                {
+                    "name": "param_235",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 22544384
+                },
+                {
+                    "name": "param_237",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 23592960
+                }
+            ],
+            "md5sum": "2ed5c4b18ac6fd72ac537b4b6961abd1"
+        },
+        {
+            "dataPath": "params_shard_79.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_246",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "8da2278877b7aa9c7b27bcaf8de8d507"
+        },
+        {
+            "dataPath": "params_shard_80.bin",
+            "format": "raw-shard",
+            "nbytes": 27279360,
+            "records": [
+                {
+                    "name": "param_239",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_240",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3670016
+                },
+                {
+                    "name": "param_241",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3678208
+                },
+                {
+                    "name": "param_242",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 3686400
+                },
+                {
+                    "name": "param_243",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 16269312
+                },
+                {
+                    "name": "param_244",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 17842176
+                },
+                {
+                    "name": "param_245",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 26230784
+                }
+            ],
+            "md5sum": "80651a847b4e549aff307b547ab88b0d"
+        },
+        {
+            "dataPath": "params_shard_81.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_248",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "c984af298a5c07eb2992c289754f379d"
+        },
+        {
+            "dataPath": "params_shard_82.bin",
+            "format": "raw-shard",
+            "nbytes": 25182208,
+            "records": [
+                {
+                    "name": "param_247",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_249",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 7340032
+                },
+                {
+                    "name": "param_250",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_251",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11018240
+                },
+                {
+                    "name": "param_252",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 11026432
+                },
+                {
+                    "name": "param_253",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 23609344
+                }
+            ],
+            "md5sum": "420c88bb70939eaa58d58fd5f2d0e3fb"
+        },
+        {
+            "dataPath": "params_shard_83.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_256",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "0c0b1a1a2619f2d2661ba112d3712ffb"
+        },
+        {
+            "dataPath": "params_shard_84.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_258",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "87683d14b07e48b6537b4d4ce6bb2e6c"
+        },
+        {
+            "dataPath": "params_shard_85.bin",
+            "format": "raw-shard",
+            "nbytes": 33046528,
+            "records": [
+                {
+                    "name": "param_254",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_255",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 8388608
+                },
+                {
+                    "name": "param_257",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 9437184
+                },
+                {
+                    "name": "param_259",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 16777216
+                },
+                {
+                    "name": "param_260",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20447232
+                },
+                {
+                    "name": "param_261",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20455424
+                },
+                {
+                    "name": "param_262",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 20463616
+                }
+            ],
+            "md5sum": "260504bd9770addb7a71849454a17661"
+        },
+        {
+            "dataPath": "params_shard_86.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_266",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "dbee54f603b73a4fe1d687d941f45065"
+        },
+        {
+            "dataPath": "params_shard_87.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_268",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "d62e16c01e90b52d98de91e4576abbdf"
+        },
+        {
+            "dataPath": "params_shard_88.bin",
+            "format": "raw-shard",
+            "nbytes": 22036480,
+            "records": [
+                {
+                    "name": "param_263",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_264",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 1572864
+                },
+                {
+                    "name": "param_265",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 9961472
+                },
+                {
+                    "name": "param_267",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_269",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 18350080
+                },
+                {
+                    "name": "param_270",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22020096
+                },
+                {
+                    "name": "param_271",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22028288
+                }
+            ],
+            "md5sum": "8b662b5ec6bb683a07e522ac11026578"
+        },
+        {
+            "dataPath": "params_shard_89.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_276",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "ee939486a518ab025bacec75913e8958"
+        },
+        {
+            "dataPath": "params_shard_90.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_278",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "f56101795744c2cd0e8ad16b92056122"
+        },
+        {
+            "dataPath": "params_shard_91.bin",
+            "format": "raw-shard",
+            "nbytes": 30932992,
+            "records": [
+                {
+                    "name": "param_272",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_273",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 12582912
+                },
+                {
+                    "name": "param_274",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 14155776
+                },
+                {
+                    "name": "param_275",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 22544384
+                },
+                {
+                    "name": "param_277",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 23592960
+                }
+            ],
+            "md5sum": "d63a974b1c7801135771db2563327dc9"
+        },
+        {
+            "dataPath": "params_shard_92.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_286",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "d59c253340a095e3e8a845a4de69f344"
+        },
+        {
+            "dataPath": "params_shard_93.bin",
+            "format": "raw-shard",
+            "nbytes": 27279360,
+            "records": [
+                {
+                    "name": "param_279",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_280",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3670016
+                },
+                {
+                    "name": "param_281",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3678208
+                },
+                {
+                    "name": "param_282",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 3686400
+                },
+                {
+                    "name": "param_283",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 16269312
+                },
+                {
+                    "name": "param_284",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 17842176
+                },
+                {
+                    "name": "param_285",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 26230784
+                }
+            ],
+            "md5sum": "f1ebab1b39d684c03ef688cf40936b67"
+        },
+        {
+            "dataPath": "params_shard_94.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_288",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "8378ef6d19afe310fcbc9c89bce3699b"
+        },
+        {
+            "dataPath": "params_shard_95.bin",
+            "format": "raw-shard",
+            "nbytes": 25182208,
+            "records": [
+                {
+                    "name": "param_287",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_289",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 7340032
+                },
+                {
+                    "name": "param_290",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_291",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 11018240
+                },
+                {
+                    "name": "param_292",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 11026432
+                },
+                {
+                    "name": "param_293",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 23609344
+                }
+            ],
+            "md5sum": "3d6999f25573ddd2eea0689fc2096db1"
+        },
+        {
+            "dataPath": "params_shard_96.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_296",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "5b2e876a3a63712ad013a304b2a5f81c"
+        },
+        {
+            "dataPath": "params_shard_97.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_298",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "d3a99843e8c65d344d2bbfa6e2b67d21"
+        },
+        {
+            "dataPath": "params_shard_98.bin",
+            "format": "raw-shard",
+            "nbytes": 33046528,
+            "records": [
+                {
+                    "name": "param_294",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_295",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 8388608
+                },
+                {
+                    "name": "param_297",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 9437184
+                },
+                {
+                    "name": "param_299",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 16777216
+                },
+                {
+                    "name": "param_300",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20447232
+                },
+                {
+                    "name": "param_301",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 20455424
+                },
+                {
+                    "name": "param_302",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 20463616
+                }
+            ],
+            "md5sum": "21156140d1439512f35f8e91c845f3d3"
+        },
+        {
+            "dataPath": "params_shard_99.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_306",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "9f9d3eb73d69fb16d44ad086d3bf44be"
+        },
+        {
+            "dataPath": "params_shard_100.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_308",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "d4816a3662deb0afb195620f1bcad91a"
+        },
+        {
+            "dataPath": "params_shard_101.bin",
+            "format": "raw-shard",
+            "nbytes": 22036480,
+            "records": [
+                {
+                    "name": "param_303",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_304",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 1572864
+                },
+                {
+                    "name": "param_305",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 9961472
+                },
+                {
+                    "name": "param_307",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 11010048
+                },
+                {
+                    "name": "param_309",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 18350080
+                },
+                {
+                    "name": "param_310",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22020096
+                },
+                {
+                    "name": "param_311",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 22028288
+                }
+            ],
+            "md5sum": "014a462d885f6ffcbce76d422fecd630"
+        },
+        {
+            "dataPath": "params_shard_102.bin",
+            "format": "raw-shard",
+            "nbytes": 58720256,
+            "records": [
+                {
+                    "name": "param_316",
+                    "shape": [
+                        28672,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 58720256,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "4b8d9eacc3c2cad62fa6f3e45fd61b71"
+        },
+        {
+            "dataPath": "params_shard_103.bin",
+            "format": "raw-shard",
+            "nbytes": 29360128,
+            "records": [
+                {
+                    "name": "param_318",
+                    "shape": [
+                        4096,
+                        1792
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 29360128,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "3cd61369c5c6b6c0be8148659fa3ae3d"
+        },
+        {
+            "dataPath": "params_shard_104.bin",
+            "format": "raw-shard",
+            "nbytes": 30932992,
+            "records": [
+                {
+                    "name": "param_312",
+                    "shape": [
+                        6144,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 12582912,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_313",
+                    "shape": [
+                        6144,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1572864,
+                    "byteOffset": 12582912
+                },
+                {
+                    "name": "param_314",
+                    "shape": [
+                        4096,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 8388608,
+                    "byteOffset": 14155776
+                },
+                {
+                    "name": "param_315",
+                    "shape": [
+                        4096,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 1048576,
+                    "byteOffset": 22544384
+                },
+                {
+                    "name": "param_317",
+                    "shape": [
+                        28672,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 7340032,
+                    "byteOffset": 23592960
+                }
+            ],
+            "md5sum": "c9e1ae3a13f81830ec82e6ab7f93454e"
+        },
+        {
+            "dataPath": "params_shard_105.bin",
+            "format": "raw-shard",
+            "nbytes": 65540096,
+            "records": [
+                {
+                    "name": "param_323",
+                    "shape": [
+                        32002,
+                        512
+                    ],
+                    "dtype": "uint32",
+                    "format": "raw",
+                    "nbytes": 65540096,
+                    "byteOffset": 0
+                }
+            ],
+            "md5sum": "0f1443791bf5e418c3fc2ee2bac229c0"
+        },
+        {
+            "dataPath": "params_shard_106.bin",
+            "format": "raw-shard",
+            "nbytes": 12935680,
+            "records": [
+                {
+                    "name": "param_319",
+                    "shape": [
+                        4096,
+                        448
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 3670016,
+                    "byteOffset": 0
+                },
+                {
+                    "name": "param_320",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3670016
+                },
+                {
+                    "name": "param_321",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3678208
+                },
+                {
+                    "name": "param_322",
+                    "shape": [
+                        4096
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192,
+                    "byteOffset": 3686400
+                },
+                {
+                    "name": "param_324",
+                    "shape": [
+                        32002,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 8192512,
+                    "byteOffset": 3694592
+                },
+                {
+                    "name": "param_325",
+                    "shape": [
+                        2048,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 524288,
+                    "byteOffset": 11887104
+                },
+                {
+                    "name": "param_326",
+                    "shape": [
+                        2048,
+                        128
+                    ],
+                    "dtype": "float16",
+                    "format": "raw",
+                    "nbytes": 524288,
+                    "byteOffset": 12411392
+                }
+            ],
+            "md5sum": "ccd014c20568d794c3c4c3b393538338"
+        }
+    ]
+}

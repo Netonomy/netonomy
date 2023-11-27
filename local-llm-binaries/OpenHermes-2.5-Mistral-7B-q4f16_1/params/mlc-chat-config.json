@@ -1,0 +1,22 @@
+{
+    "model_lib": "OpenHermes-2.5-Mistral-7B-q4f16_1",
+    "local_id": "OpenHermes-2.5-Mistral-7B-q4f16_1",
+    "conv_template": "mistral_default",
+    "temperature": 0.7,
+    "repetition_penalty": 1.0,
+    "top_p": 0.95,
+    "mean_gen_len": 128,
+    "max_gen_len": 16384,
+    "num_shards": 1,
+    "use_presharded_weights": false,
+    "shift_fill_factor": 0.3,
+    "tokenizer_files": [
+        "added_tokens.json",
+        "tokenizer.model"
+    ],
+    "model_category": "mistral",
+    "model_name": "OpenHermes-2.5-Mistral-7B",
+    "vocab_size": 32002,
+    "prefill_chunk_size": 4096,
+    "sliding_window": 4096
+}
