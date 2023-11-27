@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import { oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import useChatStore from "@/hooks/stores/useChatStore";
+import * as webllm from "@mlc-ai/web-llm";
 
 export function Chat() {
   const input = useChatStore((state) => state.input);
@@ -21,6 +22,7 @@ export function Chat() {
   );
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const loadChat = useChatStore((state) => state.actions.loadChat);
 
   const handleKeyDown = async (event: any) => {
     if (event.key === "Enter" && event.shiftKey) {
@@ -57,6 +59,10 @@ export function Chat() {
       textAreaRef.current.focus();
     }
   }, [generating]);
+
+  useEffect(() => {
+    loadChat();
+  }, []);
 
   return (
     <div className="h-full w-full flex flex-col items-center gap-4 row-span-5 col-span-1">
@@ -179,7 +185,9 @@ export function Chat() {
                       {message.role === "assistant" && (
                         <div
                           className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-primary dark:bg-primary dark:text-secondary mr-auto max-w-[90%]  whitespace-pre-wrap ${
-                            generating && "animate-bounce"
+                            generating &&
+                            message.content === "" &&
+                            "animate-bounce"
                           }`}
                         >
                           <ReactMarkdown

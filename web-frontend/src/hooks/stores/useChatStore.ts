@@ -3,18 +3,20 @@ import useWeb5Store from "./useWeb5Store";
 import useProfileStore from "./useProfileStore";
 import { ChangeEvent } from "react";
 import useAuthStore from "./useAuthStore";
-import api from "@/config/api";
+import * as webllm from "@mlc-ai/web-llm";
 
 // Type definition for the chat state
 interface ChatState {
   messages: ChatMessage[];
   input: string;
+  chat: webllm.ChatModule | null;
   generatingResponse: boolean;
   conversations: AIConversation[];
   currentConversation: AIConversation | null;
   error: string | null;
   recordId: string | null;
   actions: {
+    loadChat: () => void;
     setInput: (input: string) => void;
     setMessages: (messages: ChatMessage[]) => void;
     resetChat: () => void;
@@ -46,11 +48,47 @@ const useChatStore = create<ChatState>((set, get) => ({
   messages: [] as ChatMessage[],
   input: "",
   generatingResponse: false,
+  chat: null,
   conversations: [] as AIConversation[],
   currentConversation: null,
   error: null,
   recordId: null,
   actions: {
+    loadChat: async () => {
+      try {
+        console.log("loading chat");
+        // create a ChatModule,
+        const chat = new webllm.ChatModule();
+        // This callback allows us to report initialization progress
+        chat.setInitProgressCallback((report: webllm.InitProgressReport) => {
+          console.log(report.progress);
+        });
+        // You can also try out "RedPajama-INCITE-Chat-3B-v1-q4f32_0"
+        await chat.reload(
+          "OpenHermes-2.5-Mistral-7B-q4f16_1",
+          {},
+          {
+            model_lib_map: {
+              "OpenHermes-2.5-Mistral-7B-q4f16_1":
+                "https://raw.githubusercontent.com/Netonomy/netonomy/main/local-llm-binaries/OpenHermes-2.5-Mistral-7B-q4f16_1/OpenHermes-2.5-Mistral-7B-q4f16_1-webgpu.wasm",
+            },
+            model_list: [
+              {
+                model_url:
+                  "https://huggingface.co/ademattos/open-hermes-2.5-f16/resolve/main/",
+                local_id: "OpenHermes-2.5-Mistral-7B-q4f16_1",
+                required_features: ["shader-f16"],
+              },
+            ],
+          }
+        );
+
+        // Set the chat
+        set({ chat });
+      } catch (err) {
+        console.error(err);
+      }
+    },
     setInput: (input: string) => set({ input }),
     setRecordId: (recordId: string | null) => set({ recordId }),
     setGeneratingResponse: (generatingResponse: boolean) =>
@@ -121,80 +159,98 @@ const useChatStore = create<ChatState>((set, get) => ({
 
       const accessToken = useAuthStore.getState().token;
 
+      const generateProgressCallback = (_step: number, message: string) => {
+        console.log(message);
+      };
+
+      console.log("GENERATING");
+      const chat = get().chat;
+      console.log(chat);
+      if (!chat) return;
+
+      const lastMessage =
+        conversation.messages[conversation.messages.length - 1];
+      console.log(lastMessage.content);
+      const reply0 = await chat.generate(
+        lastMessage.content!,
+        generateProgressCallback
+      );
+      console.log(reply0);
+
       // Fetch request to send the messages
-      fetch(`${import.meta.env.VITE_API_URL}/ai/chatCompletion`, {
-        method: "POST",
-        body: JSON.stringify({
-          messages: conversation.messages,
-          did: did,
-          recordId: get().recordId || undefined,
-          profile,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-        .then(async (response) => {
-          set({ generatingResponse: false });
+      // fetch(`${import.meta.env.VITE_API_URL}/ai/chatCompletion`, {
+      //   method: "POST",
+      //   body: JSON.stringify({
+      //     messages: conversation.messages,
+      //     did: did,
+      //     recordId: get().recordId || undefined,
+      //     profile,
+      //   }),
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${accessToken}`,
+      //   },
+      // })
+      //   .then(async (response) => {
+      //     set({ generatingResponse: false });
 
-          if (response.status !== 200) {
-            console.error(`Unable to send chat message. Try again later.`);
-            set({
-              error: "Unable to send message at this time.",
-              generatingResponse: false,
-              currentConversation: conversation,
-            });
-            return;
-          }
+      //     if (response.status !== 200) {
+      //       console.error(`Unable to send chat message. Try again later.`);
+      //       set({
+      //         error: "Unable to send message at this time.",
+      //         generatingResponse: false,
+      //         currentConversation: conversation,
+      //       });
+      //       return;
+      //     }
 
-          const reader = response.body?.getReader();
+      //     const reader = response.body?.getReader();
 
-          if (reader) {
-            try {
-              while (true) {
-                const { done, value } = await reader.read();
+      //     if (reader) {
+      //       try {
+      //         while (true) {
+      //           const { done, value } = await reader.read();
 
-                if (done) {
-                  // Set generating to false
-                  set({ generatingResponse: false });
-                  break;
-                }
+      //           if (done) {
+      //             // Set generating to false
+      //             set({ generatingResponse: false });
+      //             break;
+      //           }
 
-                if (value) {
-                  const chunk = new TextDecoder().decode(value);
+      //           if (value) {
+      //             const chunk = new TextDecoder().decode(value);
 
-                  // Update AI message with new tokens
-                  set((state: any) => {
-                    // Create a copy of the current conversation
-                    let newConversation = { ...state.currentConversation };
+      //             // Update AI message with new tokens
+      //             set((state: any) => {
+      //               // Create a copy of the current conversation
+      //               let newConversation = { ...state.currentConversation };
 
-                    // Update the last message of the current conversation to have the new tokens from the server
-                    let lastMessageIndex = newConversation.messages!.length - 1;
-                    let lastMessage = {
-                      ...newConversation.messages![lastMessageIndex],
-                    };
-                    lastMessage.content += chunk;
+      //               // Update the last message of the current conversation to have the new tokens from the server
+      //               let lastMessageIndex = newConversation.messages!.length - 1;
+      //               let lastMessage = {
+      //                 ...newConversation.messages![lastMessageIndex],
+      //               };
+      //               lastMessage.content += chunk;
 
-                    // Update the conversation
-                    newConversation.messages![lastMessageIndex] = lastMessage;
+      //               // Update the conversation
+      //               newConversation.messages![lastMessageIndex] = lastMessage;
 
-                    // Return the new state
-                    return {
-                      ...state,
-                      currentConversation: newConversation,
-                    };
-                  });
-                }
-              }
-            } catch (err) {
-              console.error(`Unable to read chunk `);
-            }
-          }
-        })
-        .catch((err) => {
-          console.error(`Unable to send chat message: ${err}`);
-        });
+      //               // Return the new state
+      //               return {
+      //                 ...state,
+      //                 currentConversation: newConversation,
+      //               };
+      //             });
+      //           }
+      //         }
+      //       } catch (err) {
+      //         console.error(`Unable to read chunk `);
+      //       }
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.error(`Unable to send chat message: ${err}`);
+      //   });
 
       // const accessToken = useAuthStore.getState().token;
 
