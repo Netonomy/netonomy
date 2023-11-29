@@ -1,11 +1,7 @@
-import { Button } from './components/ui/button'
+import HomeScreen from './screens/HomeScreen'
 
 function App(): JSX.Element {
-  return (
-    <div>
-      <Button>Hello</Button>
-    </div>
-  )
+  return <HomeScreen />
 }
 
 export default App
