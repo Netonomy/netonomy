@@ -5,7 +5,8 @@ def load_model(path: str, n_ctx: int = 2048):
     model = llama_cpp.Llama(
         model_path=path,
         chat_format="llama-2",
-        n_ctx=n_ctx
+        n_ctx=n_ctx,
+        n_gpu_layers=1
     )
 
     return model

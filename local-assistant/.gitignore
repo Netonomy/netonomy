@@ -2,3 +2,5 @@ dist/
 build/
 venv/
 *.spec
+__pycache__/
+*.wav
