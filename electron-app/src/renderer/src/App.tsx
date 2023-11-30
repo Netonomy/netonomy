@@ -1,7 +1,25 @@
+import { RouterProvider, createHashRouter } from 'react-router-dom'
 import HomeScreen from './screens/HomeScreen'
+import useWeb5Store from './hooks/stores/useWeb5Store'
+import { useEffect } from 'react'
+import { SplashScreen } from './screens/SplashScreen'
+
+const router = createHashRouter([
+  {
+    path: '/',
+    element: <HomeScreen />
+  }
+])
 
 function App(): JSX.Element {
-  return <HomeScreen />
+  const web5 = useWeb5Store((state) => state.web5)
+  const connect = useWeb5Store((state) => state.connect)
+
+  useEffect(() => {
+    if (!web5) connect()
+  }, [])
+
+  return <>{web5 ? <RouterProvider router={router} /> : <SplashScreen />}</>
 }
 
 export default App

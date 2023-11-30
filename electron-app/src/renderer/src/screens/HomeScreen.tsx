@@ -1,18 +1,19 @@
 import { Button } from '@renderer/components/ui/button'
 import { Textarea } from '@renderer/components/ui/textarea'
 import useChatStore from '@renderer/hooks/stores/useChatStore'
-import { AlertCircle, Loader2, SendIcon } from 'lucide-react'
+import { AlertCircle, Loader2, PlusIcon, SendIcon } from 'lucide-react'
 import { Fragment, useEffect, useRef } from 'react'
+import aiImg from '../assets/aiSelf3.png'
 
 export default function HomeScreen() {
   const input = useChatStore((state) => state.input)
   const setInput = useChatStore((state) => state.actions.setInput)
   const generating = useChatStore((state) => state.generatingResponse)
-  const conversation = useChatStore((state) => state.currentConversation)
   const messages = useChatStore((state) => state.messages)
   const handleSubmit = useChatStore((state) => state.actions.handleSubmit)
   const error = useChatStore((state) => state.error)
   const handleInputChange = useChatStore((state) => state.actions.handleInputChange)
+  const resetChat = useChatStore((state) => state.actions.resetChat)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -46,38 +47,53 @@ export default function HomeScreen() {
   }, [input])
 
   return (
-    <div className="h-full w-full flex flex-col items-center gap-4 row-span-5 col-span-1">
+    <div className="h-screen w-screen flex flex-col items-center gap-4 row-span-5 col-span-1">
+      {/** Header */}
+      <div className="absolute top-0 left-0 right-0 h-[55px] z-40 backdrop-blur-xl bg-white dark:bg-[#0a0a0a]/30 ">
+        <div className="h-full w-full flex items-center justify-between p-6">
+          <div className="w-[10%]"></div>
+          <div className="flex items-center gap-2 w-[80%] justify-center relative ">
+            {messages.length > 0 && (
+              <div className="h-[45px] w-[45px] rounded-full overflow-hidden relative">
+                <img
+                  src={aiImg}
+                  height={45}
+                  width={45}
+                  alt="agent-ring"
+                  className="absolute top-0 left-0 right-0 bottom-0 m-auto"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="w-[10%]">
+            {messages.length > 0 && (
+              <Button
+                onClick={async () => {
+                  resetChat()
+                }}
+                size={'sm'}
+                variant={'ghost'}
+                className="rounded-full p-2"
+              >
+                <PlusIcon />
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/** Info Message when chat is empty */}
       {messages.length === 0 && (
         <div className="absolute flex flex-col items-center gap-4 w-[95%] p-4 justify-center h-[80%] z-30">
           <div className="flex flex-col gap-4 items-center">
             <div className="h-[200px] w-[200px] rounded-full overflow-hidden relative">
-              {/* <img
-                    src="/aiSelf3.png"
-                    height={200}
-                    width={200}
-                    alt="agent-ring"
-                  /> */}
-
-              {/* <img
-                src="/agent.svg"
-                height={200}
-                width={200}
-                alt="agent-ring"
-                className="absolute top-0 left-0 right-0 bottom-0 m-auto"
-              />
-              <img
-                src="/agent-ring-2.svg"
-                height={200}
-                width={200}
-                alt="agent-ring"
-                className="absolute top-0 left-0 right-0 bottom-0 m-auto"
-              /> */}
+              <img src={aiImg} height={200} width={200} alt="agent-ring" />
             </div>
 
             <div className="gap-2 flex flex-col">
               <h2 className="text-3xl font-semibold tracking-tight text-center">
-                Chat with your Digital Intelligence
+                Chat with your AI Assistant
               </h2>
 
               <p className="text-sm text-muted-foreground text-center">
@@ -90,7 +106,7 @@ export default function HomeScreen() {
       )}
 
       {/** Messages List */}
-      <div className="flex flex-1 h flex-col items-center w-full  relative overflow-y-auto max-h-[calc(100vh-135px)]">
+      <div className="flex flex-1 h flex-col items-center w-[60%] relative overflow-y-auto max-h-[calc(100vh-115px)]">
         <div className="flex flex-1 flex-col items-center w-full relative overflow-y-auto">
           <div className="h-full w-full p-4 flex overflow-y-auto flex-col-reverse z-30 pt-[60px]">
             {error && (
@@ -116,7 +132,7 @@ export default function HomeScreen() {
                   )}
                   {message.role === 'assistant' && (
                     <div
-                      className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-primary dark:bg-primary dark:text-secondary mr-auto max-w-[90%]  whitespace-pre-wrap ${
+                      className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-primary dark:bg-primary dark:text-secondary mr-auto max-w-[90%] whitespace-pre-wrap ${
                         generating && message.content === '' && 'animate-bounce'
                       }`}
                     >
