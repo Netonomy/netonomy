@@ -129,8 +129,8 @@ def main():
 
         # Convert the output to speech 
         tts.tts_to_file(text=output,
-                file_path="./audio_output.wav",
-                speaker_wav="./my_voice_sample.wav",
+                file_path="./audio_files/audio_output.wav",
+                speaker_wav="./audio_files.my_voice_sample.wav",
                 language="en")
         
         # Play the audio

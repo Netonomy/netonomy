@@ -2,7 +2,10 @@ import llama_cpp
 import subprocess
 import argparse
 import re
+import io
+import contextlib
 
+# Load the LLM model using llama_cpp
 def load_model(path, n_ctx=8000):
     model = llama_cpp.Llama(
         model_path=path,
@@ -12,14 +15,12 @@ def load_model(path, n_ctx=8000):
 
     return model
 
-
-
 def completion(model, prompt, max_tokens=1000, verbose=True):
     output = model.create_completion(
                 prompt=prompt,
                 stream=True,
                 max_tokens=max_tokens,
-                temperature=0,
+                temperature=0.5,
                 stop=["<|im_end|>"]
             )
 
@@ -37,17 +38,20 @@ def completion(model, prompt, max_tokens=1000, verbose=True):
     if verbose:
         print()
 
+    # Check for code blocks, and execute them in order
     code_blocks = re.findall(r"```(python|bash)(.*?)```", total_output, re.DOTALL)
-
     for code_type, code in code_blocks:
         code = code.strip()  # Remove leading/trailing whitespace
 
+        print("\033[91mCode Type: {}\033[0m".format(code_type))
+        print("\033[91mCode: {}\033[0m".format(code))
+
         if code_type == "python":
             try:
-                code_output = exec(code)
-
-                if verbose:
-                    print("Code Execution Output: " + str(code_output))
+                code_output = None
+                with contextlib.redirect_stdout(io.StringIO()) as f:
+                    exec(code)
+                    code_output = f.getvalue()
             except Exception as e:
                 print("An error occurred while executing the Python code: {}".format(e))
                 code_output = e
@@ -55,18 +59,18 @@ def completion(model, prompt, max_tokens=1000, verbose=True):
         elif code_type == "bash":
             try:
                 code_output = subprocess.check_output(code, shell=True)
-
-                if verbose:
-                    print("Code Execution Output: " + str(code_output))
             except Exception as e:
                 print("An error occurred while executing the Bash code: {}".format(e))
                 code_output = e
+        
+        if verbose:
+            print("Code Execution Output: {}".format(code_output))
 
         # Add the code output to ai assistant output
-        total_output += "\n" + "Code Execution Output: " + str(code_output) 
+        total_output += "\n\n" + "Code Execution Output: " + str(code_output) + "<|im_end|>\n" + "<|im_start|>assistant\n"
 
         # Send the code output to the assistant
-        prompt += "Code Execution Output: " + str(code_output) + "<|im_end|>\n" + "<|im_start|>assistant\n"
+        prompt += total_output 
         completion(model, prompt, max_tokens=1000, verbose=True)
 
     return total_output
@@ -91,9 +95,7 @@ def main():
     
     ```bash
     echo "Hello World!"
-    ```
-    
-    When you write code, it will be executed on the computer, then the response will be given back to you, then you can respond to the user. So after writing code, you should wait to get the response back before finishing your response to the user."""
+    ```"""
     prompt = "<|im_start|>system\n{system_message}<|im_end|>\n".format(system_message=system_message)
 
 
@@ -104,7 +106,6 @@ def main():
         output = completion(model, prompt)
 
         prompt += output + "<|im_end|>\n"
-
 
 if __name__ == "__main__":
     main()
