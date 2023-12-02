@@ -10,12 +10,15 @@ def load_model(path, n_ctx=8000):
     model = llama_cpp.Llama(
         model_path=path,
         n_ctx=n_ctx,
-        n_gpu_layers=1
+        n_gpu_layers=1,
+        temp=0
     )
 
     return model
 
-def completion(model, prompt, max_tokens=1000, verbose=True):
+# Use the LLM model to generate text
+# Give it the ability to execute code
+def completion(model, prompt, max_tokens=2000, verbose=True):
     output = model.create_completion(
                 prompt=prompt,
                 stream=True,
@@ -33,7 +36,12 @@ def completion(model, prompt, max_tokens=1000, verbose=True):
         total_output += token
 
         if verbose:
-            print(token, end="", flush=True)
+            # Check for code blocks, and print them in red
+            code_blocks = re.findall(r"```(python|bash)(.*?)```", token, re.DOTALL)
+            if len(code_blocks) > 0:
+                print("\033[91m", end="")
+            else:
+                print(token, end="", flush=True)
     
     if verbose:
         print()
@@ -44,8 +52,8 @@ def completion(model, prompt, max_tokens=1000, verbose=True):
     for code_type, code in code_blocks:
         code = code.strip()  # Remove leading/trailing whitespace
 
-        print("\033[91mCode Type: {}\033[0m".format(code_type))
-        print("\033[91mCode: {}\033[0m".format(code))
+        # print("\033[91mCode Type: {}\033[0m".format(code_type))
+        # print("\033[91mCode: {}\033[0m".format(code))
 
         if code_type == "python":
             try:
@@ -68,17 +76,13 @@ def completion(model, prompt, max_tokens=1000, verbose=True):
 
     # If there are no code blocks, then just return the output
     if len(code_blocks) == 0:
-        return total_output
-    # Otherwise, return the code output
+        prompt += total_output + "<|im_end|>\n"
+        return prompt 
+    # Otherwise, get the code output and send it back to the assistant
     else:
         # Add the code output to ai assistant output
-        # total_output += "\n\n" + "Code Execution Output: " + str(code_output) + "\nBased on the code output:"
-        total_output += "<|im_end|>\n<|im_start|>system\n" + "Code Execeution Output: " + str(code_output) + "\nAnalyze the code output and choose what to do next.<|im_end|>\n<|im_start|>assistant\n"
-
-        # Send the code output to the assistant
-        prompt += total_output
-        completion(model, prompt, max_tokens=1000, verbose=True)
-
+        prompt += total_output + "<|im_end|>\n<|im_start|>system\n" + "Code Execeution Output: " + str(code_output) + "\nUse the code output as context to answer the users question<|im_end|>\n<|im_start|>assistant\n"
+        return completion(model, prompt, verbose=True)
 
 
 def main():
@@ -92,25 +96,23 @@ def main():
     # Load the model
     model = load_model(model_path)
 
+
     # Prompt "Engineering"
-    system_message = """You are an AI Assistant running locally a users computer. You can write and execute python and bash code that will run on the computer. Put the code in blocks like this:
+    system_message = """You are a AI Assistant running locally on a users computer, and your purpose and drive is to assist the user with any request they have. 
+    
+    You have the ability to write and execute python and bash code that will run on the computer. ONLY write code when its necessary. When it is put it in blocks like this:
     ```python
     print("Hello World!")
     ```
     
-    ```bash
-    echo "Hello World!"
-    ```"""
+    Again, only write code when its necessary. If its not just respond with text."""
     prompt = "<|im_start|>system\n{system_message}<|im_end|>\n".format(system_message=system_message)
-
 
     while True:
         user_input = input("User: ")
         prompt += "<|im_start|>user\n{user_input}<|im_end|>\n<|im_start|>assistant\n".format(user_input=user_input)
 
-        output = completion(model, prompt)
-
-        prompt += str(output) + "<|im_end|>\n"
+        prompt = completion(model, prompt)
 
 if __name__ == "__main__":
     main()
