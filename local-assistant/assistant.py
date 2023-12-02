@@ -20,7 +20,7 @@ def completion(model, prompt, max_tokens=1000, verbose=True):
                 prompt=prompt,
                 stream=True,
                 max_tokens=max_tokens,
-                temperature=0.5,
+                temperature=0,
                 stop=["<|im_end|>"]
             )
 
@@ -40,6 +40,7 @@ def completion(model, prompt, max_tokens=1000, verbose=True):
 
     # Check for code blocks, and execute them in order
     code_blocks = re.findall(r"```(python|bash)(.*?)```", total_output, re.DOTALL)
+    code_output = ""
     for code_type, code in code_blocks:
         code = code.strip()  # Remove leading/trailing whitespace
 
@@ -48,32 +49,36 @@ def completion(model, prompt, max_tokens=1000, verbose=True):
 
         if code_type == "python":
             try:
-                code_output = None
                 with contextlib.redirect_stdout(io.StringIO()) as f:
                     exec(code)
-                    code_output = f.getvalue()
+                    code_output += f.getvalue() + "\n"
             except Exception as e:
                 print("An error occurred while executing the Python code: {}".format(e))
-                code_output = e
+                code_output += str(e) + "\n"
 
         elif code_type == "bash":
             try:
-                code_output = subprocess.check_output(code, shell=True)
+                code_output += subprocess.check_output(code, shell=True).decode('utf-8') + "\n"
             except Exception as e:
                 print("An error occurred while executing the Bash code: {}".format(e))
-                code_output = e
+                code_output += str(e) + "\n"
         
         if verbose:
             print("Code Execution Output: {}".format(code_output))
 
+    # If there are no code blocks, then just return the output
+    if len(code_blocks) == 0:
+        return total_output
+    # Otherwise, return the code output
+    else:
         # Add the code output to ai assistant output
-        total_output += "\n\n" + "Code Execution Output: " + str(code_output) + "<|im_end|>\n" + "<|im_start|>assistant\n"
+        # total_output += "\n\n" + "Code Execution Output: " + str(code_output) + "\nBased on the code output:"
+        total_output += "<|im_end|>\n<|im_start|>system\n" + "Code Execeution Output: " + str(code_output) + "\nAnalyze the code output and choose what to do next.<|im_end|>\n<|im_start|>assistant\n"
 
         # Send the code output to the assistant
-        prompt += total_output 
+        prompt += total_output
         completion(model, prompt, max_tokens=1000, verbose=True)
 
-    return total_output
 
 
 def main():
@@ -105,7 +110,7 @@ def main():
 
         output = completion(model, prompt)
 
-        prompt += output + "<|im_end|>\n"
+        prompt += str(output) + "<|im_end|>\n"
 
 if __name__ == "__main__":
     main()
