@@ -21,7 +21,7 @@ const useWeb5Store = create<Web5State>((set, get) => ({
       // Connect to Web5
       const { web5, did } = await Web5.connect({
         techPreview: {
-          //   dwnEndpoints: ['http://localhost:3100']
+          dwnEndpoints: []
         }
         // sync: "1000",
       })

@@ -1,13 +1,86 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+
+let LlamaModel, LlamaContext, LlamaChatSession, session, context, model, LlamaChatPromptWrapper
+
+async function sendMessage(event: any, message: string) {
+  await session.prompt(message, {
+    onToken(chunk) {
+      event.reply('ai-response', context.decode(chunk))
+    },
+    temperature: 0
+  })
+
+  event.reply('ai-response', 'END')
+}
+
+async function loadModel() {
+  import('node-llama-cpp')
+    .then(async (module) => {
+      LlamaModel = module.LlamaModel
+      LlamaContext = module.LlamaContext
+      LlamaChatSession = module.LlamaChatSession
+      LlamaChatPromptWrapper = module.LlamaChatPromptWrapper
+
+      class MyCustomChatPromptWrapper extends module.ChatPromptWrapper {
+        public readonly wrapperName: string = 'MyCustomChat'
+
+        public override wrapPrompt(
+          prompt: string,
+          { systemPrompt, promptIndex }: { systemPrompt: string; promptIndex: number }
+        ) {
+          if (promptIndex === 0) {
+            return (
+              '<|im_start|>system\n' +
+              systemPrompt +
+              '<|im_end|>\n<|im_start|>user\n' +
+              prompt +
+              '<|im_end|>\n<|im_start|>assistant\n'
+            )
+          } else {
+            return '<|im_start|>user\n' + prompt + '<|im_end|>\n<|im_start|>assistant\n'
+          }
+        }
+
+        public override getStopStrings(): string[] {
+          return ['<|im_end|>']
+        }
+
+        public override getDefaultStopString(): string {
+          return '<|im_end|>'
+        }
+      }
+
+      model = new LlamaModel({
+        modelPath:
+          '/Users/anthonydemattos/netonomy/models/mistral/openhermes-2.5-mistral-7b-16k.Q4_K_M.gguf'
+      })
+      context = new LlamaContext({ model })
+      session = new LlamaChatSession({
+        context,
+        promptWrapper: new MyCustomChatPromptWrapper(),
+        systemPrompt:
+          'You are a AI Assistant running locally on a users computer, and your purpose and drive is to assist the user with any request they have.'
+      })
+    })
+    .catch((err) => {
+      console.error('Failed to load module node-llama-cpp', err)
+    })
+}
+
+async function resetChat() {
+  loadModel()
+}
 
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     show: false,
     autoHideMenuBar: true,
+    titleBarStyle: 'hidden',
+    minWidth: 335,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -16,6 +89,8 @@ function createWindow(): void {
   })
 
   mainWindow.maximize()
+
+  loadModel()
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -48,6 +123,9 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
+
+  ipcMain.on('send-message', sendMessage)
+  ipcMain.on('reset-chat', resetChat)
 
   createWindow()
 

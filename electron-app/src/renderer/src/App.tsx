@@ -3,11 +3,16 @@ import HomeScreen from './screens/HomeScreen'
 import useWeb5Store from './hooks/stores/useWeb5Store'
 import { useEffect } from 'react'
 import { SplashScreen } from './screens/SplashScreen'
+import CreateProfileScreen from './screens/CreateProfileScreen'
 
 const router = createHashRouter([
   {
     path: '/',
     element: <HomeScreen />
+  },
+  {
+    path: '/create-profile',
+    element: <CreateProfileScreen />
   }
 ])
 

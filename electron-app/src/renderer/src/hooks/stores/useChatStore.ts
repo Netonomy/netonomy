@@ -14,6 +14,7 @@ interface ChatState {
     setInput: (input: string) => void
     setMessages: (messages: ChatMessage[]) => void
     resetChat: () => void
+    updateLastMessage: (token: string) => void
     setRecordId: (recordId: string | null) => void
     // createConversation: (initalMessage: ChatMessage) => Promise<AIConversation | undefined>
     sendMessage: (question: string) => void
@@ -49,14 +50,16 @@ const useChatStore = create<ChatState>((set, get) => ({
     setGeneratingResponse: (generatingResponse: boolean) => set({ generatingResponse }),
     setMessages: (messages: ChatMessage[]) => set({ messages }),
     setCurrentConversation: (currentConversation: AIConversation) => set({ currentConversation }),
-    resetChat: () =>
+    resetChat: () => {
       set({
         messages: [],
         input: '',
         generatingResponse: false,
         currentConversation: null,
         error: null
-      }),
+      })
+      ;(window as any).api.resetChat()
+    },
     // createConversation: async (initalMessage: ChatMessage) => {
     //   try {
     //     const web5 = useWeb5Store.getState().web5
@@ -87,6 +90,20 @@ const useChatStore = create<ChatState>((set, get) => ({
     //     console.error(err)
     //   }
     // },
+    updateLastMessage: (token: string) => {
+      if (token === 'END') {
+        set({ generatingResponse: false })
+        return
+      }
+
+      set((state) => {
+        const messages = [...state.messages]
+        const lastMessage = messages[messages.length - 1]
+        lastMessage.content += token
+        lastMessage.datePublished = new Date().toISOString()
+        return { messages }
+      })
+    },
     sendMessage: async (question: string) => {
       // Reset input
       set({ input: '' })
@@ -107,82 +124,93 @@ const useChatStore = create<ChatState>((set, get) => ({
           }
         ]
       }))
+      ;(window as any).api.sendMessage(question)
 
       //   Fetch request to send the messages
-      fetch(`http://localhost:8000/v1/completions`, {
-        method: 'POST',
-        body: JSON.stringify({
-          prompt: `<|im_start|>system\nYou are "Hermes 2", a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.<|im_end|>\n<|im_start|>user\n${question}<|im_end|>\n<|im_start|>assistant\n`,
-          stop: ['<|im_end|>'],
-          stream: true,
-          max_tokens: 1500
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-          //   Authorization: `Bearer ${accessToken}`
-        }
-      })
-        .then(async (response) => {
-          set({ generatingResponse: false })
+      // fetch(`http://localhost:8000/completion`, {
+      //   method: 'POST',
+      //   body: JSON.stringify({
+      //     prompt: `<|im_start|>system\nYou are "Hermes 2", a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.<|im_end|>\n<|im_start|>user\n${question}<|im_end|>\n<|im_start|>assistant\n`,
+      //     stop: ['<|im_end|>'],
+      //     stream: true,
+      //     max_tokens: 1500
+      //   }),
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //     //   Authorization: `Bearer ${accessToken}`
+      //   }
+      // })
+      //   .then(async (response) => {
+      //     set({ generatingResponse: false })
 
-          if (response.status !== 200) {
-            console.error(`Unable to send chat message. Try again later.`)
-            set({
-              error: 'Unable to send message at this time.',
-              generatingResponse: false
-            })
-            return
-          }
+      //     if (response.status !== 200) {
+      //       console.error(`Unable to send chat message. Try again later.`)
+      //       set({
+      //         error: 'Unable to send message at this time.',
+      //         generatingResponse: false
+      //       })
+      //       return
+      //     }
 
-          const reader = response.body?.getReader()
+      //     const reader = response.body?.getReader()
 
-          if (reader) {
-            try {
-              while (true) {
-                const { done, value } = await reader.read()
+      //     if (reader) {
+      //       try {
+      //         while (true) {
+      //           const { done, value } = await reader.read()
 
-                if (done) {
-                  // Set generating to false
-                  set({ generatingResponse: false })
-                  break
-                }
+      //           if (done) {
+      //             // Set generating to false
+      //             set({ generatingResponse: false })
+      //             break
+      //           }
 
-                if (value) {
-                  const chunk = new TextDecoder().decode(value)
-                  const dataStrings = chunk.split('data:').filter((str) => str.trim() !== '')
+      //           if (value) {
+      //             const chunk = new TextDecoder().decode(value)
 
-                  dataStrings.forEach((dataString) => {
-                    try {
-                      if (dataString.trim() === '[DONE]') {
-                        console.log('Received DONE signal')
-                      } else {
-                        const data = JSON.parse(dataString)
-                        const token = data['choices'][0]['text']
-                        console.log(token)
+      //             // Add chunk to the last message in the messages state content
+      //             set((state) => {
+      //               const messages = [...state.messages]
+      //               const lastMessage = messages[messages.length - 1]
+      //               lastMessage.content += chunk
+      //               lastMessage.datePublished = new Date().toISOString()
+      //               return { messages }
+      //             })
 
-                        // Update the last message in the messages state
-                        set((state) => {
-                          const messages = [...state.messages]
-                          const lastMessage = messages[messages.length - 1]
-                          lastMessage.content += token
-                          lastMessage.datePublished = new Date().toISOString()
-                          return { messages }
-                        })
-                      }
-                    } catch (err) {
-                      console.error(`Unable to parse data string as JSON: ${err}`)
-                    }
-                  })
-                }
-              }
-            } catch (err) {
-              console.error(`Unable to read chunk `)
-            }
-          }
-        })
-        .catch((err) => {
-          console.error(`Unable to send chat message: ${err}`)
-        })
+      //             // const dataStrings = chunk.split('data:').filter((str) => str.trim() !== '')
+
+      //             // dataStrings.forEach((dataString) => {
+      //             //   try {
+      //             //     if (dataString.trim() === '[DONE]') {
+      //             //       console.log('Received DONE signal')
+      //             //     } else {
+      //             //       const data = JSON.parse(dataString)
+      //             //       const token = data['choices'][0]['text']
+      //             //       console.log(token)
+
+      //             //       // Update the last message in the messages state
+      //             //       set((state) => {
+      //             //         const messages = [...state.messages]
+      //             //         const lastMessage = messages[messages.length - 1]
+      //             //         lastMessage.content += token
+      //             //         lastMessage.datePublished = new Date().toISOString()
+      //             //         return { messages }
+      //             //       })
+      //             //     }
+      //             //   } catch (err) {
+      //             //     console.error(`Unable to parse data string as JSON: ${err}`)
+      //             //   }
+      //             // })
+      //           }
+      //         }
+      //       } catch (err) {
+      //         console.error(`Unable to read chunk `)
+      //       }
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.error(`Unable to send chat message: ${err}`)
+      //   })
     },
     // updateConversation: async (conversation: AIConversation) => {
     //   const web5 = useWeb5Store.getState().web5
@@ -207,8 +235,6 @@ const useChatStore = create<ChatState>((set, get) => ({
     handleSubmit: async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       const { input, generatingResponse, actions } = get()
-
-      console.log('SUBMITTING')
 
       // Prevent submission if a response is already being generated or input is empty
       if (generatingResponse || input === '') return
