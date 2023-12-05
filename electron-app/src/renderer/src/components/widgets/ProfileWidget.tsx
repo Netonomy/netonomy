@@ -7,6 +7,7 @@ import { Button } from '../ui/button'
 import { Skeleton } from '../ui/skeleton'
 import { Avatar, AvatarImage } from '../ui/avatar'
 import { Pencil, X } from 'lucide-react'
+import TappableCardWrapper from '../TappableCardWrapper'
 
 export function ProfileWidet() {
   const navigate = useNavigate()
@@ -26,7 +27,7 @@ export function ProfileWidet() {
 
   const handleCardClick = () => {
     if (shouldNavigate) {
-      // navigate(`/profile/${usersDid}`)
+      navigate(`/profile/${usersDid}`)
     }
   }
 
@@ -52,9 +53,10 @@ export function ProfileWidet() {
 
   return (
     <div className="row-span-2 col-span-1 w-full flex items-center justify-center relative">
-      <Card className="h-full w-full rounded-xl shadow-lg" onClick={handleCardClick}>
-        <CardContent className="flex h-full items-center justify-center gap-4 lg:flex-col p-4 relative">
-          {/* {!editng ? (
+      <TappableCardWrapper>
+        <Card className="h-full w-full rounded-xl shadow-lg" onClick={handleCardClick}>
+          <CardContent className="flex h-full items-center justify-center gap-4 lg:flex-col p-4 relative">
+            {/* {!editng ? (
             <div
               className="absolute top-4 right-4"
               onClick={(e) => {
@@ -80,37 +82,37 @@ export function ProfileWidet() {
             </div>
           )} */}
 
-          {!editng ? (
-            <>
-              <div className="h-12 w-12 lg:h-44 lg:w-44 relative">
-                <Avatar className="h-full w-full">
-                  {profileFetched ? (
-                    <img src={profile?.image} className="h-full w-full" />
-                  ) : (
-                    // <>{profile?.image && <AvatarImage src={profile.image} />}</>
-                    <Skeleton className="h-full w-full" />
-                  )}
-                  {/* <AvatarFallback>
+            {!editng ? (
+              <>
+                <div className="h-12 w-12 lg:h-44 lg:w-44 relative">
+                  <Avatar className="h-full w-full">
+                    {profileFetched ? (
+                      <img src={profile?.image} className="h-full w-full" />
+                    ) : (
+                      // <>{profile?.image && <AvatarImage src={profile.image} />}</>
+                      <Skeleton className="h-full w-full" />
+                    )}
+                    {/* <AvatarFallback>
               {profile?.name?.split(" ")[0]?.charAt(0)}
               {profile?.name?.split(" ")[1]?.charAt(0)}
             </AvatarFallback> */}
-                </Avatar>
-              </div>
-
-              {profileFetched && profile ? (
-                <div className="flex gap-2">
-                  {/* <div className="font-light text-[31px]">Hello </div> */}
-                  <div className="font-semibold text-[31px]">{profile.name}</div>
+                  </Avatar>
                 </div>
-              ) : (
-                <Skeleton className="h-6 w-[150px]" />
-              )}
-            </>
-          ) : (
-            <>{/* <EditingProfileForm /> */}</>
-          )}
 
-          {/* {usersDid ? (
+                {profileFetched && profile ? (
+                  <div className="flex gap-2">
+                    {/* <div className="font-light text-[31px]">Hello </div> */}
+                    <div className="font-semibold text-[31px]">{profile.name}</div>
+                  </div>
+                ) : (
+                  <Skeleton className="h-6 w-[150px]" />
+                )}
+              </>
+            ) : (
+              <>{/* <EditingProfileForm /> */}</>
+            )}
+
+            {/* {usersDid ? (
             <div className="flex items-center gap-2">
               🔑
               <p className="text-sm text-muted-foreground max-w-[250px] truncate">
@@ -140,31 +142,32 @@ export function ProfileWidet() {
             <Skeleton className="h-6 w-[150px]" />
           )} */}
 
-          {isOwnersProfile(did || '') ? (
-            <Button variant={'ghost'} size={'sm'} onClick={handleConnectionsClick}>
-              <p className="text-sm text-muted-foreground">
-                {connections?.length || 0} Connections
-              </p>
-            </Button>
-          ) : (
-            <Button
-              disabled={creatingConnection}
-              onClick={async (e) => {
-                e.stopPropagation()
-                e.preventDefault()
+            {isOwnersProfile(did || '') ? (
+              <Button variant={'ghost'} size={'sm'} onClick={handleConnectionsClick}>
+                <p className="text-sm text-muted-foreground">
+                  {connections?.length || 0} Connections
+                </p>
+              </Button>
+            ) : (
+              <Button
+                disabled={creatingConnection}
+                onClick={async (e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
 
-                setCreatingConnection(true)
-                if (did) await createConnection(did)
-                setCreatingConnection(false)
-              }}
-            >
-              Follow
-            </Button>
-          )}
+                  setCreatingConnection(true)
+                  if (did) await createConnection(did)
+                  setCreatingConnection(false)
+                }}
+              >
+                Follow
+              </Button>
+            )}
 
-          {/* <ConnectionsDialog open={showConnectionsDialog} handleChange={handleCloseDialog} /> */}
-        </CardContent>
-      </Card>
+            {/* <ConnectionsDialog open={showConnectionsDialog} handleChange={handleCloseDialog} /> */}
+          </CardContent>
+        </Card>
+      </TappableCardWrapper>
     </div>
   )
 }

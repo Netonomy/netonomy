@@ -10,6 +10,7 @@ interface ChatState {
   currentConversation: AIConversation | null
   error: string | null
   recordId: string | null
+  callbackListenerRegistered: boolean
   actions: {
     setInput: (input: string) => void
     setMessages: (messages: ChatMessage[]) => void
@@ -21,6 +22,7 @@ interface ChatState {
     // updateConversation: (conversation: AIConversation) => void
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
     handleInputChange: (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => void
+    setCallbackListenerRegistered: (callbackListenerRegistered: boolean) => void
   }
 }
 
@@ -44,6 +46,7 @@ const useChatStore = create<ChatState>((set, get) => ({
   currentConversation: null,
   error: null,
   recordId: null,
+  callbackListenerRegistered: false,
   actions: {
     setInput: (input: string) => set({ input }),
     setRecordId: (recordId: string | null) => set({ recordId }),
@@ -278,6 +281,9 @@ const useChatStore = create<ChatState>((set, get) => ({
       const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1)
 
       set({ input: capitalizedValue })
+    },
+    setCallbackListenerRegistered: (callbackListenerRegistered: boolean) => {
+      set({ callbackListenerRegistered })
     }
   }
 }))

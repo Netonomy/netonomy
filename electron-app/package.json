@@ -30,6 +30,7 @@
     "@web5/api": "^0.8.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "framer-motion": "^10.16.12",
     "lucide-react": "^0.294.0",
     "node-llama-cpp": "^2.8.0",
     "react-drop-zone": "^4.3.3",

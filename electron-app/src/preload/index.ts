@@ -5,7 +5,8 @@ import { electronAPI } from '@electron-toolkit/preload'
 const api = {
   sendMessage: (message: string) => ipcRenderer.send('send-message', message),
   resetChat: () => ipcRenderer.send('reset-chat'),
-  handleAiResponse: (callback) => ipcRenderer.on('ai-response', callback)
+  handleAiResponse: (callback) => ipcRenderer.on('ai-response', callback),
+  removeHandleAiResponse: (callback) => ipcRenderer.removeListener('ai-response', callback)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

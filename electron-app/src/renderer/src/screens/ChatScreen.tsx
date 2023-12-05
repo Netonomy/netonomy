@@ -16,6 +16,10 @@ export default function ChatScreen() {
   const handleInputChange = useChatStore((state) => state.actions.handleInputChange)
   const resetChat = useChatStore((state) => state.actions.resetChat)
   const updateLastMessage = useChatStore((state) => state.actions.updateLastMessage)
+  const callbackListenerRegistered = useChatStore((state) => state.callbackListenerRegistered)
+  const setCallbackListenerRegistered = useChatStore(
+    (state) => state.actions.setCallbackListenerRegistered
+  )
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -49,9 +53,16 @@ export default function ChatScreen() {
   }, [input])
 
   useEffect(() => {
-    ;(window as any).api.handleAiResponse((_: any, message: string) => {
-      updateLastMessage(message)
-    })
+    if (!callbackListenerRegistered) {
+      // Define the callback inside useEffect to ensure it's using the latest state/props
+      const callback = (_: any, message: string) => {
+        updateLastMessage(message)
+      }
+
+      window.api.handleAiResponse(callback)
+
+      setCallbackListenerRegistered(true)
+    }
   }, [])
 
   return (
