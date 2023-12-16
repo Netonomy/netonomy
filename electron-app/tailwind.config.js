@@ -80,5 +80,21 @@ module.exports = {
       }
     }
   },
-  plugins: [require('tailwindcss-animate')]
+  plugins: [
+    require('tailwindcss-animate'),
+    function ({ addUtilities }) {
+      const newUtilities = {
+        '.no-select': {
+          '-webkit-user-select': 'none',
+          '-moz-user-select': 'none',
+          '-ms-user-select': 'none',
+          'user-select': 'none'
+        },
+        '.app-drag': {
+          '-webkit-app-region': 'drag'
+        }
+      }
+      addUtilities(newUtilities)
+    }
+  ]
 }

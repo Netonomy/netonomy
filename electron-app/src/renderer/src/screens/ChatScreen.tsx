@@ -1,10 +1,11 @@
 import { Button } from '@renderer/components/ui/button'
 import { Textarea } from '@renderer/components/ui/textarea'
 import useChatStore from '@renderer/hooks/stores/useChatStore'
-import { AlertCircle, Loader2, PlusIcon, SendIcon } from 'lucide-react'
+import { AlertCircle, ArrowLeft, Loader2, PlusIcon, SendIcon } from 'lucide-react'
 import { Fragment, useEffect, useRef } from 'react'
 import aiImg from '../assets/aiSelf3.png'
 import { Card, CardContent } from '@renderer/components/ui/card'
+import { useSearchParams } from 'react-router-dom'
 
 export default function ChatScreen() {
   const input = useChatStore((state) => state.input)
@@ -22,6 +23,7 @@ export default function ChatScreen() {
   )
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const handleKeyDown = async (event: any) => {
     if (event.key === 'Enter' && event.shiftKey) {
@@ -73,42 +75,50 @@ export default function ChatScreen() {
       >
         <CardContent className="h-full flex flex-col items-center w-full rounded-xl p-0">
           {/** Header */}
-          <div className="absolute top-0 left-0 right-0 h-[55px] z-40 backdrop-blur-xl bg-white dark:bg-[#0a0a0a]/30 ">
+          <div className="absolute top-0 left-0 right-0 h-[65px] z-40 backdrop-blur-xl bg-white dark:bg-[#0a0a0a]/30 ">
             <div className="h-full w-full flex items-center justify-between p-6">
-              <div className="w-[10%]"></div>
+              <div className="w-[10%]">
+                <Button
+                  size={'sm'}
+                  variant={'ghost'}
+                  className="rounded-full p-2"
+                  onClick={() => {
+                    searchParams.delete('messageId')
+                    setSearchParams(searchParams)
+                  }}
+                >
+                  <ArrowLeft />
+                </Button>
+              </div>
               <div className="flex items-center gap-2 w-[80%] justify-center relative ">
-                {messages.length > 0 && (
-                  <div className="h-[45px] w-[45px] rounded-full overflow-hidden relative">
-                    <img
-                      src={aiImg}
-                      height={45}
-                      width={45}
-                      alt="agent-ring"
-                      className="absolute top-0 left-0 right-0 bottom-0 m-auto"
-                    />
-                  </div>
-                )}
+                <div className="h-[45px] w-[45px] rounded-full overflow-hidden relative">
+                  <img
+                    src={aiImg}
+                    height={45}
+                    width={45}
+                    alt="agent-ring"
+                    className="absolute top-0 left-0 right-0 bottom-0 m-auto"
+                  />
+                </div>
               </div>
 
               <div className="w-[10%]">
-                {messages.length > 0 && (
-                  <Button
-                    onClick={async () => {
-                      resetChat()
-                    }}
-                    size={'sm'}
-                    variant={'ghost'}
-                    className="rounded-full p-2"
-                  >
-                    <PlusIcon />
-                  </Button>
-                )}
+                <Button
+                  onClick={async () => {
+                    resetChat()
+                  }}
+                  size={'sm'}
+                  variant={'ghost'}
+                  className="rounded-full p-2"
+                >
+                  <PlusIcon />
+                </Button>
               </div>
             </div>
           </div>
 
           {/** Info Message when chat is empty */}
-          {messages.length === 0 && (
+          {/* {messages.length === 0 && (
             <div className="absolute flex flex-col items-center gap-4 w-[95%] p-4 justify-center h-[80%] z-30">
               <div className="flex flex-col gap-4 items-center">
                 <div className="h-[200px] w-[200px] rounded-full overflow-hidden relative">
@@ -127,7 +137,7 @@ export default function ChatScreen() {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {/** Messages List */}
           <div className="flex flex-1 h flex-col items-center w-full relative overflow-y-auto max-h-[calc(100vh-115px)]">
