@@ -18,6 +18,7 @@ use tokenizers::{AddedToken, Tokenizer};
 const MODEL_PATH: &str =
     "/Users/anthonydemattos/netonomy/models/mistral/openhermes-2.5-mistral-7b-16k.Q4_K_M.gguf";
 const TOKENIZER_REPO: &str = "mistralai/Mistral-7B-v0.1";
+const MAX_TOKENS: usize = 1000;
 
 fn main() -> Result<()> {
     // Use hardware optimizations if available
@@ -63,7 +64,7 @@ fn main() -> Result<()> {
 
         // Concatenate prompt tokens with previous prompt tokens
         let prompt_tokens = [&pre_prompt_tokens, tokens.get_ids()].concat();
-        let to_sample: usize = 1000_usize.saturating_sub(1);
+        let to_sample: usize = MAX_TOKENS.saturating_sub(1);
         let prompt_tokens = if prompt_tokens.len() + to_sample
             > candle_transformers::models::quantized_llama::MAX_SEQ_LEN - 10
         {
