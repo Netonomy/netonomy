@@ -11,6 +11,7 @@ use candle_core::quantized::gguf_file;
 use candle_core::{Device, Tensor};
 use candle_examples::token_output_stream::TokenOutputStream;
 use candle_transformers::generation::LogitsProcessor;
+use candle_transformers::models::quantized_llama::ModelWeights;
 use std::path::PathBuf;
 use tokenizers::{AddedToken, Tokenizer};
 
@@ -28,27 +29,10 @@ fn main() -> Result<()> {
         candle_core::utils::with_f16c()
     );
 
-    let mut file = std::fs::File::open(&MODEL_PATH)?;
-
     // Load the GGUF model
-    let start = std::time::Instant::now();
-    let model = gguf_file::Content::read(&mut file)?;
-    let mut total_size_in_bytes = 0;
-    for (_, tensor) in model.tensor_infos.iter() {
-        let elem_count = tensor.shape.elem_count();
-        total_size_in_bytes +=
-            elem_count * tensor.ggml_dtype.type_size() / tensor.ggml_dtype.blck_size();
-    }
-    println!(
-        "loaded {:?} tensors ({}) in {:.2}s",
-        model.tensor_infos.len(),
-        &format_size(total_size_in_bytes),
-        start.elapsed().as_secs_f32(),
-    );
-    let mut model =
-        candle_transformers::models::quantized_llama::ModelWeights::from_gguf(model, &mut file)?;
+    let mut model = load_model()?;
 
-    // Fetch and load the tokenizer
+    // Load the tokenizer
     let tokenizer = fetch_tokenizer(TOKENIZER_REPO)?;
     let mut tos = TokenOutputStream::new(tokenizer);
 
@@ -63,17 +47,21 @@ fn main() -> Result<()> {
             .read_line(&mut prompt_str)
             .expect("Could not read input from the user");
 
+        // Encode prompt with special tokens
+        // Add system prompt if this is the first prompt
         if prompt_index == 0 {
             prompt_str = "<im_start>system\nYou are Hermes 2, a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.<|im_end|>\n<im_start>user\n".to_string() + &prompt_str + "<im_end>assistant\n";
         } else {
             prompt_str = "<im_start>user\n".to_string() + &prompt_str + "<im_end>assistant\n";
         }
 
+        // Encode prompt with tokenizer
         let tokens = tos
             .tokenizer()
             .encode(prompt_str, true)
             .map_err(anyhow::Error::msg)?;
 
+        // Concatenate prompt tokens with previous prompt tokens
         let prompt_tokens = [&pre_prompt_tokens, tokens.get_ids()].concat();
         let to_sample: usize = 1000_usize.saturating_sub(1);
         let prompt_tokens = if prompt_tokens.len() + to_sample
@@ -89,6 +77,7 @@ fn main() -> Result<()> {
         let mut all_tokens: Vec<u32> = vec![];
         let mut logits_processor = LogitsProcessor::new(299792458_u64, Some(0.2), None);
 
+        // Generate inital token
         let mut next_token: u32 = {
             let input: Tensor =
                 Tensor::new(prompt_tokens.as_slice(), &Device::Cpu)?.unsqueeze(0)?;
@@ -106,6 +95,7 @@ fn main() -> Result<()> {
         let eos_token: &str = "<|im_end|>";
         let eos_token: u32 = *tos.tokenizer().get_vocab(true).get(eos_token).unwrap();
 
+        // Generate the rest of the tokens
         for index in 0..to_sample {
             let input: Tensor = Tensor::new(&[next_token], &Device::Cpu)?.unsqueeze(0)?;
             let logits: Tensor = model.forward(&input, prompt_tokens.len() + index)?;
@@ -142,6 +132,26 @@ fn main() -> Result<()> {
     }
 
     Ok(())
+}
+
+fn load_model() -> Result<ModelWeights> {
+    let mut file = std::fs::File::open(&MODEL_PATH)?;
+    let start = std::time::Instant::now();
+    let model = gguf_file::Content::read(&mut file)?;
+    let mut total_size_in_bytes = 0;
+    for (_, tensor) in model.tensor_infos.iter() {
+        let elem_count = tensor.shape.elem_count();
+        total_size_in_bytes +=
+            elem_count * tensor.ggml_dtype.type_size() / tensor.ggml_dtype.blck_size();
+    }
+    println!(
+        "loaded {:?} tensors ({}) in {:.2}s",
+        model.tensor_infos.len(),
+        &format_size(total_size_in_bytes),
+        start.elapsed().as_secs_f32(),
+    );
+
+    Ok(candle_transformers::models::quantized_llama::ModelWeights::from_gguf(model, &mut file)?)
 }
 
 fn fetch_tokenizer(repo: &str) -> Result<Tokenizer> {
