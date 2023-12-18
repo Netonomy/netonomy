@@ -18,6 +18,6 @@ tokenizers = { version = "0.13.4", default-features = false }
 
 
 [features]
-default = []
+default = ["accelerate"]
 mkl = ["dep:intel-mkl-src", "candle-core/mkl", "candle-nn/mkl", "candle-transformers/mkl"]
 accelerate = ["dep:accelerate-src", "candle-core/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate"]

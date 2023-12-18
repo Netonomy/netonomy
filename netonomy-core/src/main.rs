@@ -12,26 +12,13 @@ use candle_core::{Device, Tensor};
 use candle_examples::token_output_stream::TokenOutputStream;
 use candle_transformers::generation::LogitsProcessor;
 use std::path::PathBuf;
-use tokenizers::Tokenizer;
+use tokenizers::{AddedToken, Tokenizer};
 
-const MODEL_PATH: &str = "/Users/anthonydemattos/netonomy/models/llama/llama-2-7b-chat.Q4_K_M.gguf";
-const TOKENIZER_REPO: &str = "hf-internal-testing/llama-tokenizer";
-const DEFAULT_PROMPT: &str = "My favorite theorem is ";
-const MAX_LENGTH: usize = 100;
+const MODEL_PATH: &str =
+    "/Users/anthonydemattos/netonomy/models/mistral/openhermes-2.5-mistral-7b-16k.Q4_K_M.gguf";
+const TOKENIZER_REPO: &str = "mistralai/Mistral-7B-v0.1";
 
-fn main() -> anyhow::Result<()> {
-    if cfg!(feature = "mkl") {
-        println!("The 'mkl' feature is enabled");
-    } else {
-        println!("The 'mkl' feature is not enabled");
-    }
-
-    if cfg!(feature = "accelerate") {
-        println!("The 'accelerate' feature is enabled");
-    } else {
-        println!("The 'accelerate' feature is not enabled");
-    }
-
+fn main() -> Result<()> {
     // Use hardware optimizations if available
     println!(
         "AVX: {}, NEON: {}, SIMD128: {}, F16C: {}",
@@ -66,10 +53,21 @@ fn main() -> anyhow::Result<()> {
     let mut tos = TokenOutputStream::new(tokenizer);
 
     let mut pre_prompt_tokens: Vec<u32> = vec![];
-    for prompt_index in 0.. {
-        let prompt_str: String = DEFAULT_PROMPT.to_string().clone();
 
-        println!("{}", &prompt_str);
+    for prompt_index in 0.. {
+        // Read in input from the user
+        print!("> ");
+        let mut prompt_str: String = String::new();
+        std::io::stdout().flush()?;
+        std::io::stdin()
+            .read_line(&mut prompt_str)
+            .expect("Could not read input from the user");
+
+        if prompt_index == 0 {
+            prompt_str = "<im_start>system\nYou are Hermes 2, a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.<|im_end|>\n<im_start>user\n".to_string() + &prompt_str + "<im_end>assistant\n";
+        } else {
+            prompt_str = "<im_start>user\n".to_string() + &prompt_str + "<im_end>assistant\n";
+        }
 
         let tokens = tos
             .tokenizer()
@@ -105,10 +103,8 @@ fn main() -> anyhow::Result<()> {
             std::io::stdout().flush()?;
         }
 
-        let eos_token: &str = "</s>";
+        let eos_token: &str = "<|im_end|>";
         let eos_token: u32 = *tos.tokenizer().get_vocab(true).get(eos_token).unwrap();
-
-        let mut sampled = 0;
 
         for index in 0..to_sample {
             let input: Tensor = Tensor::new(&[next_token], &Device::Cpu)?.unsqueeze(0)?;
@@ -131,7 +127,6 @@ fn main() -> anyhow::Result<()> {
                 print!("{t}");
                 std::io::stdout().flush()?;
             }
-            sampled += 1;
             if next_token == eos_token {
                 break;
             };
@@ -140,17 +135,56 @@ fn main() -> anyhow::Result<()> {
         if let Some(rest) = tos.decode_rest().map_err(candle_core::Error::msg)? {
             print!("{rest}");
         }
+
+        pre_prompt_tokens = [prompt_tokens.as_slice(), all_tokens.as_slice()].concat();
+
+        print!("\n");
     }
 
     Ok(())
 }
 
-fn fetch_tokenizer(repo: &str) -> anyhow::Result<Tokenizer> {
+fn fetch_tokenizer(repo: &str) -> Result<Tokenizer> {
     let api = hf_hub::api::sync::Api::new()?;
     let api = api.model(repo.to_string());
     let tokenizer_path: PathBuf = api.get("tokenizer.json")?;
 
-    Tokenizer::from_file(tokenizer_path).map_err(anyhow::Error::msg)
+    let mut tokenizer = Tokenizer::from_file(tokenizer_path).map_err(anyhow::Error::msg);
+    tokenizer = match tokenizer {
+        Ok(mut tokenizer) => {
+            let special_tokens: &[AddedToken] = &[
+                AddedToken {
+                    content: "<|im_start|>".to_string(),
+                    single_word: false,
+                    lstrip: false,
+                    rstrip: false,
+                    normalized: false,
+                    special: true,
+                },
+                AddedToken {
+                    content: "<|im_end|>".to_string(),
+                    single_word: false,
+                    lstrip: false,
+                    rstrip: false,
+                    normalized: false,
+                    special: true,
+                },
+                AddedToken {
+                    content: "<unk>".to_string(),
+                    single_word: false,
+                    lstrip: false,
+                    rstrip: false,
+                    normalized: false,
+                    special: true,
+                },
+            ];
+            tokenizer.add_special_tokens(special_tokens);
+            Ok(tokenizer)
+        }
+        Err(_) => Err(anyhow::Error::msg("Failed to fetch tokenizer")),
+    };
+
+    return tokenizer;
 }
 
 fn format_size(size_in_bytes: usize) -> String {
