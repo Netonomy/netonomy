@@ -10,6 +10,7 @@ use candle_core::{Device, Tensor};
 use candle_examples::token_output_stream::TokenOutputStream;
 use candle_transformers::generation::LogitsProcessor;
 use candle_transformers::models::quantized_llama::ModelWeights;
+use hf_hub::api;
 use once_cell::sync::Lazy;
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -18,8 +19,9 @@ use tokenizers::{AddedToken, Tokenizer};
 static MODEL: Lazy<Mutex<Option<ModelWeights>>> = Lazy::new(|| Mutex::new(None));
 static TOKENIZER: Lazy<Mutex<Option<Tokenizer>>> = Lazy::new(|| Mutex::new(None));
 
-const MODEL_PATH: &str =
-    "/Users/anthonydemattos/netonomy/models/mistral/openhermes-2.5-mistral-7b-16k.Q4_K_M.gguf";
+const MODEL_REPO: &str = "TheBloke/OpenHermes-2.5-Mistral-7B-16k-GGUF";
+const MODEL_FILE: &str = "openhermes-2.5-mistral-7b-16k.Q4_K_M.gguf";
+const MODEL_PATH: &str = "./openhermes-2.5-mistral-7b-16k.Q4_K_M.gguf";
 const TOKENIZER_REPO: &str = "mistralai/Mistral-7B-v0.1";
 const MAX_TOKENS: usize = 1000;
 
@@ -128,21 +130,25 @@ fn generate(window: tauri::Window, prompt_str: &str) -> Result<(), ()> {
 }
 
 fn load_model() -> Result<()> {
-    let mut file = std::fs::File::open(&MODEL_PATH)?;
-    let start = std::time::Instant::now();
-    let model = gguf_file::Content::read(&mut file)?;
-    let mut total_size_in_bytes = 0;
-    for (_, tensor) in model.tensor_infos.iter() {
-        let elem_count = tensor.shape.elem_count();
-        total_size_in_bytes +=
-            elem_count * tensor.ggml_dtype.type_size() / tensor.ggml_dtype.blck_size();
+    // Check if the model is already downloaded
+    if PathBuf::from(MODEL_PATH).exists() {
+        println!("Model already downloaded");
+    } else {
+        println!("Downloading model");
+
+        // Fetch the model from the HuggingFace Hub
+        let api = api::sync::Api::new()?;
+        let api = api.model(MODEL_REPO.to_string());
+        let model_path: PathBuf = api.get(MODEL_FILE)?;
+
+        // Save the model to a local file
+        let mut file = std::fs::File::create(MODEL_PATH)?;
+        std::io::copy(&mut std::fs::File::open(&model_path)?, &mut file)?;
     }
-    println!(
-        "loaded {:?} tensors ({}) in {:.2}s",
-        model.tensor_infos.len(),
-        &format_size(total_size_in_bytes),
-        start.elapsed().as_secs_f32(),
-    );
+
+    // Load the model
+    let mut file = std::fs::File::open(&MODEL_PATH)?;
+    let model = gguf_file::Content::read(&mut file)?;
 
     let model_weights =
         candle_transformers::models::quantized_llama::ModelWeights::from_gguf(model, &mut file);
@@ -150,6 +156,8 @@ fn load_model() -> Result<()> {
         Ok(weights) => {
             let mut model = MODEL.lock().unwrap();
             *model = Some(weights);
+
+            println!("Loaded model");
         }
         Err(e) => {
             eprintln!("Failed to load model: {:?}", e);
@@ -161,9 +169,21 @@ fn load_model() -> Result<()> {
 }
 
 fn fetch_and_load_tokenizer(repo: &str) -> Result<()> {
-    let api = hf_hub::api::sync::Api::new()?;
-    let api = api.model(repo.to_string());
-    let tokenizer_path: PathBuf = api.get("tokenizer.json")?;
+    // Check if the tokenizer is already downloaded
+    let tokenizer_path = PathBuf::from("tokenizer.json");
+    if PathBuf::from("tokenizer.json").exists() {
+        println!("Tokenizer already downloaded");
+    } else {
+        println!("Downloading tokenizer");
+
+        let api = hf_hub::api::sync::Api::new()?;
+        let api = api.model(repo.to_string());
+        let tokenizer_path: PathBuf = api.get("tokenizer.json")?;
+
+        // Save the tokenizer to a local file
+        let mut file = std::fs::File::create("tokenizer.json")?;
+        std::io::copy(&mut std::fs::File::open(&tokenizer_path)?, &mut file)?;
+    }
 
     let mut tokenizer = Tokenizer::from_file(tokenizer_path).map_err(anyhow::Error::msg);
     tokenizer = match tokenizer {
@@ -208,18 +228,6 @@ fn fetch_and_load_tokenizer(repo: &str) -> Result<()> {
     Ok(())
 }
 
-fn format_size(size_in_bytes: usize) -> String {
-    if size_in_bytes < 1_000 {
-        format!("{}B", size_in_bytes)
-    } else if size_in_bytes < 1_000_000 {
-        format!("{:.2}KB", size_in_bytes as f64 / 1e3)
-    } else if size_in_bytes < 1_000_000_000 {
-        format!("{:.2}MB", size_in_bytes as f64 / 1e6)
-    } else {
-        format!("{:.2}GB", size_in_bytes as f64 / 1e9)
-    }
-}
-
 fn main() {
     // Use hardware optimizations if available
     println!(
@@ -233,12 +241,8 @@ fn main() {
     // Load the GGUF model
     let _ = load_model();
 
-    println!("Loaded model");
-
     // Load the tokenizer
     fetch_and_load_tokenizer(TOKENIZER_REPO).expect("Tokenizer not loaded");
-
-    println!("Loaded tokenizer");
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![greet, generate])
