@@ -1,0 +1,38 @@
+[package]
+name = "tauri-app"
+version = "0.0.0"
+description = "A Tauri App"
+authors = ["you"]
+license = ""
+repository = ""
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1.5", features = [] }
+
+[profile.dev]
+opt-level = 3
+
+[dependencies]
+tauri = { version = "1.5", features = ["shell-open"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokenizers = { version = "0.13.4", default-features = false }
+accelerate-src = { version = "0.3.2", optional = true }
+anyhow = "1.0.75"
+candle-core = { git = "https://github.com/huggingface/candle.git", version = "0.3.1" }
+candle-examples = { git = "https://github.com/huggingface/candle.git", version = "0.3.1" }
+candle-nn = { git = "https://github.com/huggingface/candle.git", version = "0.3.1" }
+candle-transformers = { git = "https://github.com/huggingface/candle.git", version = "0.3.1" }
+hf-hub = "0.3.2"
+once_cell = "1.19.0"
+thiserror = "1.0.51"
+
+[features]
+default = ["accelerate"]
+accelerate = ["dep:accelerate-src", "candle-core/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate"]
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
