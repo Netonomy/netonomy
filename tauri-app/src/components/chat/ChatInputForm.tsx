@@ -1,42 +1,16 @@
 import { Loader2, SendIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import useChatStore from "@/stores/useChatStore";
-import { invoke } from "@tauri-apps/api";
 
 export default function ChatInputForm() {
-  const [input, setInput] = useState("");
+  const input = useChatStore((state) => state.input);
+  const setInput = useChatStore((state) => state.actions.setInput);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const addMessage = useChatStore((state) => state.actions.addMessage);
   const generating = useChatStore((state) => state.generatingTokens);
-  const setGenerating = useChatStore(
-    (state) => state.actions.setGeneratingTokens
-  );
-
-  async function sendMessage() {
-    invoke("generate", {
-      promptStr:
-        "<|im_start|>system\nYou are Hermes 2, a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.<|im_end|>\n<|im_start|>user\n" +
-        input +
-        "<|im_end|>\n<|im_start|>assistant\n",
-    });
-
-    addMessage({
-      content: input,
-      role: "user",
-    });
-
-    addMessage({
-      content: "",
-      role: "assistant",
-    });
-
-    setGenerating(true);
-
-    setInput("");
-  }
+  const sendMessage = useChatStore((state) => state.actions.sendMessage);
 
   const handleKeyDown = async (event: any) => {
     if (event.key === "Enter" && event.shiftKey) {

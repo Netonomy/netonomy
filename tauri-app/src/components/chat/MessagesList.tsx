@@ -19,8 +19,6 @@ export default function MessagesList() {
   useEffect(() => {
     if (!listeningForTokens) {
       listen("token", (event) => {
-        console.log(event);
-
         let token = event.payload as string;
 
         if (token !== "DONE") {
@@ -36,29 +34,51 @@ export default function MessagesList() {
   return (
     <div className="flex flex-1 h flex-col items-center w-full relative overflow-y-auto max-h-[calc(100vh-115px)] max-w-[1000px]">
       <div className="h-full w-full p-4 flex overflow-y-auto flex-col-reverse z-30 pt-[60px]">
-        {messages
-          .slice()
-          .reverse()
-          .map((message, i) => (
-            <Fragment key={i}>
-              {message.role === "user" && (
-                <div
-                  className={`my-2 p-3 rounded-xl inline-block bg-primary text-white ml-auto whitespace-pre-wrap`}
-                >
-                  {message.content}
-                </div>
-              )}
-              {message.role === "assistant" && (
-                <div
-                  className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-primary mr-auto max-w-[90%] whitespace-pre-wrap ${
-                    generating && message.content === "" && "animate-bounce"
-                  }`}
-                >
-                  {message.content}
-                </div>
-              )}
-            </Fragment>
-          ))}
+        {messages.length > 0 ? (
+          messages
+            .slice()
+            .reverse()
+            .map((message, i) => (
+              <Fragment key={i}>
+                {message.role === "user" && (
+                  <div
+                    className={`my-2 p-3 rounded-xl inline-block bg-primary text-white ml-auto whitespace-pre-wrap`}
+                  >
+                    {message.content}
+                  </div>
+                )}
+                {message.role === "assistant" && (
+                  <div
+                    className={`my-2 p-3 rounded-2xl inline-block bg-secondary text-primary mr-auto max-w-[90%] whitespace-pre-wrap ${
+                      generating && message.content === "" && "animate-bounce"
+                    }`}
+                  >
+                    {message.content}
+                  </div>
+                )}
+              </Fragment>
+            ))
+        ) : (
+          <div className=" flex flex-1 flex-col items-center gap-4 w-[95%] p-4 justify-center">
+            <div className="flex flex-col gap-4 items-center max-w-[600px]">
+              <div className="h-[200px] w-[200px] rounded-full overflow-hidden relative">
+                <img src="/AI.png" height={200} width={200} alt="agent-ring" />
+              </div>
+
+              <div className="gap-2 flex flex-col">
+                <h2 className="text-3xl font-semibold tracking-tight text-center">
+                  Chat with your Digital Intelligence
+                </h2>
+
+                <p className="text-sm text-muted-foreground text-center">
+                  Begin typing to ask questions, gain insights, or simply chat.
+                  Remember, the clearer your questions, the better the
+                  responses.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
