@@ -4,14 +4,13 @@ extern crate intel_mkl_src;
 #[cfg(feature = "accelerate")]
 extern crate accelerate_src;
 
-use std::io::Write;
-
 use anyhow::Result;
 use candle_core::quantized::gguf_file;
 use candle_core::{Device, Tensor};
 use candle_examples::token_output_stream::TokenOutputStream;
 use candle_transformers::generation::LogitsProcessor;
 use candle_transformers::models::quantized_llama::ModelWeights;
+use std::io::{self, Write};
 use std::path::PathBuf;
 use tokenizers::{AddedToken, Tokenizer};
 
@@ -21,7 +20,7 @@ const TOKENIZER_REPO: &str = "mistralai/Mistral-7B-v0.1";
 const MAX_TOKENS: usize = 1000;
 
 fn main() -> Result<()> {
-    // Use hardware optimizations if available
+    // Hardware optimizations
     println!(
         "AVX: {}, NEON: {}, SIMD128: {}, F16C: {}",
         candle_core::utils::with_avx(),
@@ -30,106 +29,105 @@ fn main() -> Result<()> {
         candle_core::utils::with_f16c()
     );
 
-    // Load the GGUF model
+    // Model and tokenizer setup
     let mut model = load_model()?;
-
-    // Load the tokenizer
     let tokenizer = fetch_tokenizer(TOKENIZER_REPO)?;
     let mut tos = TokenOutputStream::new(tokenizer);
-
     let mut pre_prompt_tokens: Vec<u32> = vec![];
 
     for prompt_index in 0.. {
-        // Read in input from the user
         print!("> ");
-        let mut prompt_str: String = String::new();
-        std::io::stdout().flush()?;
-        std::io::stdin()
-            .read_line(&mut prompt_str)
-            .expect("Could not read input from the user");
+        io::stdout().flush()?;
+        let mut prompt_str = String::new();
+        io::stdin().read_line(&mut prompt_str)?;
 
-        // Encode prompt with special tokens
-        // Add system prompt if this is the first prompt
+        // Chat config
         if prompt_index == 0 {
-            prompt_str = "<im_start>system\nYou are Hermes 2, a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.<|im_end|>\n<im_start>user\n".to_string() + &prompt_str + "<im_end>assistant\n";
+            prompt_str = "<|im_start|>system\nYou are Hermes 2, a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.<|im_end|>\n<|im_start|>user\n".to_string() + &prompt_str + "<|im_end|>\n<|im_start|>assistant\n";
         } else {
-            prompt_str = "<im_start>user\n".to_string() + &prompt_str + "<im_end>assistant\n";
+            prompt_str = "<|im_start|>user\n".to_string()
+                + &prompt_str
+                + "<|im_end|>\n<|im_start|>assistant\n";
         }
 
-        // Encode prompt with tokenizer
-        let tokens = tos
-            .tokenizer()
-            .encode(prompt_str, true)
-            .map_err(anyhow::Error::msg)?;
-
-        // Concatenate prompt tokens with previous prompt tokens
-        let prompt_tokens = [&pre_prompt_tokens, tokens.get_ids()].concat();
-        let to_sample: usize = MAX_TOKENS.saturating_sub(1);
-        let prompt_tokens = if prompt_tokens.len() + to_sample
-            > candle_transformers::models::quantized_llama::MAX_SEQ_LEN - 10
-        {
-            let to_remove = prompt_tokens.len() + to_sample + 10
-                - candle_transformers::models::quantized_llama::MAX_SEQ_LEN;
-            prompt_tokens[prompt_tokens.len().saturating_sub(to_remove)..].to_vec()
-        } else {
-            prompt_tokens
-        };
-
-        let mut all_tokens: Vec<u32> = vec![];
-        let mut logits_processor = LogitsProcessor::new(299792458_u64, Some(0.2), None);
-
-        // Generate inital token
-        let mut next_token: u32 = {
-            let input: Tensor =
-                Tensor::new(prompt_tokens.as_slice(), &Device::Cpu)?.unsqueeze(0)?;
-            let logits = model.forward(&input, 0)?;
-            let logits: Tensor = logits.squeeze(0)?;
-            logits_processor.sample(&logits)?
-        };
-
-        all_tokens.push(next_token);
-        if let Some(t) = tos.next_token(next_token)? {
-            print!("{t}");
-            std::io::stdout().flush()?;
-        }
-
-        let eos_token: &str = "<|im_end|>";
-        let eos_token: u32 = *tos.tokenizer().get_vocab(true).get(eos_token).unwrap();
-
-        // Generate the rest of the tokens
-        for index in 0..to_sample {
-            let input: Tensor = Tensor::new(&[next_token], &Device::Cpu)?.unsqueeze(0)?;
-            let logits: Tensor = model.forward(&input, prompt_tokens.len() + index)?;
-            let logits: Tensor = logits.squeeze(0)?;
-            let logits = if 1.1 == 1. {
-                logits
-            } else {
-                let start_at = all_tokens.len().saturating_sub(64_usize);
-                candle_transformers::utils::apply_repeat_penalty(
-                    &logits,
-                    1.1,
-                    &all_tokens[start_at..],
-                )?
-            };
-
-            next_token = logits_processor.sample(&logits)?;
-            all_tokens.push(next_token);
-            if let Some(t) = tos.next_token(next_token)? {
-                print!("{t}");
-                std::io::stdout().flush()?;
-            }
-            if next_token == eos_token {
-                break;
-            };
-        }
-
-        if let Some(rest) = tos.decode_rest().map_err(candle_core::Error::msg)? {
-            print!("{rest}");
-        }
-
-        pre_prompt_tokens = [prompt_tokens.as_slice(), all_tokens.as_slice()].concat();
+        generate(&mut model, &mut tos, &mut pre_prompt_tokens, &prompt_str)?;
 
         print!("\n");
+    }
+
+    Ok(())
+}
+
+fn generate(
+    model: &mut ModelWeights,
+    tos: &mut TokenOutputStream,
+    pre_prompt_tokens: &mut Vec<u32>,
+    prompt_str: &str,
+) -> Result<()> {
+    // Text generation logic
+    let tokens = tos
+        .tokenizer()
+        .encode(prompt_str, true)
+        .expect("Failed to encode prompt");
+    let prompt_tokens = [&pre_prompt_tokens[..], tokens.get_ids()].concat();
+    let to_sample = MAX_TOKENS.saturating_sub(1);
+
+    let prompt_tokens = if prompt_tokens.len() + to_sample
+        > candle_transformers::models::quantized_llama::MAX_SEQ_LEN - 10
+    {
+        let to_remove = prompt_tokens.len() + to_sample + 10
+            - candle_transformers::models::quantized_llama::MAX_SEQ_LEN;
+        prompt_tokens[prompt_tokens.len().saturating_sub(to_remove)..].to_vec()
+    } else {
+        prompt_tokens
+    };
+
+    let mut all_tokens: Vec<u32> = vec![];
+    let mut logits_processor = LogitsProcessor::new(299792458_u64, Some(0.2), None);
+
+    // Generate inital token
+    let next_token: u32 = {
+        let input: Tensor = Tensor::new(prompt_tokens.as_slice(), &Device::Cpu)?.unsqueeze(0)?;
+        let logits = model.forward(&input, 0)?;
+        let logits: Tensor = logits.squeeze(0)?;
+        logits_processor.sample(&logits)?
+    };
+
+    all_tokens.push(next_token);
+
+    let mut all_tokens = vec![];
+    let mut logits_processor = LogitsProcessor::new(299792458_u64, Some(0.2), None);
+
+    let eos_token: &str = "<|im_end|>";
+    let eos_token: u32 = *tos.tokenizer().get_vocab(true).get(eos_token).unwrap();
+
+    // Token generation loop
+    for index in 0..to_sample {
+        let input: Tensor = Tensor::new(
+            &[all_tokens.last().copied().unwrap_or_default()],
+            &Device::Cpu,
+        )?
+        .unsqueeze(0)?;
+        let logits: Tensor = model.forward(&input, prompt_tokens.len() + index)?;
+        let logits: Tensor = logits.squeeze(0)?;
+
+        let next_token = logits_processor.sample(&logits)?;
+        all_tokens.push(next_token);
+
+        if let Some(t) = tos.next_token(next_token)? {
+            print!("{}", t);
+            io::stdout().flush()?;
+        }
+
+        if next_token == eos_token {
+            break;
+        }
+    }
+
+    *pre_prompt_tokens = [&prompt_tokens[..], &all_tokens[..]].concat();
+
+    if let Some(rest) = tos.decode_rest()? {
+        print!("{}", rest);
     }
 
     Ok(())
