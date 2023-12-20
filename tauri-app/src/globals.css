@@ -5,7 +5,7 @@
 @layer base {
   :root {
     /* Default background color of <body />...etc */
-    --background: 0 0% 100%;
+    --background: 0 0% 91%;
     --foreground: 240 10% 3.9%;
 
     /* Background color for <Card /> */
@@ -17,11 +17,11 @@
     --popover-foreground: 240 10% 3.9%;
 
     /* Primary colors for <Button /> */
-    --primary: 240 5.9% 10%;
+    --primary: 0 0% 0%;
     --primary-foreground: 0 0% 98%;
 
     /* Secondary colors for <Button /> */
-    --secondary: 240 4.8% 93%;
+    --secondary: 0 0% 100%;
     --secondary-foreground: 240 5.9% 10%;
 
     /* Muted backgrounds such as <TabsList />, <Skeleton /> and <Switch /> */
@@ -40,13 +40,13 @@
     --border: 240 5.9% 90%;
 
     /* Border color for inputs such as <Input />, <Select />, <Textarea /> */
-    --input: 240 5.9% 90%;
+    --input: 0 0% 97%;
 
     /* Used for focus ring */
     --ring: 240 10% 3.9%;
 
     /* Border radius for card, input and buttons */
-    --radius: 0.5rem;
+    --radius: 1.3rem;
   }
 
   .dark {

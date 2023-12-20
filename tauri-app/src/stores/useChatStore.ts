@@ -9,6 +9,7 @@ interface ChatStore {
   generatingTokens: boolean;
   actions: {
     sendMessage: () => void;
+    resetChat: () => void;
     addMessage: (message: Message) => void;
     updateLastMessage: (newToken: string) => void;
     setListeningForTokens: (listening: boolean) => void;
@@ -73,6 +74,9 @@ const useChatStore = create<ChatStore>((set, get) => ({
         ],
         input: "",
       });
+    },
+    resetChat: () => {
+      set({ messages: [], input: "" });
     },
     addMessage: (message: Message) => {
       set({ messages: [...get().messages, message] });

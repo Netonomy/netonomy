@@ -25,13 +25,6 @@ const MODEL_PATH: &str = "./openhermes-2.5-mistral-7b-16k.Q4_K_M.gguf";
 const TOKENIZER_REPO: &str = "mistralai/Mistral-7B-v0.1";
 const MAX_TOKENS: usize = 1000;
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    println!("Hello, {}!", name);
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 #[tauri::command(async)]
 fn generate(window: tauri::Window, prompt_str: &str) -> Result<(), ()> {
     println!("Generating...");
@@ -245,7 +238,7 @@ fn main() {
     fetch_and_load_tokenizer(TOKENIZER_REPO).expect("Tokenizer not loaded");
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, generate])
+        .invoke_handler(tauri::generate_handler![generate])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
