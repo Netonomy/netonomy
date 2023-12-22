@@ -23,8 +23,7 @@ In summary, the main point of DIDs is to give users more control over their digi
 | Codebase                                 |     Description     |
 | :--------------------------------------- | :-----------------: |
 | [server](server)                         | Node Express Server |
-| [web-frontend](shawarma)                 |   React Vite App    |
-| [vector-db](https://docs.trychroma.com/) |      Chroma DB      |
+| [tauri app](tauri-app)                 |  Tauri App (Desktop and Mobile App) | 
 
 ## 🏃‍♂️ How to run locally
 
