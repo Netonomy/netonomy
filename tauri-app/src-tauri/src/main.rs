@@ -27,7 +27,6 @@ const MAX_TOKENS: usize = 1000;
 
 #[tauri::command(async)]
 fn generate(window: tauri::Window, prompt_str: &str) -> Result<(), ()> {
-    println!("Generating...");
     let mut model_guard = MODEL.lock().unwrap();
     let model: &mut ModelWeights = model_guard.as_mut().expect("Model not loaded");
     // Get the tokenizer
@@ -81,7 +80,6 @@ fn generate(window: tauri::Window, prompt_str: &str) -> Result<(), ()> {
     let eos_token: u32 = *tos.tokenizer().get_vocab(true).get(eos_token).unwrap();
 
     if let Some(t) = tos.next_token(next_token).expect("msg") {
-        println!("{}", t);
         let _ = window.emit("token", Some(t)).map_err(|e| e.to_string());
     }
 
@@ -103,7 +101,6 @@ fn generate(window: tauri::Window, prompt_str: &str) -> Result<(), ()> {
         all_tokens.push(next_token);
 
         if let Some(t) = tos.next_token(next_token).expect("msg") {
-            println!("{}", t);
             let _ = window.emit("token", Some(t)).map_err(|e| e.to_string());
         }
 
