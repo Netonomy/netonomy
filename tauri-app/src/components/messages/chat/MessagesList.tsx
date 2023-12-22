@@ -59,7 +59,7 @@ export default function MessagesList() {
               </Fragment>
             ))
         ) : (
-          <div className=" flex flex-1 flex-col items-center gap-4 w-[95%] p-4 justify-center">
+          <div className=" flex flex-1 mb-20 flex-col items-center gap-4 w-[95%] p-4 justify-center">
             <div className="flex flex-col gap-4 items-center max-w-[600px]">
               <div className="h-[200px] w-[200px] rounded-full overflow-hidden relative">
                 <img src="/AI.png" height={200} width={200} alt="agent-ring" />
@@ -67,14 +67,8 @@ export default function MessagesList() {
 
               <div className="gap-2 flex flex-col">
                 <h2 className="text-3xl font-semibold tracking-tight text-center">
-                  Chat with your Digital Intelligence
+                  Send a new message
                 </h2>
-
-                <p className="text-sm text-muted-foreground text-center">
-                  Begin typing to ask questions, gain insights, or simply chat.
-                  Remember, the clearer your questions, the better the
-                  responses.
-                </p>
               </div>
             </div>
           </div>

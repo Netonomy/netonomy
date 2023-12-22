@@ -1,6 +1,6 @@
 import { Loader2, SendIcon } from "lucide-react";
-import { Button } from "../ui/button";
-import { Textarea } from "../ui/textarea";
+import { Button } from "../../ui/button";
+import { Textarea } from "../../ui/textarea";
 import { useEffect, useRef } from "react";
 import useChatStore from "@/stores/useChatStore";
 

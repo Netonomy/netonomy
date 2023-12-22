@@ -6,12 +6,11 @@ const router = createHashRouter([
   {
     path: "/",
     element: <HomePage />,
-    children: [
-      {
-        path: "/",
-        element: <MessagesPage />,
-      },
-    ],
+    children: [],
+  },
+  {
+    path: "/messages",
+    element: <MessagesPage />,
   },
 ]);
 
