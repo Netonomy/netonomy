@@ -62,16 +62,15 @@ const useWeb5Store = create<Web5State>((set, get) => ({
       }
 
       // configure protocol on local DWN
-      const { status: configureStatus, protocol } =
-        await web5.dwn.protocols.configure({
-          message: {
-            definition: p,
-          },
-        });
+      const { protocol } = await web5.dwn.protocols.configure({
+        message: {
+          definition: p,
+        },
+      });
       // console.log("configure protocol local status", configureStatus);
 
       // configure protocol on remote DWN, because sync may not have occured yet
-      const { status: remoteConfigureStatus } = await protocol!.send(did);
+      await protocol!.send(did);
       // console.log("configure protocol remote status", remoteConfigureStatus);
     }
   },

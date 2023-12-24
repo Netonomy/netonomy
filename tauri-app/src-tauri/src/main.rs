@@ -14,6 +14,7 @@ use hf_hub::api;
 use once_cell::sync::Lazy;
 use std::path::PathBuf;
 use std::sync::Mutex;
+use std::thread;
 use tokenizers::{AddedToken, Tokenizer};
 
 static MODEL: Lazy<Mutex<Option<ModelWeights>>> = Lazy::new(|| Mutex::new(None));
@@ -228,11 +229,14 @@ fn main() {
         candle_core::utils::with_f16c()
     );
 
-    // Load the GGUF model
-    let _ = load_model();
+    // Start a new thread to load the model and tokenizer
+    thread::spawn(|| {
+        // Load the GGUF model
+        let _ = load_model();
 
-    // Load the tokenizer
-    fetch_and_load_tokenizer(TOKENIZER_REPO).expect("Tokenizer not loaded");
+        // Load the tokenizer
+        fetch_and_load_tokenizer(TOKENIZER_REPO).expect("Tokenizer not loaded");
+    });
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![generate])

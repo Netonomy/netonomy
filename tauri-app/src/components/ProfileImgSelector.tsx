@@ -69,7 +69,7 @@ export default function ProfileImgSelector(props: {
 
   const onCropComplete = useCallback(
     async (
-      croppedArea: any,
+      // croppedArea: any,
       croppedAreaPixels: { x: number; y: number; height: number; width: number }
     ) => {
       setCroppedAreaPixels(croppedAreaPixels);

@@ -48,7 +48,7 @@ export default function ChatInputForm() {
         e.preventDefault();
         sendMessage();
       }}
-      className="flex items-center relative h-auto w-[90%] gap-2  max-w-[700px] z-50"
+      className="flex items-center relative h-auto w-[90%] gap-2  max-w-[700px] z-50 mb-4"
     >
       <Textarea
         ref={textAreaRef}

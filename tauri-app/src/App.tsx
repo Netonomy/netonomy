@@ -1,16 +1,20 @@
 import { RouterProvider, createHashRouter } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import MessagesPage from "./pages/MessagesPage";
-import CreateProfilePage from "./pages/CreateProfilePage";
 import useWeb5Store from "./stores/useWeb5Store";
 import { useEffect } from "react";
 import { SplashPage } from "./pages/SplashPage";
+import HomePage from "./pages/HomePage";
+import PdfViewerPage from "./pages/PdfViewerPage";
+import CreateProfilePage from "./pages/CreateProfilePage";
+import MessagesPage from "./pages/MessagesPage";
 
 const router = createHashRouter([
   {
     path: "/",
     element: <HomePage />,
-    children: [],
+  },
+  {
+    path: "/pdf/:recordId",
+    element: <PdfViewerPage />,
   },
   {
     path: "/messages",

@@ -32,7 +32,7 @@ export default function MessagesList() {
   }, []);
 
   return (
-    <div className="flex flex-1 h flex-col items-center w-full relative overflow-y-auto max-h-[calc(100vh-115px)] max-w-[1000px]">
+    <div className="flex flex-1 flex-col items-center w-full relative overflow-y-auto max-w-[1000px]">
       <div className="h-full w-full p-4 flex overflow-y-auto flex-col-reverse z-30 pt-[60px]">
         {messages.length > 0 ? (
           messages
