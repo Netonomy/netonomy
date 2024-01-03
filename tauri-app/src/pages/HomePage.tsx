@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import NavBar from "@/components/NavBar";
 import TopLoader from "@/components/TopLoader";
-import MessagesPreview from "@/components/messages/preview/MessagesPreview";
 import Storage from "@/components/storage/Storage";
 import { NavBarOptions } from "@/enums/NavBarOptions";
 import useAppStore from "@/stores/useAppStore";
@@ -9,6 +8,7 @@ import useProfileStore from "@/stores/useProfileStore";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfilePage from "./ProfilePage";
+import Chat from "@/components/messages/chat/Chat";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -30,8 +30,12 @@ export default function HomePage() {
         className={`flex flex-1 flex-col items-center relative md:flex-row-reverse`}
       >
         <div className="flex flex-1 m-4 h-full w-full">
-          {selectedNavBarItem === NavBarOptions.messages && <MessagesPreview />}
+          {/* {selectedNavBarItem === NavBarOptions.messages && <MessagesPreview />} */}
           {selectedNavBarItem === NavBarOptions.storage && <Storage />}
+          {selectedNavBarItem === NavBarOptions.ai && (
+            <Chat showBackButton={false} />
+          )}
+
           {selectedNavBarItem === NavBarOptions.profile && <ProfilePage />}
         </div>
 

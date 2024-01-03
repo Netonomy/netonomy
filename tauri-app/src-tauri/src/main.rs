@@ -10,20 +10,14 @@ use candle_core::{Device, Tensor};
 use candle_examples::token_output_stream::TokenOutputStream;
 use candle_transformers::generation::LogitsProcessor;
 use candle_transformers::models::quantized_llama::ModelWeights;
-use hf_hub::api;
 use once_cell::sync::Lazy;
-use std::path::PathBuf;
 use std::sync::Mutex;
-use std::thread;
+use tauri::App;
 use tokenizers::{AddedToken, Tokenizer};
 
 static MODEL: Lazy<Mutex<Option<ModelWeights>>> = Lazy::new(|| Mutex::new(None));
 static TOKENIZER: Lazy<Mutex<Option<Tokenizer>>> = Lazy::new(|| Mutex::new(None));
 
-const MODEL_REPO: &str = "TheBloke/OpenHermes-2.5-Mistral-7B-16k-GGUF";
-const MODEL_FILE: &str = "openhermes-2.5-mistral-7b-16k.Q4_K_M.gguf";
-const MODEL_PATH: &str = "./openhermes-2.5-mistral-7b-16k.Q4_K_M.gguf";
-const TOKENIZER_REPO: &str = "mistralai/Mistral-7B-v0.1";
 const MAX_TOKENS: usize = 1000;
 
 #[tauri::command(async)]
@@ -120,25 +114,32 @@ fn generate(window: tauri::Window, prompt_str: &str) -> Result<(), ()> {
     Ok(())
 }
 
-fn load_model() -> Result<()> {
+fn load_model(app: &mut App) -> Result<()> {
+    let resource_path = app
+        .path_resolver()
+        .resolve_resource("resources/openhermes-2.5-mistral-7b-16k.Q4_K_M.gguf")
+        .expect("failed to resolve resource");
+
+    let mut file = std::fs::File::open(&resource_path).unwrap();
+
     // Check if the model is already downloaded
-    if PathBuf::from(MODEL_PATH).exists() {
-        println!("Model already downloaded");
-    } else {
-        println!("Downloading model");
+    // if PathBuf::from(MODEL_PATH).exists() {
+    //     println!("Model already downloaded");
+    // } else {
+    //     println!("Downloading model");
 
-        // Fetch the model from the HuggingFace Hub
-        let api = api::sync::Api::new()?;
-        let api = api.model(MODEL_REPO.to_string());
-        let model_path: PathBuf = api.get(MODEL_FILE)?;
+    //     // Fetch the model from the HuggingFace Hub
+    //     let api = api::sync::Api::new()?;
+    //     let api = api.model(MODEL_REPO.to_string());
+    //     let model_path: PathBuf = api.get(MODEL_FILE)?;
 
-        // Save the model to a local file
-        let mut file = std::fs::File::create(MODEL_PATH)?;
-        std::io::copy(&mut std::fs::File::open(&model_path)?, &mut file)?;
-    }
+    //     // Save the model to a local file
+    //     let mut file = std::fs::File::create(MODEL_PATH)?;
+    //     std::io::copy(&mut std::fs::File::open(&model_path)?, &mut file)?;
+    // }
 
     // Load the model
-    let mut file = std::fs::File::open(&MODEL_PATH)?;
+    // let mut file = std::fs::File::open(&MODEL_PATH)?;
     let model = gguf_file::Content::read(&mut file)?;
 
     let model_weights =
@@ -159,24 +160,29 @@ fn load_model() -> Result<()> {
     Ok(())
 }
 
-fn fetch_and_load_tokenizer(repo: &str) -> Result<()> {
+fn fetch_and_load_tokenizer(app: &mut App) -> Result<()> {
+    let resource_path = app
+        .path_resolver()
+        .resolve_resource("resources/tokenizer.json")
+        .expect("failed to resolve resource");
+
     // Check if the tokenizer is already downloaded
-    let tokenizer_path = PathBuf::from("tokenizer.json");
-    if PathBuf::from("tokenizer.json").exists() {
-        println!("Tokenizer already downloaded");
-    } else {
-        println!("Downloading tokenizer");
+    // let tokenizer_path = PathBuf::from("tokenizer.json");
+    // if PathBuf::from("tokenizer.json").exists() {
+    //     println!("Tokenizer already downloaded");
+    // } else {
+    //     println!("Downloading tokenizer");
 
-        let api = hf_hub::api::sync::Api::new()?;
-        let api = api.model(repo.to_string());
-        let tokenizer_path: PathBuf = api.get("tokenizer.json")?;
+    //     let api = hf_hub::api::sync::Api::new()?;
+    //     let api = api.model(repo.to_string());
+    //     let tokenizer_path: PathBuf = api.get("tokenizer.json")?;
 
-        // Save the tokenizer to a local file
-        let mut file = std::fs::File::create("tokenizer.json")?;
-        std::io::copy(&mut std::fs::File::open(&tokenizer_path)?, &mut file)?;
-    }
+    //     // Save the tokenizer to a local file
+    //     let mut file = std::fs::File::create("tokenizer.json")?;
+    //     std::io::copy(&mut std::fs::File::open(&tokenizer_path)?, &mut file)?;
+    // }
 
-    let mut tokenizer = Tokenizer::from_file(tokenizer_path).map_err(anyhow::Error::msg);
+    let mut tokenizer = Tokenizer::from_file(&resource_path).map_err(anyhow::Error::msg);
     tokenizer = match tokenizer {
         Ok(mut tokenizer) => {
             let special_tokens: &[AddedToken] = &[
@@ -220,25 +226,25 @@ fn fetch_and_load_tokenizer(repo: &str) -> Result<()> {
 }
 
 fn main() {
-    // Use hardware optimizations if available
-    println!(
-        "AVX: {}, NEON: {}, SIMD128: {}, F16C: {}",
-        candle_core::utils::with_avx(),
-        candle_core::utils::with_neon(),
-        candle_core::utils::with_simd128(),
-        candle_core::utils::with_f16c()
-    );
-
-    // Start a new thread to load the model and tokenizer
-    thread::spawn(|| {
-        // Load the GGUF model
-        let _ = load_model();
-
-        // Load the tokenizer
-        fetch_and_load_tokenizer(TOKENIZER_REPO).expect("Tokenizer not loaded");
-    });
-
     tauri::Builder::default()
+        .setup(|app| {
+            // Use hardware optimizations if available
+            println!(
+                "AVX: {}, NEON: {}, SIMD128: {}, F16C: {}",
+                candle_core::utils::with_avx(),
+                candle_core::utils::with_neon(),
+                candle_core::utils::with_simd128(),
+                candle_core::utils::with_f16c()
+            );
+
+            // Load the GGUF model
+            let _ = load_model(app);
+
+            // Load tokenizer
+            fetch_and_load_tokenizer(app).expect("Tokenizer not loaded");
+
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![generate])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
