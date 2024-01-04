@@ -23,7 +23,7 @@ export default function HomePage() {
   }, [profile, fetched]);
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden">
+    <div className="h-screen w-screen flex flex-col">
       <TopLoader />
       <Header />
       <div

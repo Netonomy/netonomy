@@ -8,7 +8,7 @@ import {
 
 export default function FileIcon({ type }: { type: string }) {
   const style =
-    "min-h-[38px] min-w-[38px] md:min-h-[60px] md:min-w-[60px] rounded-lg flex items-center justify-center";
+    "min-h-[45px] min-w-[45px] md:min-h-[60px] md:min-w-[60px] rounded-lg flex items-center justify-center";
 
   switch (type) {
     case "application/pdf":
