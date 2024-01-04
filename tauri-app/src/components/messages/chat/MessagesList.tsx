@@ -60,14 +60,14 @@ export default function MessagesList() {
             ))
         ) : (
           <div className=" flex flex-1 mb-20 flex-col items-center gap-4 w-[95%] p-4 justify-center">
-            <div className="flex flex-col gap-4 items-center max-w-[600px]">
+            <div className="flex flex-col gap-8 items-center max-w-[600px]">
               <div className="h-[200px] w-[200px] rounded-full overflow-hidden relative">
                 <img src="/AI.png" height={200} width={200} alt="agent-ring" />
               </div>
 
               <div className="gap-2 flex flex-col">
                 <h2 className="text-3xl font-semibold tracking-tight text-center">
-                  Send a new message
+                  Hello, how can I help you?
                 </h2>
               </div>
             </div>

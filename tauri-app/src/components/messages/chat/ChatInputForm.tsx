@@ -58,7 +58,7 @@ export default function ChatInputForm() {
         onKeyDown={handleKeyDown}
         disabled={generating}
         placeholder="Ask anything..."
-        className="min-h-[50px] h-10 max-h-[250px] pr-[58px] py-4 resize-none w-full text-md text-primary box-border focus:shadow-md overflow-hidden bg-[#dedede] border-none"
+        className="min-h-[50px] h-10 max-h-[250px] pr-[58px] py-4 resize-none w-full text-md text-primary box-border focus:shadow-md overflow-hidden bg-[#dedede] dark:bg-secondary border-none"
       />
 
       <Button

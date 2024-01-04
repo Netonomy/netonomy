@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "netonomy",
-    "version": "0.0.0"
+    "version": "0.0.1"
   },
   "tauri": {
     "cli": {
@@ -18,7 +18,6 @@
       "args": [],
       "subcommands": {
         "subcommand-name": {
-       
         }
       }
     },
@@ -61,7 +60,7 @@
         "minWidth": 335,
         "maximizable": true,
         "maximized": true,
-        "titleBarStyle": "Overlay"
+        "titleBarStyle": "Transparent"
       }
     ]
   }

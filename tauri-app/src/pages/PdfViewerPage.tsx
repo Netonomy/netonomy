@@ -8,10 +8,10 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
 import { Document, Page } from "react-pdf";
 import { RingLoader } from "react-spinners";
+import useCollectionStore from "@/stores/useCollectionStore";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import useCollectionStore from "@/stores/useCollectionStore";
 // Set the worker source for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",

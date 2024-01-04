@@ -11,6 +11,12 @@ import {
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "../ui/context-menu";
 
 export default function Storage() {
   const navigate = useNavigate();
@@ -52,29 +58,31 @@ export default function Storage() {
             return (
               <Fragment key={file.identifier}>
                 {!isFolder ? (
-                  <div
-                    key={i}
-                    className={`h-40 w-40 rounded-lg flex flex-col items-center gap-6 relative p-2 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
-                    onClick={() => {
-                      if (file.encodingFormat === "application/pdf")
-                        navigate(`/pdf/${file.identifier}`);
-                    }}
-                  >
-                    <div className="flex flex-1 w-full items-center justify-center">
-                      <FileIcon type={file.encodingFormat} />
-                    </div>
+                  <ContextMenu>
+                    <ContextMenuTrigger>
+                      <div
+                        key={i}
+                        className={`h-40 w-40 rounded-lg flex flex-col items-center gap-6 relative p-2 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                        onClick={() => {
+                          if (file.encodingFormat === "application/pdf")
+                            navigate(`/pdf/${file.identifier}`);
+                        }}
+                      >
+                        <div className="flex flex-1 w-full items-center justify-center">
+                          <FileIcon type={file.encodingFormat} />
+                        </div>
 
-                    <div className="flex w-full flex-col gap-[2px]">
-                      <div className="text-md md:text-lg font-normal truncate text-center">
-                        {file.name}
-                      </div>
+                        <div className="flex w-full flex-col gap-[2px]">
+                          <div className="text-md md:text-lg font-normal truncate text-center">
+                            {file.name}
+                          </div>
 
-                      <small className="text-sm text-gray-500 font-medium leading-none text-center">
-                        {new Date(file.datePublished).toLocaleDateString()}
-                      </small>
-                    </div>
+                          <small className="text-sm text-gray-500 font-medium leading-none text-center">
+                            {new Date(file.datePublished).toLocaleDateString()}
+                          </small>
+                        </div>
 
-                    {/* <DropdownMenu>
+                        {/* <DropdownMenu>
                       <DropdownMenuTrigger>
                         <MoreHorizontal className="hover:bg-gray-200 dark:hover:opacity-80 dark:hover:hover:bg-[#0d0d0d] p-2 h-9 w-9 rounded-full" />
                       </DropdownMenuTrigger>
@@ -90,7 +98,19 @@ export default function Storage() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu> */}
-                  </div>
+                      </div>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent>
+                      <ContextMenuItem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          deleteItem(file.identifier);
+                        }}
+                      >
+                        Delete
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
                 ) : (
                   <div
                     key={i}

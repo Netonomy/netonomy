@@ -8,7 +8,7 @@ export default function ProfilePage() {
 
   return (
     <div className="h-full w-full flex flex-col">
-      <div className="h-12 w-12 lg:h-44 lg:w-44 relative">
+      <div className="h-32 w-32 lg:h-44 lg:w-44 relative">
         <Avatar className="h-full w-full">
           {profileFetched ? (
             <img src={profile?.image} className="h-full w-full" />

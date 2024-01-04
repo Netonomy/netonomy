@@ -1,11 +1,12 @@
 import { RouterProvider, createHashRouter } from "react-router-dom";
 import useWeb5Store from "./stores/useWeb5Store";
-import { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { SplashPage } from "./pages/SplashPage";
 import HomePage from "./pages/HomePage";
-import PdfViewerPage from "./pages/PdfViewerPage";
-import CreateProfilePage from "./pages/CreateProfilePage";
-import MessagesPage from "./pages/MessagesPage";
+import { ThemeProvider } from "./components/ThemeProvider";
+const PdfViewerPage = React.lazy(() => import("./pages/PdfViewerPage"));
+const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
+const CreateProfilePage = React.lazy(() => import("./pages/CreateProfilePage"));
 
 const router = createHashRouter([
   {
@@ -14,15 +15,27 @@ const router = createHashRouter([
   },
   {
     path: "/pdf/:recordId",
-    element: <PdfViewerPage />,
+    element: (
+      <Suspense>
+        <PdfViewerPage />
+      </Suspense>
+    ),
   },
   {
     path: "/messages",
-    element: <MessagesPage />,
+    element: (
+      <Suspense>
+        <MessagesPage />
+      </Suspense>
+    ),
   },
   {
     path: "/create-profile",
-    element: <CreateProfilePage />,
+    element: (
+      <Suspense>
+        <CreateProfilePage />
+      </Suspense>
+    ),
   },
 ]);
 
@@ -34,7 +47,11 @@ function App() {
     if (!web5) connect();
   }, []);
 
-  return <>{web5 ? <RouterProvider router={router} /> : <SplashPage />}</>;
+  return (
+    <ThemeProvider>
+      {web5 ? <RouterProvider router={router} /> : <SplashPage />}
+    </ThemeProvider>
+  );
 }
 
 export default App;
