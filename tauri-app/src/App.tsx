@@ -4,6 +4,7 @@ import React, { Suspense, useEffect } from "react";
 import { SplashPage } from "./pages/SplashPage";
 import HomePage from "./pages/HomePage";
 import { ThemeProvider } from "./components/ThemeProvider";
+import ImageViewerPage from "./pages/ImageViewerPage";
 const PdfViewerPage = React.lazy(() => import("./pages/PdfViewerPage"));
 const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const CreateProfilePage = React.lazy(() => import("./pages/CreateProfilePage"));
@@ -18,6 +19,14 @@ const router = createHashRouter([
     element: (
       <Suspense>
         <PdfViewerPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/image/:recordId",
+    element: (
+      <Suspense>
+        <ImageViewerPage />
       </Suspense>
     ),
   },

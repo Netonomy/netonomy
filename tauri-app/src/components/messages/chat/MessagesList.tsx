@@ -42,7 +42,7 @@ export default function MessagesList() {
               <Fragment key={i}>
                 {message.role === "user" && (
                   <div
-                    className={`my-2 p-3 rounded-xl inline-block bg-primary text-white ml-auto whitespace-pre-wrap`}
+                    className={`my-2 p-3 rounded-xl inline-block bg-primary text-secondary ml-auto whitespace-pre-wrap`}
                   >
                     {message.content}
                   </div>

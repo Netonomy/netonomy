@@ -63,6 +63,14 @@ function FileGrid() {
                         onClick={() => {
                           if (file.encodingFormat === "application/pdf")
                             navigate(`/pdf/${file.identifier}`);
+                          else if (
+                            file.encodingFormat === "image/jpeg" ||
+                            file.encodingFormat === "image/png" ||
+                            file.encodingFormat === "image/gif" ||
+                            file.encodingFormat === "image/webp" ||
+                            file.encodingFormat === "image/svg+xml"
+                          )
+                            navigate(`/image/${file.identifier}`);
                         }}
                       >
                         <div className="flex flex-1 w-full items-center justify-center">
