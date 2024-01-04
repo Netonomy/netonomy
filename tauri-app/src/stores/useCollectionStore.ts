@@ -5,6 +5,7 @@ import useAppStore from "./useAppStore";
 
 interface CollectionState {
   collection: Record | null;
+  selectedDisplayTab: "grid" | "list"; // Used to determine which tab is selected in the display tab bar
   collectionItems: (DigitalDocument | Collection)[] | null;
   filteredCollectionItems: (DigitalDocument | Collection)[] | null;
   searchStr: string;
@@ -15,6 +16,7 @@ interface CollectionState {
   } | null;
   fetchingFile: boolean;
   actions: {
+    setSelectedDisplayTab: (tab: "grid" | "list") => void;
     fetchFilesAndFolders: (parentId?: string) => Promise<void>;
     uploadFile: (file: File) => Promise<void>;
     fetchFile: (recordId: string) => Promise<void>;
@@ -38,7 +40,11 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
   fetching: false,
   file: null,
   fetchingFile: false,
+  selectedDisplayTab: "grid",
   actions: {
+    setSelectedDisplayTab: (tab: "grid" | "list") => {
+      set({ selectedDisplayTab: tab });
+    },
     fetchFilesAndFolders: async (parentId?: string) => {
       const web5 = useWeb5Store.getState().web5;
       if (!web5) return;

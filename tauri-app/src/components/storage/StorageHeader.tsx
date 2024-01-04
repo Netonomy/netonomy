@@ -13,6 +13,12 @@ import useCollectionStore from "@/stores/useCollectionStore";
 export default function StorageHeader() {
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadFile = useCollectionStore((state) => state.actions.uploadFile);
+  const selectedDisplayTab = useCollectionStore(
+    (state) => state.selectedDisplayTab
+  );
+  const setSelectedDisplayTab = useCollectionStore(
+    (state) => state.actions.setSelectedDisplayTab
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -24,7 +30,7 @@ export default function StorageHeader() {
   };
 
   return (
-    <div className="h-14 w-full flex justify-between items-center">
+    <div className="h-14  w-full flex justify-between items-center">
       <div className="flex w-full px-5 md:px-0">
         <h3 className="text-4xl font-semibold tracking-tight">Storage</h3>
       </div>
@@ -54,7 +60,10 @@ export default function StorageHeader() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Tabs defaultValue="grid">
+        <Tabs
+          defaultValue={selectedDisplayTab}
+          onValueChange={(value) => setSelectedDisplayTab(value as any)}
+        >
           <TabsList>
             <TabsTrigger value="grid">
               <LayoutGrid />
