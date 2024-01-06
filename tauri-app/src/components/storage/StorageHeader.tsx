@@ -8,16 +8,16 @@ import {
 } from "../ui/dropdown-menu";
 import { useRef } from "react";
 import { Input } from "../ui/input";
-import useCollectionStore from "@/stores/useFileStorageStore";
+import useCollectionStore, {
+  selectedStorageDisplayTabAtom,
+} from "@/stores/useFileStorageStore";
+import { useAtom } from "jotai/react";
 
 export default function StorageHeader() {
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadFile = useCollectionStore((state) => state.actions.uploadFile);
-  const selectedDisplayTab = useCollectionStore(
-    (state) => state.selectedDisplayTab
-  );
-  const setSelectedDisplayTab = useCollectionStore(
-    (state) => state.actions.setSelectedDisplayTab
+  const [selectedDisplayTab, setSelectedDisplayTab] = useAtom(
+    selectedStorageDisplayTabAtom
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +61,7 @@ export default function StorageHeader() {
         </DropdownMenu>
 
         <Tabs
-          defaultValue={selectedDisplayTab}
+          value={selectedDisplayTab}
           onValueChange={(value) => setSelectedDisplayTab(value as any)}
         >
           <TabsList>

@@ -2,6 +2,12 @@ import { create } from "zustand";
 import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
 import { Record } from "@web5/api";
 import useAppStore from "./useAppStore";
+import { atomWithStorage } from "jotai/utils";
+
+export const selectedStorageDisplayTabAtom = atomWithStorage(
+  "selectedStorageDisplayTab",
+  "grid"
+);
 
 interface StorageState {
   collection: Record | null;
