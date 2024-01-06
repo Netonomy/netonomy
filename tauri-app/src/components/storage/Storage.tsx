@@ -1,4 +1,4 @@
-import useCollectionStore from "@/stores/useCollectionStore";
+import useCollectionStore from "@/stores/useFileStorageStore";
 import FileGrid from "./FileGrid";
 import StorageHeader from "./StorageHeader";
 import FileList from "./FileList";

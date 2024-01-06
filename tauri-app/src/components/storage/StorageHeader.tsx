@@ -8,7 +8,7 @@ import {
 } from "../ui/dropdown-menu";
 import { useRef } from "react";
 import { Input } from "../ui/input";
-import useCollectionStore from "@/stores/useCollectionStore";
+import useCollectionStore from "@/stores/useFileStorageStore";
 
 export default function StorageHeader() {
   const inputRef = useRef<HTMLInputElement>(null);

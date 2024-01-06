@@ -1,4 +1,4 @@
-import useCollectionStore from "@/stores/useCollectionStore";
+import useCollectionStore from "@/stores/useFileStorageStore";
 import { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +34,23 @@ function FileList() {
   useEffect(() => {
     fetchCollection(undefined);
   }, []);
+
+  if (collectionItems?.length === 0) {
+    return (
+      <div className="flex flex-1 w-full overflow-y-auto p-2">
+        <div
+          className={`w-full flex-1 rounded-lg items-center flex justify-center ${
+            isDragActive && "bg-primary-foreground"
+          }`}
+          {...getRootProps()}
+        >
+          <div className="text-2xl font-medium text-primary">
+            Start by dragging a file here.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-1 w-full overflow-y-auto">
@@ -75,7 +92,8 @@ function FileList() {
                       </div>
 
                       <small className="text-sm text-gray-500 font-medium leading-none">
-                        {new Date(file.datePublished).toLocaleDateString()}
+                        {file.datePublished &&
+                          new Date(file.datePublished).toLocaleDateString()}
                       </small>
                     </div>
 

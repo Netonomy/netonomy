@@ -3,7 +3,7 @@ import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
 import { Record } from "@web5/api";
 import useAppStore from "./useAppStore";
 
-interface CollectionState {
+interface StorageState {
   collection: Record | null;
   selectedDisplayTab: "grid" | "list"; // Used to determine which tab is selected in the display tab bar
   collectionItems: (DigitalDocument | Collection)[] | null;
@@ -32,7 +32,7 @@ interface CollectionState {
   };
 }
 
-const useCollectionStore = create<CollectionState>((set, get) => ({
+const useStorageStore = create<StorageState>((set, get) => ({
   collection: null,
   collectionItems: null,
   filteredCollectionItems: null,
@@ -162,7 +162,7 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
           name: file.name,
           encodingFormat: file.type,
           size: file.size.toString(),
-          url: uploadedFile!.id,
+          fileBlobId: uploadedFile!.id,
           identifier: "",
           dateCreated: new Date().toISOString(),
           dateModified: new Date().toISOString(),
@@ -266,7 +266,7 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
           const { record: blobRecord } = await web5.dwn.records.read({
             message: {
               filter: {
-                recordId: data.url,
+                recordId: data.fileBlobId,
               },
             },
           });
@@ -328,7 +328,7 @@ const useCollectionStore = create<CollectionState>((set, get) => ({
   },
 }));
 
-export default useCollectionStore;
+export default useStorageStore;
 
 export type DigitalDocument = {
   "@context": "https://schema.org";
@@ -336,13 +336,12 @@ export type DigitalDocument = {
   name: string;
   encodingFormat: string;
   size: string;
-  url: string;
+  fileBlobId: string;
   identifier: string;
   dateCreated?: string;
   dateModified?: string;
-  datePublished: string;
-  thumbnail?: Blob;
-  thumbnailUrl?: string;
+  datePublished?: string;
+  thumbnailBlobId?: string;
 };
 
 export type Collection = {

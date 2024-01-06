@@ -8,7 +8,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
 import { Document, Page } from "react-pdf";
 import { RingLoader } from "react-spinners";
-import useCollectionStore from "@/stores/useCollectionStore";
+import useCollectionStore from "@/stores/useFileStorageStore";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";

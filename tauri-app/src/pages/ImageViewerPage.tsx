@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import useCollectionStore from "@/stores/useCollectionStore";
+import useCollectionStore from "@/stores/useFileStorageStore";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
