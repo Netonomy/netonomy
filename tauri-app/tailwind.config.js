@@ -69,6 +69,9 @@ module.exports = {
       gridTemplateColumns: {
         auto: "repeat(auto-fill, minmax(200px, 1fr))",
       },
+      gridTemplateRows: {
+        sm: 'repeat(auto-fill, minmax(200px, 1fr))'
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],

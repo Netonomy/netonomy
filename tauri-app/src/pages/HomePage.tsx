@@ -17,10 +17,10 @@ export default function HomePage() {
   const fetched = useProfileStore((state) => state.fetched);
   const fetchProfile = useProfileStore((state) => state.fetchProfile);
 
-  useEffect(() => {
-    fetchProfile();
-    if (!profile && fetched) navigate("/create-profile");
-  }, [profile, fetched]);
+  // useEffect(() => {
+  //   fetchProfile();
+  //   if (!profile && fetched) navigate("/create-profile");
+  // }, [profile, fetched]);
 
   return (
     <div className="h-screen w-screen flex flex-col">
@@ -39,7 +39,7 @@ export default function HomePage() {
           {selectedNavBarItem === NavBarOptions.profile && <ProfilePage />}
         </div>
 
-        <NavBar />
+        {/* <NavBar /> */}
       </div>
     </div>
   );

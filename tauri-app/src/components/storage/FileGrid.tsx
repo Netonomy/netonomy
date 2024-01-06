@@ -32,7 +32,7 @@ function FileGrid() {
     }
   }, []);
 
-  const { getRootProps } = useDropzone({
+  const { getRootProps, isDragActive } = useDropzone({
     onDrop,
     noClick: true,
   });
@@ -42,9 +42,11 @@ function FileGrid() {
   }, []);
 
   return (
-    <div className="flex flex-1 w-full overflow-y-auto">
+    <div className="flex flex-1 w-full overflow-y-auto p-2">
       <div
-        className={`w-full flex-1 overflow-y-auto grid grid-cols-auto items-center max-h-[calc(100vh-160px)] md:max-h-min`}
+        className={`w-full flex-1 overflow-y-auto grid grid-cols-auto grid-rows-sm rounded-lg   max-h-[calc(100vh-160px)] md:max-h-min ${
+          isDragActive && "bg-primary-foreground"
+        }`}
         {...getRootProps()}
       >
         {collectionItems &&
@@ -59,7 +61,7 @@ function FileGrid() {
                     <ContextMenuTrigger>
                       <div
                         key={i}
-                        className={`h-full w-full rounded-lg flex flex-col items-center gap-6 relative p-2 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                        className={`h-full w-full rounded-lg flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
                         onClick={() => {
                           if (file.encodingFormat === "application/pdf")
                             navigate(`/pdf/${file.identifier}`);

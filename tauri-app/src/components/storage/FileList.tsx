@@ -26,7 +26,7 @@ function FileList() {
     }
   }, []);
 
-  const { getRootProps } = useDropzone({
+  const { getRootProps, isDragActive } = useDropzone({
     onDrop,
     noClick: true,
   });
@@ -38,7 +38,9 @@ function FileList() {
   return (
     <div className="flex flex-1 w-full overflow-y-auto">
       <div
-        className={`w-full flex-1 overflow-y-auto max-h-[calc(100vh-160px)] md:max-h-[calc(100vh-120px)] items-center `}
+        className={`w-full flex-1 overflow-y-auto max-h-[calc(100vh-160px)] md:max-h-[calc(100vh-100px)] items-center rounded-lg ${
+          isDragActive && "bg-primary-foreground"
+        }`}
         {...getRootProps()}
       >
         {collectionItems &&
@@ -51,7 +53,7 @@ function FileList() {
                 {!isFolder ? (
                   <div
                     key={i}
-                    className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                    className={`h-auto w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
                     onClick={() => {
                       if (file.encodingFormat === "application/pdf")
                         navigate(`/pdf/${file.identifier}`);
