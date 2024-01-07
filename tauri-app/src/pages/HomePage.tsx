@@ -20,7 +20,7 @@ export default function HomePage() {
   // useEffect(() => {
   //   fetchProfile();
   //   if (!profile && fetched) navigate("/create-profile");
-  // }, [profile, fetched]);A
+  // }, [profile, fetched]);
 
   return (
     <div className="h-screen w-screen flex flex-col">
@@ -29,7 +29,7 @@ export default function HomePage() {
       <div
         className={`flex flex-1 flex-col items-center relative md:flex-row-reverse`}
       >
-        <div className="flex flex-1 m-4 h-full w-full">
+        <div className="flex flex-1 m-4 h-full w-full p-2">
           {/* {selectedNavBarItem === NavBarOptions.messages && <MessagesPreview />} */}
           {selectedNavBarItem === NavBarOptions.storage && <Storage />}
           {selectedNavBarItem === NavBarOptions.ai && (
