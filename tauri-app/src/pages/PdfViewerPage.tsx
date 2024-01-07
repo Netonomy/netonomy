@@ -61,7 +61,7 @@ export default function PdfViewerPage() {
           className="m-4 w-10 rounded-full p-0"
           variant={"ghost"}
           onClick={() => {
-            navigate(-1);
+            navigate("/");
           }}
         >
           <ArrowLeft />

@@ -175,6 +175,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
         }
       });
 
+      set({ fetching: false });
       set({ collectionItems: items, fetching: false });
     },
     updateFileItem: async (

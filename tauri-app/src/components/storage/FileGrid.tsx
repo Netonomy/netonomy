@@ -2,7 +2,7 @@ import useCollectionStore, {
   Collection,
   DigitalDocument,
 } from "@/stores/useFileStorageStore";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,7 +15,15 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "../ui/context-menu";
-import { Copy, Lock, MoreHorizontal, Share, Trash, Trash2 } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Lock,
+  MoreHorizontal,
+  Share,
+  Trash,
+  Trash2,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import FileIcon from "./FileIcon";
+import { Skeleton } from "../ui/skeleton";
 
 function FileGrid() {
   const navigate = useNavigate();
@@ -36,6 +45,8 @@ function FileGrid() {
   const updateFile = useCollectionStore(
     (state) => state.actions.updateFileItem
   );
+  const [linkCopied, setLinkCopied] = useState(false);
+  const fetching = useCollectionStore((state) => state.fetching);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
@@ -53,20 +64,7 @@ function FileGrid() {
   }, []);
 
   if (collectionItems?.length === 0) {
-    return (
-      <div className="flex flex-1 w-full overflow-y-auto p-2">
-        <div
-          className={`w-full flex-1 rounded-lg items-center flex justify-center ${
-            isDragActive && "bg-primary-foreground"
-          }`}
-          {...getRootProps()}
-        >
-          <div className="text-2xl font-medium text-primary">
-            Start by dragging a file here.
-          </div>
-        </div>
-      </div>
-    );
+    return <div className="flex flex-1 w-full overflow-y-auto p-2"></div>;
   }
 
   return (
@@ -77,6 +75,22 @@ function FileGrid() {
         }`}
         {...getRootProps()}
       >
+        {fetching && (
+          <>
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="p-2">
+                <div
+                  className={`h-auto w-full rounded flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                >
+                  <Skeleton className="w-24 h-24 rounded-lg" />
+
+                  <Skeleton className="w-20 h-3 rounded-lg" />
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+
         {collectionItems &&
           collectionItems.map((file, i) => {
             const type = file.data["@type"];
@@ -228,19 +242,46 @@ function FileGrid() {
                                 event.preventDefault();
                                 event.stopPropagation();
 
-                                navigator.clipboard.writeText(
-                                  `${import.meta.env.VITE_DWN_URL}/${
-                                    file.record.author
-                                  }/records/${
-                                    (file.data as DigitalDocument).fileBlobId
-                                  }`
-                                );
+                                if (
+                                  (file.data as DigitalDocument)
+                                    .encodingFormat === "application/pdf"
+                                )
+                                  navigator.clipboard.writeText(
+                                    `http://localhost:1420/#/pdf/${
+                                      (file.data as DigitalDocument).identifier
+                                    }`
+                                  );
+                                else
+                                  navigator.clipboard.writeText(
+                                    `${import.meta.env.VITE_DWN_URL}/${
+                                      file.record.author
+                                    }/records/${
+                                      (file.data as DigitalDocument).fileBlobId
+                                    }`
+                                  );
+
+                                setLinkCopied(true);
+
+                                setTimeout(() => {
+                                  setLinkCopied(false);
+                                }, 2000);
                               }}
                             >
-                              <Copy className="w-2 h-2 mr-2 text-inherit" />
-                              <p className="text-sm text-muted-foreground">
-                                Copy Link
-                              </p>
+                              {linkCopied ? (
+                                <Check className="w-2 h-2 mr-2 text-inherit" />
+                              ) : (
+                                <Copy className="w-2 h-2 mr-2 text-inherit" />
+                              )}
+
+                              {linkCopied ? (
+                                <p className="text-sm text-muted-foreground">
+                                  Link Copied!
+                                </p>
+                              ) : (
+                                <p className="text-sm text-muted-foreground">
+                                  Copy Link
+                                </p>
+                              )}
                             </ContextMenuItem>
                           )}
                         </ContextMenuSubContent>

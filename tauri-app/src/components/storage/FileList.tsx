@@ -1,4 +1,6 @@
-import useCollectionStore from "@/stores/useFileStorageStore";
+import useCollectionStore, {
+  DigitalDocument,
+} from "@/stores/useFileStorageStore";
 import { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
@@ -63,53 +65,80 @@ function FileList() {
       >
         {collectionItems &&
           collectionItems.map((file, i) => {
-            const type = file["@type"];
+            const type = file.data["@type"];
             const isFolder = type === "Collection";
 
             return (
-              <div key={file.identifier} className="p-2">
+              <div key={file.data.identifier} className="p-2">
                 {!isFolder ? (
                   <div
                     key={i}
                     className={`h-auto w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
                     onClick={async () => {
-                      if (file.encodingFormat === "application/pdf")
-                        navigate(`/pdf/${file.identifier}`);
-                      else if (
-                        file.encodingFormat === "image/jpeg" ||
-                        file.encodingFormat === "image/png" ||
-                        file.encodingFormat === "image/gif" ||
-                        file.encodingFormat === "image/webp" ||
-                        file.encodingFormat === "image/svg+xml"
+                      if (
+                        (file.data as DigitalDocument).encodingFormat ===
+                        "application/pdf"
                       )
-                        navigate(`/image/${file.identifier}`);
+                        navigate(
+                          `/pdf/${(file.data as DigitalDocument).identifier}`
+                        );
                       else if (
-                        file.encodingFormat === "video/mp4" ||
-                        file.encodingFormat === "video/quicktime" ||
-                        file.encodingFormat === "video/x-flv" ||
-                        file.encodingFormat === "video/MP2T" ||
-                        file.encodingFormat === "video/x-msvideo" ||
-                        file.encodingFormat === "video/x-ms-wmv"
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "image/jpeg" ||
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "image/png" ||
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "image/gif" ||
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "image/webp" ||
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "image/svg+xml"
                       )
-                        navigate(`/video/${file.identifier}`);
+                        navigate(
+                          `/image/${(file.data as DigitalDocument).identifier}`
+                        );
+                      else if (
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "video/mp4" ||
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "video/quicktime" ||
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "video/x-flv" ||
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "video/MP2T" ||
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "video/x-msvideo" ||
+                        (file.data as DigitalDocument).encodingFormat ===
+                          "video/x-ms-wmv"
+                      )
+                        navigate(
+                          `/video/${(file.data as DigitalDocument).identifier}`
+                        );
                       else {
-                        const blob = await fetchBlob(file.fileBlobId);
+                        const blob = await fetchBlob(
+                          (file.data as DigitalDocument).fileBlobId
+                        );
                         if (blob)
                           window.open(URL.createObjectURL(blob), "_blank");
                       }
                     }}
                   >
                     <div className="flex items-center justify-center">
-                      <FileIcon type={"file"} file={file} />
+                      <FileIcon
+                        type={"file"}
+                        file={file.data as DigitalDocument}
+                      />
                     </div>
                     <div className="flex flex-1 flex-col ml-4 gap-[2px]">
                       <div className="text-sm font-normal flex flex-1 max-w-[calc(100vw-30vw)] truncate">
-                        {file.name}
+                        {(file.data as DigitalDocument).name}
                       </div>
 
                       <small className="text-xs text-gray-500 font-medium leading-none">
-                        {file.datePublished &&
-                          new Date(file.datePublished).toLocaleDateString()}
+                        {(file.data as DigitalDocument).datePublished &&
+                          new Date(
+                            (file.data as DigitalDocument).datePublished!
+                          ).toLocaleDateString()}
                       </small>
                     </div>
 
@@ -121,7 +150,9 @@ function FileList() {
                         <DropdownMenuItem
                           onClick={(event) => {
                             event.stopPropagation();
-                            deleteItem(file.identifier);
+                            deleteItem(
+                              (file.data as DigitalDocument).identifier
+                            );
                           }}
                           className="cursor-pointer roun"
                         >
@@ -139,12 +170,16 @@ function FileList() {
 
                     <div className="flex flex-1 flex-col ml-4 gap-[2px]">
                       <div className="text-md md:text-lg font-normal max-w-[221px] sm:max-w-[400px] xl:max-w-[400px] truncate">
-                        {file.name}
+                        {(file.data as DigitalDocument).name}
                       </div>
 
                       <small className="text-sm text-gray-500 font-medium leading-none">
-                        {file.dateCreated && (
-                          <>{new Date(file.dateCreated).toLocaleDateString()}</>
+                        {(file.data as DigitalDocument).dateCreated && (
+                          <>
+                            {new Date(
+                              (file.data as DigitalDocument).dateCreated!
+                            ).toLocaleDateString()}
+                          </>
                         )}
                       </small>
                     </div>
@@ -157,7 +192,9 @@ function FileList() {
                         <DropdownMenuItem
                           onClick={(event) => {
                             event.stopPropagation();
-                            deleteItem(file.identifier);
+                            deleteItem(
+                              (file.data as DigitalDocument).identifier
+                            );
                           }}
                           className="cursor-pointer roun"
                         >
