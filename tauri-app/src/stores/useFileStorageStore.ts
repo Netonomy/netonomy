@@ -19,13 +19,24 @@ export const selectedStorageDisplayTabAtom = atomWithStorage(
 interface StorageState {
   collection: Record | null;
   selectedDisplayTab: "grid" | "list"; // Used to determine which tab is selected in the display tab bar
-  collectionItems: (DigitalDocument | Collection)[] | null;
-  filteredCollectionItems: (DigitalDocument | Collection)[] | null;
+  collectionItems:
+    | {
+        data: DigitalDocument | Collection;
+        record: Record;
+      }[]
+    | null;
+  filteredCollectionItems:
+    | {
+        data: DigitalDocument | Collection;
+        record: Record;
+      }[]
+    | null;
   searchStr: string;
   fetching: boolean;
   file: {
     data: DigitalDocument;
     blob: Blob;
+    record: Record;
   } | null;
   fetchingFile: boolean;
   actions: {
@@ -35,6 +46,11 @@ interface StorageState {
     fetchFile: (recordId: string) => Promise<void>;
     fetchBlob: (recordId: string) => Promise<Blob | null>;
     deleteItem: (recordId: string) => Promise<void>;
+    updateFileItem: (
+      recordId: string,
+      data: DigitalDocument,
+      publish: boolean
+    ) => Promise<void>;
     createCollection: ({
       name,
       parentId,
@@ -84,7 +100,10 @@ const useStorageStore = create<StorageState>((set, get) => ({
       }
 
       // Set the collection items
-      let items: (DigitalDocument | Collection)[] = [];
+      let items: {
+        data: DigitalDocument | Collection;
+        record: Record;
+      }[] = [];
 
       // Fetch the collections
       const { records: collectionRecords } = await web5.dwn.records.query({
@@ -101,12 +120,15 @@ const useStorageStore = create<StorageState>((set, get) => ({
         // Loop through the collections
         for (var i = 0; i < collectionRecords.length; i++) {
           const record = collectionRecords[i];
-          let data = await record.data.json();
+          let data: Collection = await record.data.json();
 
           data.identifier = record.id;
 
           // Add the collection to the files and folders array
-          items.push(data);
+          items.push({
+            data,
+            record,
+          });
         }
       }
 
@@ -128,21 +150,25 @@ const useStorageStore = create<StorageState>((set, get) => ({
         // Loop through the collection items
         for (var i = 0; i < collectionItems.length; i++) {
           const record = collectionItems[i];
-          let data = await record.data.json();
+          let data: DigitalDocument = await record.data.json();
 
           data.identifier = record.id;
+          data.published = record.published;
 
           // Add the folder to the files and folders array
-          items.push(data);
+          items.push({
+            data,
+            record,
+          });
         }
       }
 
       // Sort the collection items by date created
       items.sort((a, b) => {
-        if (a.dateCreated && b.dateCreated) {
+        if (a.data.dateCreated && b.data.dateCreated) {
           return (
-            new Date(b.dateCreated).getTime() -
-            new Date(a.dateCreated).getTime()
+            new Date(b.data.dateCreated).getTime() -
+            new Date(a.data.dateCreated).getTime()
           );
         } else {
           return 0;
@@ -150,6 +176,91 @@ const useStorageStore = create<StorageState>((set, get) => ({
       });
 
       set({ collectionItems: items, fetching: false });
+    },
+    updateFileItem: async (
+      recordId: string,
+      data: DigitalDocument,
+      publish: boolean
+    ) => {
+      const web5 = useWeb5Store.getState().web5;
+      if (!web5) return;
+      try {
+        // set loading
+        useAppStore.getState().actions.setLoading(true);
+
+        // Fetch the record
+        const { record } = await web5.dwn.records.read({
+          message: {
+            filter: {
+              recordId,
+            },
+          },
+        });
+
+        // Update the record
+        await record?.update({
+          data: {
+            ...data,
+            published: publish,
+          },
+          published: publish,
+        });
+
+        if (data.thumbnailBlobId) {
+          // Fetch the thumbnail record
+          const { record: thumbnailRecord } = await web5.dwn.records.read({
+            message: {
+              filter: {
+                recordId: data.thumbnailBlobId,
+              },
+            },
+          });
+
+          // Update the thumbnail record
+          thumbnailRecord.update({
+            published: publish,
+          });
+        }
+
+        if (data.fileBlobId) {
+          // Fetch the file record
+          const { record: fileRecord } = await web5.dwn.records.read({
+            message: {
+              filter: {
+                recordId: data.fileBlobId,
+              },
+            },
+          });
+
+          // Update the file record
+          fileRecord.update({
+            published: publish,
+          });
+        }
+
+        // Update the collection items array
+        set((state) => ({
+          ...state,
+          collectionItems: state.collectionItems?.map((item) => {
+            if (item.data.identifier === recordId) {
+              return {
+                data: item.data,
+                record: {
+                  ...item.record,
+                  published: publish,
+                } as Record,
+              };
+            } else {
+              return item;
+            }
+          }),
+        }));
+      } catch (err) {
+        console.error(err);
+      }
+
+      // unset loading
+      useAppStore.getState().actions.setLoading(false);
     },
     uploadFile: async (file: File) => {
       try {
@@ -168,6 +279,9 @@ const useStorageStore = create<StorageState>((set, get) => ({
         const { record: uploadedFile } = await web5.dwn.records.create({
           data: blob,
         });
+
+        // Send to dwn
+        uploadedFile?.send(did);
 
         // If the file is a pdf, create a thumbnail
         let thumbnailBlobId: string | undefined = undefined;
@@ -191,6 +305,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
               }
             );
             thumbnailBlobId = uploadedThumbnail?.id;
+            uploadedThumbnail?.send(did);
           } catch (error) {
             console.error(error);
           }
@@ -207,8 +322,12 @@ const useStorageStore = create<StorageState>((set, get) => ({
           // Upload the thumbnail blob
           const { record: uploadedThumbnail } = await web5.dwn.records.create({
             data: thumbnailBlob,
+            message: {
+              published: false,
+            },
           });
           thumbnailBlobId = uploadedThumbnail?.id;
+          uploadedThumbnail?.send(did);
         }
 
         // Create the digital document
@@ -236,26 +355,27 @@ const useStorageStore = create<StorageState>((set, get) => ({
               ? "collection/digitalDocument"
               : "digitalDocument",
             dataFormat: "application/json",
-            published: true,
+            published: false,
             parentId: get().collection?.id || undefined,
             contextId: get().collection?.contextId || undefined,
           },
         });
+
+        record?.send(did);
 
         // Update the collection items array
         if (record) {
           data.identifier = record.id;
 
           set((state) => ({
-            collectionItems: [data, ...(state.collectionItems ?? [])],
+            collectionItems: [
+              {
+                data,
+                record,
+              },
+              ...(state.collectionItems ?? []),
+            ],
           }));
-
-          // Vectorize the file
-          // upload to chroma
-          const formData = new FormData();
-          formData.append("file", file);
-          formData.append("did", did);
-          formData.append("recordId", record!.id);
         }
       } catch (err) {
         console.log(err);
@@ -311,7 +431,13 @@ const useStorageStore = create<StorageState>((set, get) => ({
       if (record) {
         data.identifier = record.id;
         set((state) => ({
-          collectionItems: [data, ...(state.collectionItems ?? [])],
+          collectionItems: [
+            {
+              data,
+              record,
+            },
+            ...(state.collectionItems ?? []),
+          ],
         }));
       }
     },
@@ -346,6 +472,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
 
           set({
             file: {
+              record,
               data,
               blob,
             },
@@ -372,7 +499,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
       // Remove the record from the collection items array
       set((state) => ({
         collectionItems: state.collectionItems?.filter(
-          (item) => item.identifier !== recordId
+          (item) => item.data.identifier !== recordId
         ),
       }));
 
@@ -386,10 +513,14 @@ const useStorageStore = create<StorageState>((set, get) => ({
       } else {
         const filteredCollectionItems = get().collectionItems?.filter(
           (item) => {
-            if (item["@type"] === "DigitalDocument") {
-              return item.name.toLowerCase().includes(searchStr.toLowerCase());
+            if (item.data["@type"] === "DigitalDocument") {
+              return item.data.name
+                .toLowerCase()
+                .includes(searchStr.toLowerCase());
             } else {
-              return item.name.toLowerCase().includes(searchStr.toLowerCase());
+              return item.data.name
+                .toLowerCase()
+                .includes(searchStr.toLowerCase());
             }
           }
         );
@@ -410,6 +541,7 @@ export type DigitalDocument = {
   size: string;
   fileBlobId: string;
   identifier: string;
+  published?: boolean;
   dateCreated?: string;
   dateModified?: string;
   datePublished?: string;
