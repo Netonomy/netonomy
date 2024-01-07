@@ -8,12 +8,13 @@
 
 ### Mission
 
-Give users control over their digital identity, data, and finances
+Give people and organizations control over their digital identity, data, and finances
 
 ### Feature Roadmap
 
 - [ ] File Storage (viewing, sharing, editing)
 - [ ] File backup/sync (select folders or files to backup and sync from local device)
+- [ ] File creation
 - [ ] Image storage + backup/sync with device
 - [ ] User Profiles + feed of published records
 - [ ] Contacts
