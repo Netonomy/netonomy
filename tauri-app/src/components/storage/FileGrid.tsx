@@ -25,6 +25,7 @@ function FileGrid() {
   );
   const deleteItem = useCollectionStore((state) => state.actions.deleteItem);
   const uploadFile = useCollectionStore((state) => state.actions.uploadFile);
+  const fetchBlob = useCollectionStore((state) => state.actions.fetchBlob);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
@@ -78,7 +79,7 @@ function FileGrid() {
                       <div
                         key={i}
                         className={`h-auto w-full rounded-lg flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
-                        onClick={() => {
+                        onClick={async () => {
                           if (file.encodingFormat === "application/pdf")
                             navigate(`/pdf/${file.identifier}`);
                           else if (
@@ -98,6 +99,11 @@ function FileGrid() {
                             file.encodingFormat === "video/x-ms-wmv"
                           )
                             navigate(`/video/${file.identifier}`);
+                          else {
+                            const blob = await fetchBlob(file.fileBlobId);
+                            if (blob)
+                              window.open(URL.createObjectURL(blob), "_blank");
+                          }
                         }}
                       >
                         <div className="flex flex-1 w-full items-center justify-center ">

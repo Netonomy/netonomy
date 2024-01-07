@@ -68,7 +68,7 @@ export default function FileIcon({
   }, []);
 
   let style =
-    "min-h-[65px] min-w-[65px] max-w-[65px] max-h-[65px] md:min-h-[80px] md:min-w-[80px] md:max-h-[80px] md:max-w-[80px] rounded-lg flex items-center justify-center";
+    "min-h-[65px] min-w-[65px] max-w-[65px] max-h-[65px] md:min-h-[80px] md:min-w-[80px] md:max-h-[80px] md:max-w-[80px] rounded-sm flex items-center justify-center";
 
   if (selectedStorageTabDiaply === "list")
     style =
@@ -77,7 +77,7 @@ export default function FileIcon({
   if (type === "folder")
     return (
       <div className={`${style} bg-blue-600`}>
-        <FolderIcon className="text-white" />
+        <FolderIcon className="text-white h-8 w-8" />
       </div>
     );
 
@@ -99,7 +99,7 @@ export default function FileIcon({
     case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
       return (
         <div className={`${style} bg-green-600`}>
-          <FileSpreadsheet className="text-white" />
+          <FileSpreadsheet className="text-white h-8 w-8" />
         </div>
       );
     case "video/quicktime":
@@ -120,7 +120,7 @@ export default function FileIcon({
       }
       return (
         <div className={`${style} bg-purple-600`}>
-          <VideoIcon className="text-white" />
+          <VideoIcon className="text-white h-8 w-8" />
         </div>
       );
     case "image/jpeg":
@@ -142,14 +142,14 @@ export default function FileIcon({
       }
       return (
         <div className={`${style} bg-blue-600`}>
-          <ImageIcon className="text-white" />
+          <ImageIcon className="text-white h-8 w-8" />
         </div>
       );
 
     default:
       return (
         <div className={`${style} bg-blue-600`}>
-          <File className="text-white" />
+          <File className="text-white h-8 w-8" />
         </div>
       );
   }

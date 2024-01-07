@@ -39,7 +39,7 @@ function ImageViewerPage() {
         {file?.blob && (
           <img
             src={URL.createObjectURL(file.blob)}
-            className="max-w-full max-h-[calc(100vh-200px)] rounded-lg"
+            className="max-w-full max-h-[calc(100vh-200px)] rounded-sm"
           />
         )}
       </div>

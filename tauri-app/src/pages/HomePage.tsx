@@ -1,4 +1,3 @@
-import Header from "@/components/Header";
 // import NavBar from "@/components/NavBar";
 import TopLoader from "@/components/TopLoader";
 import Storage from "@/components/storage/Storage";
@@ -9,6 +8,7 @@ import useAppStore from "@/stores/useAppStore";
 // import { useNavigate } from "react-router-dom";
 import ProfilePage from "./ProfilePage";
 import Chat from "@/components/messages/chat/Chat";
+// import NavBar from "@/components/NavBar";
 
 export default function HomePage() {
   // const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function HomePage() {
   return (
     <div className="h-screen w-screen flex flex-col max-h-[-webkit-fill-available]">
       <TopLoader />
-      <Header />
+      {/* <Header /> */}
       <div
         className={`flex flex-1 flex-col items-center relative md:flex-row-reverse`}
       >

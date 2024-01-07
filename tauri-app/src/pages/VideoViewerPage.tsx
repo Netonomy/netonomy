@@ -37,7 +37,7 @@ export default function VideoPlayerPage() {
         </div>
       </div>
 
-      <div className="flex flex-1 w-full bg-white m-12 mt-[75px] rounded-lg overflow-hidden flex-col items-center justify-center dark:bg-black relative">
+      <div className="flex flex-1 w-full  m-12 mt-[75px] rounded-lg overflow-hidden flex-col items-center justify-center dark:bg-black relative">
         {file ? (
           <ReactPlayer
             url={URL.createObjectURL(file.blob)}
