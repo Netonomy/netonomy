@@ -5,6 +5,7 @@ import { SplashPage } from "./pages/SplashPage";
 import HomePage from "./pages/HomePage";
 import { ThemeProvider } from "./components/ThemeProvider";
 import ImageViewerPage from "./pages/ImageViewerPage";
+import NoteEditorPage from "./pages/NoteEditorPage";
 const PdfViewerPage = React.lazy(() => import("./pages/PdfViewerPage"));
 const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const CreateProfilePage = React.lazy(() => import("./pages/CreateProfilePage"));
@@ -13,7 +14,7 @@ const VideoViewerPage = React.lazy(() => import("./pages/VideoViewerPage"));
 const router = createHashRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <NoteEditorPage />,
   },
   {
     path: "/pdf/:recordId",
@@ -36,6 +37,14 @@ const router = createHashRouter([
     element: (
       <Suspense>
         <VideoViewerPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/note/:recordId",
+    element: (
+      <Suspense>
+        <NoteEditorPage />
       </Suspense>
     ),
   },
