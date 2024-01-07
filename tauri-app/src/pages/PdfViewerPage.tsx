@@ -12,6 +12,7 @@ import useCollectionStore from "@/stores/useFileStorageStore";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import MyRingLoader from "@/components/MyRingLoader";
 // Set the worker source for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -152,6 +153,9 @@ export default function PdfViewerPage() {
                   )}
                 </AutoSizer>
               )}
+              <div className="h-full w-full items-center flex justify-center">
+                {!file?.blob && <MyRingLoader />}
+              </div>
             </CardContent>
           </Card>
         </div>
