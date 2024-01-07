@@ -8,6 +8,7 @@ import ImageViewerPage from "./pages/ImageViewerPage";
 const PdfViewerPage = React.lazy(() => import("./pages/PdfViewerPage"));
 const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const CreateProfilePage = React.lazy(() => import("./pages/CreateProfilePage"));
+const VideoViewerPage = React.lazy(() => import("./pages/VideoViewerPage"));
 
 const router = createHashRouter([
   {
@@ -27,6 +28,14 @@ const router = createHashRouter([
     element: (
       <Suspense>
         <ImageViewerPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/video/:recordId",
+    element: (
+      <Suspense>
+        <VideoViewerPage />
       </Suspense>
     ),
   },

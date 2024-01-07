@@ -90,6 +90,15 @@ function FileGrid() {
                             file.encodingFormat === "image/svg+xml"
                           )
                             navigate(`/image/${file.identifier}`);
+                          else if (
+                            file.encodingFormat === "video/mp4" ||
+                            file.encodingFormat === "video/quicktime" ||
+                            file.encodingFormat === "video/x-flv" ||
+                            file.encodingFormat === "video/MP2T" ||
+                            file.encodingFormat === "video/x-msvideo" ||
+                            file.encodingFormat === "video/x-ms-wmv"
+                          )
+                            navigate(`/video/${file.identifier}`);
                         }}
                       >
                         <div className="flex flex-1 w-full items-center justify-center">
