@@ -29,7 +29,7 @@ function ImageViewerPage() {
         </Button>
 
         <div className="flex flex-col flex-auto  ">
-          <div className="text-lg font-semibold truncate">
+          <div className="text-lg font-semibold truncate max-w-[calc(100vw-30vw)]">
             {file?.data.name}
           </div>
         </div>

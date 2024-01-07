@@ -58,9 +58,9 @@ function FileGrid() {
     );
   }
   return (
-    <div className="flex flex-1 w-full overflow-y-auto p-2">
+    <div className="flex flex-1 w-full overflow-y-auto p-2 max-h-[calc(100vh-100px)] ">
       <div
-        className={`w-full flex-1 overflow-y-auto grid grid-cols-auto grid-rows-sm rounded-lg  max-h-[calc(100vh-90px)] md:max-h-min ${
+        className={`w-full flex-1 overflow-y-auto grid grid-cols-auto grid-rows-sm rounded-lg  max-h-[calc(100vh-120px)] md:max-h-min ${
           isDragActive && "bg-primary-foreground"
         }`}
         {...getRootProps()}
