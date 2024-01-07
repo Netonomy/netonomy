@@ -51,13 +51,12 @@ function FileGrid() {
           {...getRootProps()}
         >
           <div className="text-2xl font-medium text-primary">
-            Start by uploading a file.
+            Start by dragging a file here.
           </div>
         </div>
       </div>
     );
   }
-
   return (
     <div className="flex flex-1 w-full overflow-y-auto p-2">
       <div
