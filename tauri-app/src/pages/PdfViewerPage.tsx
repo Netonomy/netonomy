@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -55,110 +54,96 @@ export default function PdfViewerPage() {
   }, []);
 
   return (
-    <div className="h-screen w-screen p-10">
-      <div className="flex flex-1 w-full flex-row items-center gap-6 h-full">
-        <div className="flex-grow h-full flex flex-col items-center max-h-[calc(100vh-40px)]">
-          <Card className="flex flex-1 w-full overflow-hidden shadow-lg">
-            <CardContent className="w-full h-full overflow-y-auto flex flex-col p-0 relative">
-              {/** Document Control Header */}
-              <div className="absolute top-0 left-0 right-0 h-[55px] z-40 flex items-center backdrop-blur-xl bg-white/30 dark:bg-black/30 ">
-                <Button
-                  className="m-4 w-10 rounded-full p-0"
-                  variant={"ghost"}
-                  onClick={() => {
-                    navigate(-1);
-                  }}
-                >
-                  <ArrowLeft />
-                </Button>
+    <div className="h-screen w-screen">
+      {/** Document Control Header */}
+      <div className="absolute top-0 left-0 right-0 h-[55px] z-40 flex items-center backdrop-blur-xl bg-white/30 dark:bg-black/30 ">
+        <Button
+          className="m-4 w-10 rounded-full p-0"
+          variant={"ghost"}
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <ArrowLeft />
+        </Button>
 
-                <div className="flex flex-col flex-auto  ">
-                  <div className="text-lg font-semibold truncate">
-                    {file?.data.name}
-                  </div>
+        <div className="flex flex-col flex-auto  ">
+          <div className="text-lg font-semibold truncate">
+            {file?.data.name}
+          </div>
 
-                  <p className="text-sm text-muted-foreground">
-                    {numPages} Pages
-                  </p>
-                </div>
-
-                <div className="flex gap-1">
-                  <Button
-                    onClick={zoomOut}
-                    variant={"ghost"}
-                    className="rounded-full p-2"
-                  >
-                    <ZoomOutIcon />
-                  </Button>
-
-                  <Button
-                    onClick={zoomIn}
-                    variant={"ghost"}
-                    className="rounded-full p-2"
-                  >
-                    <ZoomInIcon />
-                  </Button>
-                </div>
-              </div>
-
-              {file?.blob && (
-                <AutoSizer>
-                  {({ height, width }: { height: number; width: number }) => (
-                    <Document
-                      file={URL.createObjectURL(file.blob)}
-                      onLoadSuccess={onDocumentLoadSuccess}
-                      loading={
-                        <div
-                          className="flex items-center justify-center"
-                          style={{ height, width }}
-                        >
-                          <RingLoader
-                            className="absolute z-30 top-0 left-0 right-0 "
-                            loading
-                          />
-                        </div>
-                      }
-                    >
-                      <List
-                        height={height}
-                        itemCount={numPages || 0}
-                        itemSize={height}
-                        width={width}
-                        // onScroll={({ scrollOffset }: { scrollOffset: any }) => {
-                        // //   const pageNumber =
-                        // //     Math.floor(scrollOffset / height) + 1;
-
-                        //   // setDisplayedPage(pageNumber);
-                        // }}
-                      >
-                        {({ index, style }: { index: number; style: any }) => (
-                          <div
-                            style={{
-                              ...style,
-                              display: "flex",
-                              justifyContent: "center",
-                              paddingTop: "60px",
-                              transform: `scale(${scale})`,
-                            }}
-                          >
-                            <Page
-                              key={index}
-                              pageNumber={index + 1}
-                              height={height}
-                            />
-                          </div>
-                        )}
-                      </List>
-                    </Document>
-                  )}
-                </AutoSizer>
-              )}
-              <div className="h-full w-full items-center flex justify-center">
-                {!file?.blob && <MyRingLoader />}
-              </div>
-            </CardContent>
-          </Card>
+          <p className="text-sm text-muted-foreground">{numPages} Pages</p>
         </div>
+
+        <div className="flex gap-1">
+          <Button
+            onClick={zoomOut}
+            variant={"ghost"}
+            className="rounded-full p-2"
+          >
+            <ZoomOutIcon />
+          </Button>
+
+          <Button
+            onClick={zoomIn}
+            variant={"ghost"}
+            className="rounded-full p-2"
+          >
+            <ZoomInIcon />
+          </Button>
+        </div>
+      </div>
+
+      {file?.blob && (
+        <AutoSizer>
+          {({ height, width }: { height: number; width: number }) => (
+            <Document
+              file={URL.createObjectURL(file.blob)}
+              onLoadSuccess={onDocumentLoadSuccess}
+              loading={
+                <div
+                  className="flex items-center justify-center"
+                  style={{ height, width }}
+                >
+                  <RingLoader
+                    className="absolute z-30 top-0 left-0 right-0 "
+                    loading
+                  />
+                </div>
+              }
+            >
+              <List
+                height={height}
+                itemCount={numPages || 0}
+                itemSize={height}
+                width={width}
+                // onScroll={({ scrollOffset }: { scrollOffset: any }) => {
+                // //   const pageNumber =
+                // //     Math.floor(scrollOffset / height) + 1;
+
+                //   // setDisplayedPage(pageNumber);
+                // }}
+              >
+                {({ index, style }: { index: number; style: any }) => (
+                  <div
+                    style={{
+                      ...style,
+                      display: "flex",
+                      justifyContent: "center",
+                      paddingTop: "60px",
+                      transform: `scale(${scale})`,
+                    }}
+                  >
+                    <Page key={index} pageNumber={index + 1} height={height} />
+                  </div>
+                )}
+              </List>
+            </Document>
+          )}
+        </AutoSizer>
+      )}
+      <div className="h-full w-full items-center flex justify-center">
+        {!file?.blob && <MyRingLoader />}
       </div>
     </div>
   );

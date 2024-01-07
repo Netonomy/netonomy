@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import FileIcon from "./FileIcon";
-import FileThumbnail from "./FileThumbnail";
 
 function FileList() {
   const navigate = useNavigate();
@@ -56,7 +55,7 @@ function FileList() {
   return (
     <div className="flex flex-1 w-full overflow-y-auto">
       <div
-        className={`w-full flex-1 overflow-y-auto max-h-[calc(100vh-160px)] md:max-h-[calc(100vh-100px)] items-center rounded-lg ${
+        className={`w-full flex-1 overflow-y-auto max-h-[calc(100vh-90px)] md:max-h-[calc(100vh-100px)] items-center rounded-lg ${
           isDragActive && "bg-primary-foreground"
         }`}
         {...getRootProps()}
@@ -95,18 +94,14 @@ function FileList() {
                     }}
                   >
                     <div className="flex items-center justify-center">
-                      {file.thumbnailBlobId ? (
-                        <FileThumbnail file={file} />
-                      ) : (
-                        <FileIcon type={file.encodingFormat} />
-                      )}
+                      <FileIcon type={"file"} file={file} />
                     </div>
                     <div className="flex flex-1 flex-col ml-4 gap-[2px]">
-                      <div className="text-md md:text-lg font-normal flex flex-1 max-w-[calc(100vw-30vw)] truncate">
+                      <div className="text-sm font-normal flex flex-1 max-w-[calc(100vw-30vw)] truncate">
                         {file.name}
                       </div>
 
-                      <small className="text-sm text-gray-500 font-medium leading-none">
+                      <small className="text-xs text-gray-500 font-medium leading-none">
                         {file.datePublished &&
                           new Date(file.datePublished).toLocaleDateString()}
                       </small>

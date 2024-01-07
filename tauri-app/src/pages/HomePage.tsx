@@ -29,7 +29,7 @@ export default function HomePage() {
       <div
         className={`flex flex-1 flex-col items-center relative md:flex-row-reverse`}
       >
-        <div className="flex flex-1 m-4 h-full w-full p-2">
+        <div className="flex flex-1 h-full w-full md:p-2 md:m-4">
           {/* {selectedNavBarItem === NavBarOptions.messages && <MessagesPreview />} */}
           {selectedNavBarItem === NavBarOptions.storage && <Storage />}
           {selectedNavBarItem === NavBarOptions.ai && (

@@ -3,7 +3,7 @@ import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
 import { Record } from "@web5/api";
 import useAppStore from "./useAppStore";
 import { atomWithStorage } from "jotai/utils";
-import { makeThumb } from "@/lib/utils";
+import { makeThumb, makeThumbFromVideo } from "@/lib/utils";
 import { pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -194,6 +194,21 @@ const useStorageStore = create<StorageState>((set, get) => ({
           } catch (error) {
             console.error(error);
           }
+        } else if (file.type.startsWith("video/")) {
+          const canvas: any = await makeThumbFromVideo(blob);
+
+          // Convert canvas to blob
+          const thumbnailBlob = await new Promise((resolve) => {
+            canvas.toBlob((blob: Blob) => {
+              resolve(blob);
+            });
+          });
+
+          // Upload the thumbnail blob
+          const { record: uploadedThumbnail } = await web5.dwn.records.create({
+            data: thumbnailBlob,
+          });
+          thumbnailBlobId = uploadedThumbnail?.id;
         }
 
         // Create the digital document

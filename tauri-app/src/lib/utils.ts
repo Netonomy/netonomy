@@ -36,3 +36,66 @@ export function makeThumb(page: any) {
       return canvas;
     });
 }
+
+export function makeThumbFromVideo(videoBlob: any) {
+  return new Promise((resolve, reject) => {
+    // Create a video element
+    var video = document.createElement("video");
+
+    // Set the source of the video to the blob
+    video.src = URL.createObjectURL(videoBlob);
+
+    // Create a canvas element
+    var canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 96;
+    var ctx = canvas.getContext("2d");
+
+    // When the video metadata is loaded
+    video.onloadedmetadata = function () {
+      // Set video dimensions
+      video.width = video.videoWidth;
+      video.height = video.videoHeight;
+
+      // Calculate the scale to fit the video frame into the canvas
+      var scale = Math.min(
+        canvas.width / video.width,
+        canvas.height / video.height
+      );
+
+      // Set the canvas size based on the video frame and scale
+      canvas.width = video.width * scale;
+      canvas.height = video.height * scale;
+
+      // When the video is ready to play
+      video.onseeked = function () {
+        // Draw the video frame onto the canvas
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        ctx?.drawImage(
+          video,
+          0,
+          0,
+          video.width,
+          video.height,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+
+        // Resolve the promise with the canvas
+        resolve(canvas);
+
+        // Revoke the blob URL to release memory
+        URL.revokeObjectURL(video.src);
+      };
+
+      // Seek the video to the first frame or any specific frame
+      video.currentTime = 1; // Change 0 to desired seconds, if needed
+    };
+
+    // Error handling
+    video.onerror = function (e) {
+      reject("Error loading video: " + e);
+    };
+  });
+}

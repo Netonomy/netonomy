@@ -16,7 +16,6 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import FileIcon from "./FileIcon";
-import FileThumbnail from "./FileThumbnail";
 
 function FileGrid() {
   const navigate = useNavigate();
@@ -61,7 +60,7 @@ function FileGrid() {
   return (
     <div className="flex flex-1 w-full overflow-y-auto p-2">
       <div
-        className={`w-full flex-1 overflow-y-auto grid grid-cols-auto grid-rows-sm rounded-lg   max-h-[calc(100vh-160px)] md:max-h-min ${
+        className={`w-full flex-1 overflow-y-auto grid grid-cols-auto grid-rows-sm rounded-lg  max-h-[calc(100vh-90px)] md:max-h-min ${
           isDragActive && "bg-primary-foreground"
         }`}
         {...getRootProps()}
@@ -101,20 +100,16 @@ function FileGrid() {
                             navigate(`/video/${file.identifier}`);
                         }}
                       >
-                        <div className="flex flex-1 w-full items-center justify-center">
-                          {file.thumbnailBlobId ? (
-                            <FileThumbnail file={file} />
-                          ) : (
-                            <FileIcon type={file.encodingFormat} />
-                          )}
+                        <div className="flex flex-1 w-full items-center justify-center ">
+                          <FileIcon file={file} type="file" />
                         </div>
 
                         <div className="flex w-full flex-col gap-[2px]">
-                          <div className="text-md md:text-lg font-normal truncate text-center">
+                          <div className="text-xs md:text-xs font-normal truncate text-center">
                             {file.name}
                           </div>
 
-                          <small className="text-sm text-gray-500 font-medium leading-none text-center">
+                          <small className="text-xs text-gray-500 leading-none text-center">
                             {file.datePublished &&
                               new Date(file.datePublished).toLocaleDateString()}
                           </small>
