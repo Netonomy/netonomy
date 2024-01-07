@@ -11,6 +11,17 @@ export default defineConfig(async () => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // build: {
+  //   target: "es2022",
+  // },
+  // esbuild: {
+  //   target: "es2022",
+  // },
+  // optimizeDeps: {
+  //   esbuildOptions: {
+  //     target: "es2022",
+  //   },
+  // },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //

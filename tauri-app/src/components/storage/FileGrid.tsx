@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import FileIcon from "./FileIcon";
+import FileThumbnail from "./FileThumbnail";
 
 function FileGrid() {
   const navigate = useNavigate();
@@ -77,7 +78,7 @@ function FileGrid() {
                     <ContextMenuTrigger>
                       <div
                         key={i}
-                        className={`h-full w-full rounded-lg flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                        className={`h-auto w-full rounded-lg flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
                         onClick={() => {
                           if (file.encodingFormat === "application/pdf")
                             navigate(`/pdf/${file.identifier}`);
@@ -101,7 +102,11 @@ function FileGrid() {
                         }}
                       >
                         <div className="flex flex-1 w-full items-center justify-center">
-                          <FileIcon type={file.encodingFormat} />
+                          {file.thumbnailBlobId ? (
+                            <FileThumbnail file={file} />
+                          ) : (
+                            <FileIcon type={file.encodingFormat} />
+                          )}
                         </div>
 
                         <div className="flex w-full flex-col gap-[2px]">

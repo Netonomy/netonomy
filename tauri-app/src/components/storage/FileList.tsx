@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import FileIcon from "./FileIcon";
+import FileThumbnail from "./FileThumbnail";
 
 function FileList() {
   const navigate = useNavigate();
@@ -93,8 +94,13 @@ function FileList() {
                         navigate(`/video/${file.identifier}`);
                     }}
                   >
-                    <FileIcon type={file.encodingFormat} />
-
+                    <div className="flex items-center justify-center">
+                      {file.thumbnailBlobId ? (
+                        <FileThumbnail file={file} />
+                      ) : (
+                        <FileIcon type={file.encodingFormat} />
+                      )}
+                    </div>
                     <div className="flex flex-1 flex-col ml-4 gap-[2px]">
                       <div className="text-md md:text-lg font-normal flex flex-1 max-w-[calc(100vw-30vw)] truncate">
                         {file.name}

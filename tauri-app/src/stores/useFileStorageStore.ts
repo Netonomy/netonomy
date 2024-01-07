@@ -3,6 +3,13 @@ import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
 import { Record } from "@web5/api";
 import useAppStore from "./useAppStore";
 import { atomWithStorage } from "jotai/utils";
+import { makeThumb } from "@/lib/utils";
+import { pdfjs } from "react-pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.js",
+  import.meta.url
+).toString();
 
 export const selectedStorageDisplayTabAtom = atomWithStorage(
   "selectedStorageDisplayTab",
@@ -26,6 +33,7 @@ interface StorageState {
     fetchFilesAndFolders: (parentId?: string) => Promise<void>;
     uploadFile: (file: File) => Promise<void>;
     fetchFile: (recordId: string) => Promise<void>;
+    fetchBlob: (recordId: string) => Promise<Blob | null>;
     deleteItem: (recordId: string) => Promise<void>;
     createCollection: ({
       name,
@@ -161,6 +169,33 @@ const useStorageStore = create<StorageState>((set, get) => ({
           data: blob,
         });
 
+        // If the file is a pdf, create a thumbnail
+        let thumbnailBlobId: string | undefined = undefined;
+        if (file.type === "application/pdf") {
+          try {
+            const loadingTask = pdfjs.getDocument(URL.createObjectURL(blob));
+            const doc = await loadingTask.promise;
+            const canvas = await doc.getPage(1).then(makeThumb);
+
+            // Convert canvas to blob
+            const thumbnailBlob = await new Promise((resolve) => {
+              canvas.toBlob((blob: Blob) => {
+                resolve(blob);
+              });
+            });
+
+            // Upload the thumbnail blob
+            const { record: uploadedThumbnail } = await web5.dwn.records.create(
+              {
+                data: thumbnailBlob,
+              }
+            );
+            thumbnailBlobId = uploadedThumbnail?.id;
+          } catch (error) {
+            console.error(error);
+          }
+        }
+
         // Create the digital document
         let data: DigitalDocument = {
           "@context": "https://schema.org",
@@ -170,6 +205,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
           size: file.size.toString(),
           fileBlobId: uploadedFile!.id,
           identifier: "",
+          thumbnailBlobId,
           dateCreated: new Date().toISOString(),
           dateModified: new Date().toISOString(),
           datePublished: new Date().toISOString(),
@@ -208,9 +244,24 @@ const useStorageStore = create<StorageState>((set, get) => ({
         }
       } catch (err) {
         console.log(err);
+        useAppStore.getState().actions.setLoading(false);
       }
 
       useAppStore.getState().actions.setLoading(false);
+    },
+    fetchBlob: async (recordId: string) => {
+      const web5 = useWeb5Store.getState().web5;
+      if (!web5) return null;
+
+      const { record } = await web5.dwn.records.read({
+        message: {
+          filter: {
+            recordId,
+          },
+        },
+      });
+
+      return record?.data.blob();
     },
     createCollection: async ({ name }: { name: string }) => {
       const web5 = useWeb5Store.getState().web5;

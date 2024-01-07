@@ -23,7 +23,7 @@ export default function HomePage() {
   // }, [profile, fetched]);
 
   return (
-    <div className="h-screen w-screen flex flex-col">
+    <div className="h-screen w-screen flex flex-col max-h-[-webkit-fill-available]">
       <TopLoader />
       <Header />
       <div

@@ -9,7 +9,6 @@ import { FixedSizeList as List } from "react-window";
 import { Document, Page } from "react-pdf";
 import { RingLoader } from "react-spinners";
 import useCollectionStore from "@/stores/useFileStorageStore";
-
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import MyRingLoader from "@/components/MyRingLoader";
@@ -26,6 +25,7 @@ export default function PdfViewerPage() {
   const [scale, setScale] = useState<number>(1);
   const fetchFile = useCollectionStore((state) => state.actions.fetchFile);
   const file = useCollectionStore((state) => state.file);
+
   // const [displayedPage, setDisplayedPage] = useState<number>(1);
 
   /**
