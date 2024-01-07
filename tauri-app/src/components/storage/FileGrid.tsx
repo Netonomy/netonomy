@@ -64,7 +64,20 @@ function FileGrid() {
   }, []);
 
   if (collectionItems?.length === 0) {
-    return <div className="flex flex-1 w-full overflow-y-auto p-2"></div>;
+    return (
+      <div className="flex flex-1 w-full overflow-y-auto p-2">
+        <div
+          className={`w-full flex-1 rounded-lg items-center flex justify-center ${
+            isDragActive && "bg-primary-foreground"
+          }`}
+          {...getRootProps()}
+        >
+          <div className="text-2xl font-medium text-primary">
+            Start by dragging a file here.
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
