@@ -21,7 +21,7 @@ const useWeb5Store = create<Web5State>((set, get) => ({
       // Connect to Web5
       const { web5, did } = await Web5.connect({
         techPreview: {
-          dwnEndpoints: [],
+          dwnEndpoints: [import.meta.env.VITE_DWN_URL as string],
         },
         // sync: "1000",
       });
