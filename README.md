@@ -10,6 +10,8 @@
 
 Give people and organizations control over their digital identity, data, and finances
 
+Since users will have complete ownership we enable direct peer to peer transfer of information
+
 ### Feature Roadmap
 
 - [ ] File Storage (viewing, sharing, editing)
