@@ -4,7 +4,7 @@ import { NavBarOptions } from "@/enums/NavBarOptions";
 
 export default function NavBar() {
   return (
-    <div className="flex w-full h-16 items-center gap-4 md:h-full md:w-16 md:flex-col md:py-4 bg-myGrey">
+    <div className="flex w-full h-16 items-center gap-4 md:h-full md:w-16 md:flex-col md:py-4 bg-myGrey dark:bg-secondary">
       {/* <NavBarItem icon={<MessageSquare />} item={NavBarOptions.messages} /> */}
 
       <NavBarItem icon={<Box />} item={NavBarOptions.storage} />
