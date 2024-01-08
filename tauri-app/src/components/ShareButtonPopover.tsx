@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import useStorageStore, { DigitalDocument } from "@/stores/useFileStorageStore";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function ShareButtonPopover() {
   const file = useStorageStore((state) => state.file);
@@ -13,16 +14,24 @@ export default function ShareButtonPopover() {
     <Popover>
       <PopoverTrigger>
         <Button className="m-4 gap-1">
-          <Share className="h-3 w-3" /> Share
+          {file?.record.published ? (
+            <>
+              <Share className="h-3 w-3" /> Share
+            </>
+          ) : (
+            <>
+              <Lock className="h-3 w-3" /> Share
+            </>
+          )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent>
-        <div className="flex flex-col gap-2">
+      <PopoverContent className="w-[400px] mr-4">
+        <div className="flex flex-col gap-2 transition-all">
           <div className="text-lg font-semibold">View Access</div>
 
-          <div className="flex flex-col rounded border">
+          <div className="flex flex-col rounded border ">
             <div
-              className="w-full flex justify-start items-center rounded p-2 cursor-pointer border-b-[1px] hover:bg-primary-foreground"
+              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer border-b-[1px] hover:bg-primary-foreground relative"
               onClick={() => {
                 updateFile(
                   (file?.data as DigitalDocument).identifier,
@@ -31,14 +40,38 @@ export default function ShareButtonPopover() {
                 );
               }}
             >
-              <div className="flex flex-1 items-center gap-1">
-                <Lock className="h-3 w-3" /> Private
+              <div className="w-full flex justify-start items-center ">
+                <div
+                  className={`flex flex-1 items-center gap-1 text-sm ${
+                    !file?.record.published ? "font-semibold" : "font-normal"
+                  }`}
+                >
+                  <Lock className="h-4 w-4" /> Private
+                </div>
               </div>
-              {!file?.record.published && <Check className="h-3 w-3" />}{" "}
+
+              <p className="text-sm text-muted-foreground">Only you can see</p>
+
+              <div className="absolute right-2 flex items-center ">
+                {!file?.record.published && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.6 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.25 }}
+                    exit={{ opacity: 0 }}
+                    className="rounded-full bg-primary p-1"
+                  >
+                    <Check
+                      className="h-3 w-3 text-secondary"
+                      fontWeight={"bold"}
+                    />
+                  </motion.div>
+                )}
+              </div>
             </div>
 
             <div
-              className="w-full flex justify-start items-center rounded p-2 cursor-pointer hover:bg-primary-foreground"
+              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer border-b-[1px] hover:bg-primary-foreground relative"
               onClick={() => {
                 updateFile(
                   (file?.data as DigitalDocument).identifier,
@@ -47,11 +80,36 @@ export default function ShareButtonPopover() {
                 );
               }}
             >
-              <div className="flex flex-1 items-center gap-1">
-                <Share className="h-3 w-3" /> Share
+              <div className="w-full flex justify-start items-center ">
+                <div
+                  className={`flex flex-1 items-center gap-1 text-sm ${
+                    file?.record.published ? "font-semibold" : "font-normal"
+                  }`}
+                >
+                  <Share className="h-4 w-4" /> Sharable
+                </div>
               </div>
 
-              {file?.record.published && <Check className="h-3 w-3" />}
+              <p className="text-sm text-muted-foreground">
+                Anyone with the link can view this
+              </p>
+
+              <div className="absolute right-2 top-5 flex items-center">
+                {file?.record.published && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.6 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.25 }}
+                    exit={{ opacity: 0 }}
+                    className="rounded-full bg-primary p-1"
+                  >
+                    <Check
+                      className="h-3 w-3 text-secondary"
+                      fontWeight={"bold"}
+                    />
+                  </motion.div>
+                )}{" "}
+              </div>
             </div>
           </div>
 
@@ -86,15 +144,21 @@ export default function ShareButtonPopover() {
               }}
             >
               {linkCopied ? (
-                <Check className="w-2 h-2 mr-2 text-inherit" />
+                <Check
+                  className="w-3 h-3 mr-1 text-primary"
+                  fontWeight={"bold"}
+                />
               ) : (
-                <Copy className="w-2 h-2 mr-2 text-inherit" />
+                <Copy
+                  className="w-3 h-3 mr-1 text-primary"
+                  fontWeight={"bold"}
+                />
               )}
 
               {linkCopied ? (
-                <p className="text-sm text-muted-foreground">Link Copied!</p>
+                <p className="text-sm text-primary">Link Copied!</p>
               ) : (
-                <p className="text-sm text-muted-foreground">Copy Link</p>
+                <p className="text-sm text-primary">Copy Link</p>
               )}
             </div>
           )}
