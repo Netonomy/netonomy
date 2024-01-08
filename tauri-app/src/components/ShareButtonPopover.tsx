@@ -120,21 +120,21 @@ export default function ShareButtonPopover() {
                 event.preventDefault();
                 event.stopPropagation();
 
-                if (
-                  (file.data as DigitalDocument).encodingFormat ===
-                  "application/pdf"
-                )
-                  navigator.clipboard.writeText(
-                    `http://localhost:1420/#/pdf/${
-                      (file.data as DigitalDocument).identifier
-                    }`
-                  );
-                else
-                  navigator.clipboard.writeText(
-                    `${import.meta.env.VITE_DWN_URL}/${
-                      file.record.author
-                    }/records/${(file.data as DigitalDocument).fileBlobId}`
-                  );
+                // if (
+                //   (file.data as DigitalDocument).encodingFormat ===
+                //   "application/pdf"
+                // )
+                //   navigator.clipboard.writeText(
+                //     `http://localhost:1420/#/pdf/${
+                //       (file.data as DigitalDocument).identifier
+                //     }`
+                //   );
+                // else
+                navigator.clipboard.writeText(
+                  `${import.meta.env.VITE_DWN_URL}/${
+                    file.record.author
+                  }/records/${(file.data as DigitalDocument).fileBlobId}`
+                );
 
                 setLinkCopied(true);
 
