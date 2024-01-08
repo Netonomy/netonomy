@@ -1,3 +1,4 @@
+import ShareButtonPopover from "@/components/ShareButtonPopover";
 import { Button } from "@/components/ui/button";
 import useCollectionStore from "@/stores/useFileStorageStore";
 import { ArrowLeft } from "lucide-react";
@@ -33,6 +34,8 @@ function ImageViewerPage() {
             {file?.data.name}
           </div>
         </div>
+
+        <ShareButtonPopover />
       </div>
 
       <div className=" flex flex-1 items-center justify-center">

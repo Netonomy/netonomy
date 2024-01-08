@@ -198,6 +198,8 @@ const useStorageStore = create<StorageState>((set, get) => ({
           },
         });
 
+        if (!record) throw new Error("Record not found");
+
         // Update the record
         await record?.update({
           data: {
@@ -238,6 +240,16 @@ const useStorageStore = create<StorageState>((set, get) => ({
             published: publish,
           });
         }
+
+        // Update the current file
+        let file: any = {
+          ...get().file,
+          record: {
+            ...record,
+            published: publish,
+          } as Record,
+        };
+        set({ file });
 
         // Update the collection items array
         set((state) => ({
@@ -460,6 +472,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
           if (!record) return;
 
           let data: DigitalDocument = await record.data.json();
+          data.identifier = record.id;
 
           // Fetch the file
           const { record: blobRecord } = await web5.dwn.records.read({

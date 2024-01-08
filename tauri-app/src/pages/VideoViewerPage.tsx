@@ -1,5 +1,6 @@
 "use client";
 import MyRingLoader from "@/components/MyRingLoader";
+import ShareButtonPopover from "@/components/ShareButtonPopover";
 import { Button } from "@/components/ui/button";
 import useCollectionStore from "@/stores/useFileStorageStore";
 import { ArrowLeft } from "lucide-react";
@@ -35,6 +36,8 @@ export default function VideoPlayerPage() {
             {file?.data.name}
           </div>
         </div>
+
+        <ShareButtonPopover />
       </div>
 
       <div className="flex flex-1 w-full  m-12 mt-[75px] rounded-lg overflow-hidden flex-col items-center justify-center dark:bg-black relative">

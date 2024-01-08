@@ -11,6 +11,7 @@ import useCollectionStore from "@/stores/useFileStorageStore";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import MyRingLoader from "@/components/MyRingLoader";
+import ShareButtonPopover from "@/components/ShareButtonPopover";
 // Set the worker source for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -92,6 +93,7 @@ export default function PdfViewerPage() {
             <ZoomInIcon />
           </Button>
         </div>
+        <ShareButtonPopover />
       </div>
 
       {file?.blob && (
