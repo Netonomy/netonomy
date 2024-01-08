@@ -84,4 +84,6 @@ export const useTheme = () => {
     default:
       context.theme = "light";
   }
+
+  return context;
 };

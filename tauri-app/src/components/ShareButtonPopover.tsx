@@ -29,7 +29,7 @@ export default function ShareButtonPopover() {
         <div className="flex flex-col gap-2 transition-all">
           <div className="text-lg font-semibold">View Access</div>
 
-          <div className="flex flex-col rounded border ">
+          <div className="flex flex-col rounded-sm border overflow-hidden ">
             <div
               className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer border-b-[1px] hover:bg-primary-foreground relative"
               onClick={() => {
@@ -71,7 +71,7 @@ export default function ShareButtonPopover() {
             </div>
 
             <div
-              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer border-b-[1px] hover:bg-primary-foreground relative"
+              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer hover:bg-primary-foreground relative"
               onClick={() => {
                 updateFile(
                   (file?.data as DigitalDocument).identifier,
@@ -94,7 +94,7 @@ export default function ShareButtonPopover() {
                 Anyone with the link can view this
               </p>
 
-              <div className="absolute right-2 top-5 flex items-center">
+              <div className="absolute right-2 flex items-center">
                 {file?.record.published && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.6 }}

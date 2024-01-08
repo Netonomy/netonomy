@@ -21,6 +21,7 @@ export default function VideoPlayerPage() {
   return (
     <div className="h-screen w-screen relative flex">
       {/** Document Control Header */}
+
       <div className="absolute top-0 left-0 right-0 h-[55px] z-40 flex items-center backdrop-blur-xl bg-white/30 dark:bg-black/30 ">
         <Button
           className="m-4 w-10 rounded-full p-0"
@@ -32,7 +33,7 @@ export default function VideoPlayerPage() {
           <ArrowLeft />
         </Button>
         <div className="flex flex-col flex-auto  ">
-          <div className="text-lg font-semibold truncate">
+          <div className="text-lg font-semibold truncate  max-w-[calc(100vw-40vw)]">
             {file?.data.name}
           </div>
         </div>

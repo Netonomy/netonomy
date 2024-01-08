@@ -66,7 +66,7 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider>
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       {web5 ? <RouterProvider router={router} /> : <SplashPage />}
     </ThemeProvider>
   );
