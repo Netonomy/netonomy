@@ -1,6 +1,8 @@
+import MyRingLoader from "@/components/MyRingLoader";
 import PageContainer from "@/components/PageContainer";
 import ShareButtonPopover from "@/components/ShareButtonPopover";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import useCollectionStore from "@/stores/useFileStorageStore";
 import useWeb5Store from "@/stores/useWeb5Store";
 import { ArrowLeft } from "lucide-react";
@@ -13,6 +15,7 @@ function ImageViewerPage() {
   const did = useWeb5Store((state) => state.did);
   const fetchFile = useCollectionStore((state) => state.actions.fetchFile);
   const file = useCollectionStore((state) => state.file);
+  const fetchingFile = useCollectionStore((state) => state.fetchingFile);
 
   useEffect(() => {
     fetchFile(didInRoute!, recordId!);
@@ -32,7 +35,9 @@ function ImageViewerPage() {
           <ArrowLeft />
         </Button>
 
-        {file?.data && (
+        {fetchingFile ? (
+          <Skeleton className="h-5 w-32 bg-myGrey" />
+        ) : (
           <div className="flex flex-col flex-auto  ">
             <div className="text-lg font-semibold truncate max-w-[calc(100vw-30vw)]">
               {file?.data.name}
@@ -43,12 +48,16 @@ function ImageViewerPage() {
         {did === file?.record.author && <ShareButtonPopover />}
       </div>
 
-      <div className=" flex flex-1 items-center justify-center">
+      <div className=" flex flex-1 items-center justify-center p-6">
+        {fetchingFile && <MyRingLoader />}
         {file?.blob && (
           <img
             src={URL.createObjectURL(file.blob)}
             className="max-w-full max-h-[calc(100vh-200px)] rounded-sm"
           />
+        )}
+        {!file && !fetchingFile && (
+          <div className="text-lg font-semibold">File not found</div>
         )}
       </div>
     </PageContainer>

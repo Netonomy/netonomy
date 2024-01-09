@@ -14,6 +14,7 @@ import MyRingLoader from "@/components/MyRingLoader";
 import ShareButtonPopover from "@/components/ShareButtonPopover";
 import useWeb5Store from "@/stores/useWeb5Store";
 import PageContainer from "@/components/PageContainer";
+import { Skeleton } from "@/components/ui/skeleton";
 // Set the worker source for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -28,8 +29,7 @@ export default function PdfViewerPage() {
   const [scale, setScale] = useState<number>(1);
   const fetchFile = useCollectionStore((state) => state.actions.fetchFile);
   const file = useCollectionStore((state) => state.file);
-
-  // const [displayedPage, setDisplayedPage] = useState<number>(1);
+  const fetchingFile = useCollectionStore((state) => state.fetchingFile);
 
   /**
    * Callback function for when the PDF document is successfully loaded.
@@ -72,11 +72,19 @@ export default function PdfViewerPage() {
         </Button>
 
         <div className="flex flex-col flex-auto  ">
-          <div className="text-lg font-semibold truncate max-w-[calc(100vw-40vw)]">
-            {file?.data.name}
-          </div>
+          {fetchingFile ? (
+            <Skeleton className="h-5 w-32 bg-myGrey" />
+          ) : (
+            <div className="text-lg font-semibold truncate max-w-[calc(100vw-40vw)]">
+              {file?.data.name}
+            </div>
+          )}
 
-          <p className="text-sm text-muted-foreground">{numPages} Pages</p>
+          {fetchingFile ? (
+            <Skeleton className="h-4 w-16 bg-myGrey mt-1" />
+          ) : (
+            <p className="text-sm text-muted-foreground">{numPages} Pages</p>
+          )}
         </div>
 
         <div className="flex gap-1">
@@ -149,7 +157,10 @@ export default function PdfViewerPage() {
         </AutoSizer>
       )}
       <div className="h-full w-full items-center flex justify-center">
-        {!file?.blob && <MyRingLoader />}
+        {fetchingFile && <MyRingLoader />}
+        {!file && !fetchingFile && (
+          <div className="text-lg font-semibold">File not found</div>
+        )}
       </div>
     </PageContainer>
   );

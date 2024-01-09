@@ -468,7 +468,9 @@ const useStorageStore = create<StorageState>((set, get) => ({
           },
         })
         .then(async ({ record }) => {
-          if (!record) return;
+          if (!record) {
+            set({ fetchingFile: false, file: null });
+          }
 
           let data: DigitalDocument = await record.data.json();
           data.identifier = record.id;
