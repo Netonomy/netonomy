@@ -13,6 +13,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import MyRingLoader from "@/components/MyRingLoader";
 import ShareButtonPopover from "@/components/ShareButtonPopover";
 import useWeb5Store from "@/stores/useWeb5Store";
+import PageContainer from "@/components/PageContainer";
 // Set the worker source for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -57,7 +58,7 @@ export default function PdfViewerPage() {
   }, []);
 
   return (
-    <div className="h-screen w-screen">
+    <PageContainer>
       {/** Document Control Header */}
       <div className="absolute top-0 left-0 right-0 h-[55px] z-40 flex items-center backdrop-blur-xl bg-white/30 dark:bg-black/30 ">
         <Button
@@ -150,6 +151,6 @@ export default function PdfViewerPage() {
       <div className="h-full w-full items-center flex justify-center">
         {!file?.blob && <MyRingLoader />}
       </div>
-    </div>
+    </PageContainer>
   );
 }

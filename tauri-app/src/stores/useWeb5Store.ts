@@ -23,7 +23,7 @@ const useWeb5Store = create<Web5State>((set, get) => ({
         techPreview: {
           dwnEndpoints: [import.meta.env.VITE_DWN_URL as string],
         },
-        sync: "1000",
+        // sync: "1000",
       });
 
       // Set the Web5 instance and DID

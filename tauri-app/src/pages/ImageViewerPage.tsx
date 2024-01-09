@@ -1,3 +1,4 @@
+import PageContainer from "@/components/PageContainer";
 import ShareButtonPopover from "@/components/ShareButtonPopover";
 import { Button } from "@/components/ui/button";
 import useCollectionStore from "@/stores/useFileStorageStore";
@@ -18,7 +19,7 @@ function ImageViewerPage() {
   }, []);
 
   return (
-    <div className="h-screen w-screen p-10 flex">
+    <PageContainer>
       {/** Document Control Header */}
       <div className="absolute top-0 left-0 right-0 h-[55px] z-40 flex items-center backdrop-blur-xl bg-white/30 dark:bg-black/30 ">
         <Button
@@ -50,7 +51,7 @@ function ImageViewerPage() {
           />
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

@@ -8,7 +8,7 @@ export default function TopLoader() {
 
   return (
     <BarLoader
-      className="absolute z-30 top-0 left-0 right-0"
+      className="absolute z-50 top-0 left-0 right-0"
       height={4}
       width={"100%"}
       loading={loading}

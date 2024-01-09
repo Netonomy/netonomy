@@ -1,5 +1,5 @@
-"use client";
 import MyRingLoader from "@/components/MyRingLoader";
+import PageContainer from "@/components/PageContainer";
 import ShareButtonPopover from "@/components/ShareButtonPopover";
 import { Button } from "@/components/ui/button";
 import useCollectionStore from "@/stores/useFileStorageStore";
@@ -21,7 +21,7 @@ export default function VideoPlayerPage() {
   }, []);
 
   return (
-    <div className="h-screen w-screen relative flex">
+    <PageContainer>
       {/** Document Control Header */}
 
       <div className="absolute top-0 left-0 right-0 h-[55px] z-40 flex items-center backdrop-blur-xl bg-white/30 dark:bg-black/30 ">
@@ -59,6 +59,6 @@ export default function VideoPlayerPage() {
           <MyRingLoader />
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }
