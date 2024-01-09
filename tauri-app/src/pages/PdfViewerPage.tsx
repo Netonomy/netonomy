@@ -12,6 +12,7 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import MyRingLoader from "@/components/MyRingLoader";
 import ShareButtonPopover from "@/components/ShareButtonPopover";
+import useWeb5Store from "@/stores/useWeb5Store";
 // Set the worker source for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -20,7 +21,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 export default function PdfViewerPage() {
   const navigate = useNavigate();
-  const { recordId } = useParams();
+  const { did: didInRoute, recordId } = useParams();
+  const did = useWeb5Store((state) => state.did);
   const [numPages, setNumPages] = useState<number>();
   const [scale, setScale] = useState<number>(1);
   const fetchFile = useCollectionStore((state) => state.actions.fetchFile);
@@ -51,7 +53,7 @@ export default function PdfViewerPage() {
   }
 
   useEffect(() => {
-    fetchFile(recordId!);
+    fetchFile(didInRoute!, recordId!);
   }, []);
 
   return (
@@ -93,7 +95,8 @@ export default function PdfViewerPage() {
             <ZoomInIcon />
           </Button>
         </div>
-        <ShareButtonPopover />
+
+        {did === file?.record.author && <ShareButtonPopover />}
       </div>
 
       {file?.blob && (

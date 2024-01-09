@@ -1,4 +1,4 @@
-import { RouterProvider, createHashRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import useWeb5Store from "./stores/useWeb5Store";
 import React, { Suspense, useEffect } from "react";
 import { SplashPage } from "./pages/SplashPage";
@@ -10,13 +10,13 @@ const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const CreateProfilePage = React.lazy(() => import("./pages/CreateProfilePage"));
 const VideoViewerPage = React.lazy(() => import("./pages/VideoViewerPage"));
 
-const router = createHashRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <HomePage />,
   },
   {
-    path: "/pdf/:recordId",
+    path: "/pdf/:did/:recordId",
     element: (
       <Suspense>
         <PdfViewerPage />
@@ -24,7 +24,7 @@ const router = createHashRouter([
     ),
   },
   {
-    path: "/image/:recordId",
+    path: "/image/:did/:recordId",
     element: (
       <Suspense>
         <ImageViewerPage />
@@ -32,7 +32,7 @@ const router = createHashRouter([
     ),
   },
   {
-    path: "/video/:recordId",
+    path: "/video/:did/:recordId",
     element: (
       <Suspense>
         <VideoViewerPage />

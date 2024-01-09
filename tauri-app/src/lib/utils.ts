@@ -99,3 +99,19 @@ export function makeThumbFromVideo(videoBlob: any) {
     };
   });
 }
+
+export function getFileType(
+  encodingFormat: string
+): "image" | "pdf" | "video" | "other" {
+  if (encodingFormat === "application/pdf") return "pdf";
+  else if (
+    encodingFormat === "image/jpeg" ||
+    encodingFormat === "image/png" ||
+    encodingFormat === "image/gif" ||
+    encodingFormat === "image/webp" ||
+    encodingFormat === "image/svg+xml"
+  )
+    return "image";
+  else if (encodingFormat.startsWith("video/")) return "video";
+  else return "other";
+}

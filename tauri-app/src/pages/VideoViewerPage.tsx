@@ -3,6 +3,7 @@ import MyRingLoader from "@/components/MyRingLoader";
 import ShareButtonPopover from "@/components/ShareButtonPopover";
 import { Button } from "@/components/ui/button";
 import useCollectionStore from "@/stores/useFileStorageStore";
+import useWeb5Store from "@/stores/useWeb5Store";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import ReactPlayer from "react-player";
@@ -10,12 +11,13 @@ import { useNavigate, useParams } from "react-router-dom";
 
 export default function VideoPlayerPage() {
   const navigate = useNavigate();
-  const { recordId } = useParams();
+  const { did: didInRoute, recordId } = useParams();
+  const did = useWeb5Store((state) => state.did);
   const fetchFile = useCollectionStore((state) => state.actions.fetchFile);
   const file = useCollectionStore((state) => state.file);
 
   useEffect(() => {
-    fetchFile(recordId!);
+    fetchFile(didInRoute!, recordId!);
   }, []);
 
   return (
@@ -38,7 +40,7 @@ export default function VideoPlayerPage() {
           </div>
         </div>
 
-        <ShareButtonPopover />
+        {did === file?.record.author && <ShareButtonPopover />}
       </div>
 
       <div className="flex flex-1 w-full  m-12 mt-[75px] rounded-lg overflow-hidden flex-col items-center justify-center dark:bg-black relative">

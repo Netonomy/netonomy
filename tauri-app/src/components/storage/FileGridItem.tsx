@@ -13,6 +13,8 @@ import {
 import FileIcon from "./FileIcon";
 import { Record } from "@web5/api";
 import FileContextMenu from "./FileContextMenu";
+import useWeb5Store from "@/stores/useWeb5Store";
+import { getFileType } from "@/lib/utils";
 
 export default function FileGridItem({
   file,
@@ -25,6 +27,7 @@ export default function FileGridItem({
   const navigate = useNavigate();
   const type = file.data["@type"];
   const isFolder = type === "Collection";
+  const did = useWeb5Store((state) => state.did);
 
   const fetchBlob = useStorageStore((state) => state.actions.fetchBlob);
   const deleteItem = useStorageStore((state) => state.actions.deleteItem);
@@ -37,36 +40,16 @@ export default function FileGridItem({
             key={file.data.identifier}
             className={`h-auto w-full rounded-lg flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
             onClick={async () => {
-              if (
-                (file.data as DigitalDocument).encodingFormat ===
-                "application/pdf"
-              )
-                navigate(`/pdf/${(file.data as DigitalDocument).identifier}`);
-              else if (
-                (file.data as DigitalDocument).encodingFormat ===
-                  "image/jpeg" ||
-                (file.data as DigitalDocument).encodingFormat === "image/png" ||
-                (file.data as DigitalDocument).encodingFormat === "image/gif" ||
-                (file.data as DigitalDocument).encodingFormat ===
-                  "image/webp" ||
-                (file.data as DigitalDocument).encodingFormat ===
-                  "image/svg+xml"
-              )
-                navigate(`/image/${(file.data as DigitalDocument).identifier}`);
-              else if (
-                (file.data as DigitalDocument).encodingFormat === "video/mp4" ||
-                (file.data as DigitalDocument).encodingFormat ===
-                  "video/quicktime" ||
-                (file.data as DigitalDocument).encodingFormat ===
-                  "video/x-flv" ||
-                (file.data as DigitalDocument).encodingFormat ===
-                  "video/MP2T" ||
-                (file.data as DigitalDocument).encodingFormat ===
-                  "video/x-msvideo" ||
-                (file.data as DigitalDocument).encodingFormat ===
-                  "video/x-ms-wmv"
-              )
-                navigate(`/video/${(file.data as DigitalDocument).identifier}`);
+              const fileType = getFileType(
+                (file.data as DigitalDocument).encodingFormat
+              );
+              if (fileType === "pdf") navigate(`/pdf/${did}/${file.record.id}`);
+              else if (fileType === "image")
+                navigate(`/image/${did}/${file.record.id}`);
+              else if (fileType === "video")
+                navigate(
+                  `/video/${did}/${(file.data as DigitalDocument).identifier}`
+                );
               else {
                 const blob = await fetchBlob(
                   (file.data as DigitalDocument).fileBlobId

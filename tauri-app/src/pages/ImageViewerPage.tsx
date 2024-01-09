@@ -1,18 +1,20 @@
 import ShareButtonPopover from "@/components/ShareButtonPopover";
 import { Button } from "@/components/ui/button";
 import useCollectionStore from "@/stores/useFileStorageStore";
+import useWeb5Store from "@/stores/useWeb5Store";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 function ImageViewerPage() {
   const navigate = useNavigate();
-  const { recordId } = useParams();
+  const { did: didInRoute, recordId } = useParams();
+  const did = useWeb5Store((state) => state.did);
   const fetchFile = useCollectionStore((state) => state.actions.fetchFile);
   const file = useCollectionStore((state) => state.file);
 
   useEffect(() => {
-    fetchFile(recordId!);
+    fetchFile(didInRoute!, recordId!);
   }, []);
 
   return (
@@ -29,13 +31,15 @@ function ImageViewerPage() {
           <ArrowLeft />
         </Button>
 
-        <div className="flex flex-col flex-auto  ">
-          <div className="text-lg font-semibold truncate max-w-[calc(100vw-30vw)]">
-            {file?.data.name}
+        {file?.data && (
+          <div className="flex flex-col flex-auto  ">
+            <div className="text-lg font-semibold truncate max-w-[calc(100vw-30vw)]">
+              {file?.data.name}
+            </div>
           </div>
-        </div>
+        )}
 
-        <ShareButtonPopover />
+        {did === file?.record.author && <ShareButtonPopover />}
       </div>
 
       <div className=" flex flex-1 items-center justify-center">

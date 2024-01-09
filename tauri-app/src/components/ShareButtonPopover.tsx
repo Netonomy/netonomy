@@ -4,6 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import useStorageStore, { DigitalDocument } from "@/stores/useFileStorageStore";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { getFileType } from "@/lib/utils";
 
 export default function ShareButtonPopover() {
   const file = useStorageStore((state) => state.file);
@@ -120,21 +121,28 @@ export default function ShareButtonPopover() {
                 event.preventDefault();
                 event.stopPropagation();
 
-                // if (
-                //   (file.data as DigitalDocument).encodingFormat ===
-                //   "application/pdf"
-                // )
-                //   navigator.clipboard.writeText(
-                //     `http://localhost:1420/#/pdf/${
-                //       (file.data as DigitalDocument).identifier
-                //     }`
-                //   );
-                // else
-                navigator.clipboard.writeText(
-                  `${import.meta.env.VITE_DWN_URL}/${
-                    file.record.author
-                  }/records/${(file.data as DigitalDocument).fileBlobId}`
+                const fileType = getFileType(
+                  (file.data as DigitalDocument).encodingFormat
                 );
+
+                if (fileType === "pdf")
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/pdf/${file.record.author}/${file.record.id}`
+                  );
+                else if (fileType === "image")
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/image/${file.record.author}/${file.record.id}`
+                  );
+                else if (fileType === "video")
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/video/${file.record.author}/${file.record.id}`
+                  );
+                else
+                  navigator.clipboard.writeText(
+                    `${import.meta.env.VITE_DWN_URL}/${
+                      file.record.author
+                    }/records/${(file.data as DigitalDocument).fileBlobId}`
+                  );
 
                 setLinkCopied(true);
 

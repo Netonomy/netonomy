@@ -43,7 +43,7 @@ interface StorageState {
     setSelectedDisplayTab: (tab: "grid" | "list") => void;
     fetchFilesAndFolders: (parentId?: string) => Promise<void>;
     uploadFile: (file: File) => Promise<void>;
-    fetchFile: (recordId: string) => Promise<void>;
+    fetchFile: (did: string, recordId: string) => Promise<void>;
     fetchBlob: (recordId: string) => Promise<Blob | null>;
     deleteItem: (recordId: string) => Promise<void>;
     updateFileItem: (
@@ -136,12 +136,12 @@ const useStorageStore = create<StorageState>((set, get) => ({
       const { records: collectionItems } = await web5.dwn.records.query({
         message: {
           filter: {
-            parentId: parentId || undefined,
-            protocol: schemaOrgProtocolDefinition.protocol,
+            // parentId: parentId || undefined,
+            // protocol: schemaOrgProtocolDefinition.protocol,
             schema: "https://schema.org/DigitalDocument",
-            protocolPath: parentId
-              ? "collection/digitalDocument"
-              : "digitalDocument",
+            // protocolPath: parentId
+            //   ? "collection/digitalDocument"
+            //   : "digitalDocument",
           },
         },
       });
@@ -209,6 +209,8 @@ const useStorageStore = create<StorageState>((set, get) => ({
           published: publish,
         });
 
+        await record.send(useWeb5Store.getState().did!);
+
         if (data.thumbnailBlobId) {
           // Fetch the thumbnail record
           const { record: thumbnailRecord } = await web5.dwn.records.read({
@@ -220,9 +222,10 @@ const useStorageStore = create<StorageState>((set, get) => ({
           });
 
           // Update the thumbnail record
-          thumbnailRecord.update({
+          await thumbnailRecord.update({
             published: publish,
           });
+          await thumbnailRecord.send(useWeb5Store.getState().did!);
         }
 
         if (data.fileBlobId) {
@@ -236,18 +239,16 @@ const useStorageStore = create<StorageState>((set, get) => ({
           });
 
           // Update the file record
-          fileRecord.update({
+          await fileRecord.update({
             published: publish,
           });
+          await fileRecord.send(useWeb5Store.getState().did!);
         }
 
         // Update the current file
         let file: any = {
           ...get().file,
-          record: {
-            ...record,
-            published: publish,
-          } as Record,
+          record,
         };
         set({ file });
 
@@ -258,10 +259,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
             if (item.data.identifier === recordId) {
               return {
                 data: item.data,
-                record: {
-                  ...item.record,
-                  published: publish,
-                } as Record,
+                record,
               };
             } else {
               return item;
@@ -363,14 +361,14 @@ const useStorageStore = create<StorageState>((set, get) => ({
           data,
           message: {
             schema: "https://schema.org/DigitalDocument",
-            protocol: schemaOrgProtocolDefinition.protocol,
-            protocolPath: get().collection?.id
-              ? "collection/digitalDocument"
-              : "digitalDocument",
+            // protocol: schemaOrgProtocolDefinition.protocol,
+            // protocolPath: get().collection?.id
+            //   ? "collection/digitalDocument"
+            //   : "digitalDocument",
             dataFormat: "application/json",
             published: false,
-            parentId: get().collection?.id || undefined,
-            contextId: get().collection?.contextId || undefined,
+            // parentId: get().collection?.id || undefined,
+            // contextId: get().collection?.contextId || undefined,
           },
         });
 
@@ -454,7 +452,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
         }));
       }
     },
-    fetchFile: async (recordId: string) => {
+    fetchFile: async (did: string, recordId: string) => {
       const web5 = useWeb5Store.getState().web5;
       if (!web5) return;
 
@@ -462,6 +460,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
 
       web5.dwn.records
         .read({
+          from: did,
           message: {
             filter: {
               recordId,
@@ -476,6 +475,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
 
           // Fetch the file
           const { record: blobRecord } = await web5.dwn.records.read({
+            from: did,
             message: {
               filter: {
                 recordId: data.fileBlobId,
