@@ -1,6 +1,7 @@
 import MyRingLoader from "@/components/MyRingLoader";
 import PageContainer from "@/components/PageContainer";
 import ShareButtonPopover from "@/components/ShareButtonPopover";
+import DownloadButton from "@/components/storage/DownloadButton";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import useCollectionStore from "@/stores/useFileStorageStore";
@@ -35,17 +36,20 @@ function ImageViewerPage() {
           <ArrowLeft />
         </Button>
 
-        {fetchingFile ? (
-          <Skeleton className="h-5 w-32 bg-myGrey" />
-        ) : (
-          <div className="flex flex-col flex-auto  ">
+        <div className="flex flex-col flex-auto  ">
+          {fetchingFile ? (
+            <Skeleton className="h-5 w-32 bg-myGrey" />
+          ) : (
             <div className="text-lg font-semibold truncate max-w-[calc(100vw-30vw)]">
               {file?.data.name}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {did === file?.record.author && <ShareButtonPopover />}
+        <div className="flex items-center gap-2 mr-4">
+          <DownloadButton />
+          {did === file?.record.author && <ShareButtonPopover />}
+        </div>
       </div>
 
       <div className=" flex flex-1 items-center justify-center p-6">

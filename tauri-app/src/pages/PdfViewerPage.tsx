@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ZoomInIcon, ZoomOutIcon } from "lucide-react";
+import { ArrowLeft, Download, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { pdfjs } from "react-pdf";
@@ -15,6 +15,7 @@ import ShareButtonPopover from "@/components/ShareButtonPopover";
 import useWeb5Store from "@/stores/useWeb5Store";
 import PageContainer from "@/components/PageContainer";
 import { Skeleton } from "@/components/ui/skeleton";
+import DownloadButton from "@/components/storage/DownloadButton";
 // Set the worker source for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -71,7 +72,7 @@ export default function PdfViewerPage() {
           <ArrowLeft />
         </Button>
 
-        <div className="flex flex-col flex-auto  ">
+        <div className="flex flex-col flex-auto">
           {fetchingFile ? (
             <Skeleton className="h-5 w-32 bg-myGrey" />
           ) : (
@@ -87,25 +88,29 @@ export default function PdfViewerPage() {
           )}
         </div>
 
-        <div className="flex gap-1">
-          <Button
-            onClick={zoomOut}
-            variant={"ghost"}
-            className="rounded-full p-2"
-          >
-            <ZoomOutIcon />
-          </Button>
+        <div className="flex items-center gap-2 mr-4">
+          <div className="flex gap-1">
+            <Button
+              onClick={zoomOut}
+              variant={"ghost"}
+              className="rounded-full p-2"
+            >
+              <ZoomOutIcon />
+            </Button>
 
-          <Button
-            onClick={zoomIn}
-            variant={"ghost"}
-            className="rounded-full p-2"
-          >
-            <ZoomInIcon />
-          </Button>
+            <Button
+              onClick={zoomIn}
+              variant={"ghost"}
+              className="rounded-full p-2"
+            >
+              <ZoomInIcon />
+            </Button>
+          </div>
+
+          <DownloadButton />
+
+          {did === file?.record.author && <ShareButtonPopover />}
         </div>
-
-        {did === file?.record.author && <ShareButtonPopover />}
       </div>
 
       {file?.blob && (

@@ -14,7 +14,7 @@ export default function ShareButtonPopover() {
   return (
     <Popover>
       <PopoverTrigger>
-        <Button className="m-4 gap-1">
+        <Button className="gap-1">
           {file?.record.published ? (
             <>
               <Share className="h-3 w-3" /> Share

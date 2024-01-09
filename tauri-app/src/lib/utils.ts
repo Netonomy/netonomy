@@ -47,7 +47,7 @@ export function makeThumbFromVideo(videoBlob: any) {
 
     // Create a canvas element
     var canvas = document.createElement("canvas");
-    canvas.width = canvas.height = 96;
+    canvas.width = canvas.height = 150;
     var ctx = canvas.getContext("2d");
 
     // When the video metadata is loaded
@@ -90,7 +90,7 @@ export function makeThumbFromVideo(videoBlob: any) {
       };
 
       // Seek the video to the first frame or any specific frame
-      video.currentTime = 1; // Change 0 to desired seconds, if needed
+      video.currentTime = 0; // Change 0 to desired seconds, if needed
     };
 
     // Error handling

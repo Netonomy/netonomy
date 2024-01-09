@@ -10,3 +10,12 @@ services:
       - DS_PORT=3100
       - DS_MAX_RECORD_DATA_SIZE=100gb
     platform: linux/amd64
+
+  app:
+    build:
+      context: ./tauri-app
+    container_name: app
+    ports:
+      - 1420:1420
+    volumes:
+      - "./tauri-app/src:/app/src"
