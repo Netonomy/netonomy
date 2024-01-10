@@ -1,4 +1,4 @@
-import { Plus, LayoutGrid, AlignJustify, File } from "lucide-react";
+import { Plus, LayoutGrid, AlignJustify, File, Pencil } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import {
   DropdownMenu,
@@ -12,8 +12,10 @@ import useCollectionStore, {
   selectedStorageDisplayTabAtom,
 } from "@/stores/useFileStorageStore";
 import { useAtom } from "jotai/react";
+import { useNavigate } from "react-router-dom";
 
 export default function StorageHeader() {
+  const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadFile = useCollectionStore((state) => state.actions.uploadFile);
   const [selectedDisplayTab, setSelectedDisplayTab] = useAtom(
@@ -48,6 +50,15 @@ export default function StorageHeader() {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="rounded-xl">
+            <DropdownMenuItem
+              className="rounded-xl"
+              onClick={() => {
+                navigate("/note");
+              }}
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              <span>Note</span>
+            </DropdownMenuItem>
             <DropdownMenuItem
               className="rounded-xl"
               onClick={() => {

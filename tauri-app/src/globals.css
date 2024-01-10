@@ -80,13 +80,91 @@
       --ring: 240 4.9% 83.9%;
     }
   }
-}
 
-@layer base {
+  .tiptap h1 {
+    margin-block: 5rem; /* Equivalent to 'scroll-m-20' */
+    font-size: 2.25rem; /* Equivalent to 'text-4xl' */
+    font-weight: 800; /* Equivalent to 'font-extrabold' */
+    letter-spacing: -0.025em; /* Equivalent to 'tracking-tight' */
+  }
+
+  @media (min-width: 1024px) {
+    .tiptap h1 {
+      font-size: 3rem; /* Equivalent to 'lg:text-5xl' */
+    }
+  }
+
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.tiptap > * + * {
+  margin-top: 0.55em;
+}
+
+.tiptap h1,
+h2,
+h3,
+h4 {
+  padding: 0;
+  margin: 0;
+}
+
+.tiptap h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+}
+
+.tiptap h2 {
+  font-size: 1.875rem;
+  font-weight: 800;
+}
+
+.tiptap h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.tiptap h4 {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+@media (min-width: 1024px) {
+  .tiptap h1 {
+    font-size: 3rem;
+  }
+
+  .tiptap h2 {
+    font-size: 2.25rem;
+  }
+}
+
+.tiptap p {
+  margin-top: 1.5rem;
+  line-height: 1.75rem;
+}
+
+.tiptap ul {
+  margin-top: 1.5rem; /* Equivalent to 'my-6' */
+  margin-bottom: 1.5rem; /* Equivalent to 'my-6' */
+  margin-left: 1.5rem; /* Equivalent to 'ml-6' */
+  list-style-type: disc; /* Equivalent to 'list-disc' */
+}
+
+.tiptap code {
+  position: relative; /* Equivalent to 'relative' */
+  border-radius: 0.25rem; /* Equivalent to 'rounded' (default Tailwind radius) */
+  background-color: #f4f4f5; /* 'bg-muted' - specify your muted color */
+  padding-left: 0.3rem; /* Equivalent to 'px-[0.3rem]' */
+  padding-right: 0.3rem; /* Equivalent to 'px-[0.3rem]' */
+  padding-top: 0.2rem; /* Equivalent to 'py-[0.2rem]' */
+  padding-bottom: 0.2rem; /* Equivalent to 'py-[0.2rem]' */
+  font-family: monospace; /* Equivalent to 'font-mono' */
+  font-size: 0.875rem; /* Equivalent to 'text-sm' */
+  font-weight: 600; /* Equivalent to 'font-semibold' */
 }

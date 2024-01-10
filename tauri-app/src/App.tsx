@@ -14,13 +14,21 @@ const VideoViewerPage = React.lazy(() => import("./pages/VideoViewerPage"));
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <NoteEditorPage />,
+    element: <HomePage />,
   },
   {
     path: "/pdf/:did/:recordId",
     element: (
       <Suspense>
         <PdfViewerPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/note",
+    element: (
+      <Suspense>
+        <NoteEditorPage />
       </Suspense>
     ),
   },
