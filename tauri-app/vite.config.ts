@@ -11,6 +11,17 @@ export default defineConfig(async () => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // build: {
+  //   target: "es2022",
+  // },
+  // esbuild: {
+  //   target: "es2022",
+  // },
+  // optimizeDeps: {
+  //   esbuildOptions: {
+  //     target: "es2022",
+  //   },
+  // },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
@@ -19,10 +30,12 @@ export default defineConfig(async () => ({
   // 2. tauri expects a fixed port, fail if that port is not available
   server: {
     port: 1420,
+    host: true,
     strictPort: true,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**"],
+      usePolling: true,
     },
   },
 }));

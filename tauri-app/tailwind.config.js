@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
+  // darkMode: ["class"],
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     container: {
@@ -67,10 +67,10 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       gridTemplateColumns: {
-        auto: "repeat(auto-fill, minmax(200px, 1fr))",
+        auto: "repeat(auto-fill, minmax(175px, 0.5fr))",
       },
       gridTemplateRows: {
-        sm: 'repeat(auto-fill, minmax(200px, 1fr))'
+        sm: 'repeat(auto-fill, minmax(175px, 1fr))'
       }
     },
   },

@@ -14,7 +14,9 @@ export default function NavBarItem({
 
   return (
     <div
-      className="flex flex-col items-center gap-2 cursor-pointer"
+      className={`flex flex-col items-center gap-2 p-3 rounded-lg cursor-pointer ${
+        selectedNavBar === item && "bg-secondary"
+      }`}
       onClick={() => setNavBarItem(item)}
     >
       <div
@@ -26,7 +28,7 @@ export default function NavBarItem({
       </div>
 
       <div
-        className={`w-1 h-1 rounded-full ${
+        className={`w-1 h-1 rounded-full md:hidden ${
           selectedNavBar === item ? "bg-primary" : "bg-transparent"
         }`}
       />

@@ -3,6 +3,13 @@ import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
 import { Record } from "@web5/api";
 import useAppStore from "./useAppStore";
 import { atomWithStorage } from "jotai/utils";
+import { makeThumb, makeThumbFromVideo } from "@/lib/utils";
+import { pdfjs } from "react-pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.js",
+  import.meta.url
+).toString();
 
 export const selectedStorageDisplayTabAtom = atomWithStorage(
   "selectedStorageDisplayTab",
@@ -12,21 +19,38 @@ export const selectedStorageDisplayTabAtom = atomWithStorage(
 interface StorageState {
   collection: Record | null;
   selectedDisplayTab: "grid" | "list"; // Used to determine which tab is selected in the display tab bar
-  collectionItems: (DigitalDocument | Collection)[] | null;
-  filteredCollectionItems: (DigitalDocument | Collection)[] | null;
+  collectionItems:
+    | {
+        data: DigitalDocument | Collection;
+        record: Record;
+      }[]
+    | null;
+  filteredCollectionItems:
+    | {
+        data: DigitalDocument | Collection;
+        record: Record;
+      }[]
+    | null;
   searchStr: string;
   fetching: boolean;
   file: {
     data: DigitalDocument;
     blob: Blob;
+    record: Record;
   } | null;
   fetchingFile: boolean;
   actions: {
     setSelectedDisplayTab: (tab: "grid" | "list") => void;
     fetchFilesAndFolders: (parentId?: string) => Promise<void>;
     uploadFile: (file: File) => Promise<void>;
-    fetchFile: (recordId: string) => Promise<void>;
+    fetchFile: (did: string, recordId: string) => Promise<void>;
+    fetchBlob: (recordId: string) => Promise<Blob | null>;
     deleteItem: (recordId: string) => Promise<void>;
+    updateFileItem: (
+      recordId: string,
+      data: DigitalDocument,
+      publish: boolean
+    ) => Promise<void>;
     createCollection: ({
       name,
       parentId,
@@ -76,7 +100,10 @@ const useStorageStore = create<StorageState>((set, get) => ({
       }
 
       // Set the collection items
-      let items: (DigitalDocument | Collection)[] = [];
+      let items: {
+        data: DigitalDocument | Collection;
+        record: Record;
+      }[] = [];
 
       // Fetch the collections
       const { records: collectionRecords } = await web5.dwn.records.query({
@@ -93,12 +120,15 @@ const useStorageStore = create<StorageState>((set, get) => ({
         // Loop through the collections
         for (var i = 0; i < collectionRecords.length; i++) {
           const record = collectionRecords[i];
-          let data = await record.data.json();
+          let data: Collection = await record.data.json();
 
           data.identifier = record.id;
 
           // Add the collection to the files and folders array
-          items.push(data);
+          items.push({
+            data,
+            record,
+          });
         }
       }
 
@@ -106,12 +136,12 @@ const useStorageStore = create<StorageState>((set, get) => ({
       const { records: collectionItems } = await web5.dwn.records.query({
         message: {
           filter: {
-            parentId: parentId || undefined,
-            protocol: schemaOrgProtocolDefinition.protocol,
+            // parentId: parentId || undefined,
+            // protocol: schemaOrgProtocolDefinition.protocol,
             schema: "https://schema.org/DigitalDocument",
-            protocolPath: parentId
-              ? "collection/digitalDocument"
-              : "digitalDocument",
+            // protocolPath: parentId
+            //   ? "collection/digitalDocument"
+            //   : "digitalDocument",
           },
         },
       });
@@ -120,28 +150,128 @@ const useStorageStore = create<StorageState>((set, get) => ({
         // Loop through the collection items
         for (var i = 0; i < collectionItems.length; i++) {
           const record = collectionItems[i];
-          let data = await record.data.json();
+          let data: DigitalDocument = await record.data.json();
 
           data.identifier = record.id;
+          data.published = record.published;
 
           // Add the folder to the files and folders array
-          items.push(data);
+          items.push({
+            data,
+            record,
+          });
         }
       }
 
       // Sort the collection items by date created
       items.sort((a, b) => {
-        if (a.dateCreated && b.dateCreated) {
+        if (a.data.dateCreated && b.data.dateCreated) {
           return (
-            new Date(b.dateCreated).getTime() -
-            new Date(a.dateCreated).getTime()
+            new Date(b.data.dateCreated).getTime() -
+            new Date(a.data.dateCreated).getTime()
           );
         } else {
           return 0;
         }
       });
 
+      set({ fetching: false });
       set({ collectionItems: items, fetching: false });
+    },
+    updateFileItem: async (
+      recordId: string,
+      data: DigitalDocument,
+      publish: boolean
+    ) => {
+      const web5 = useWeb5Store.getState().web5;
+      if (!web5) return;
+      try {
+        // set loading
+        useAppStore.getState().actions.setLoading(true);
+
+        // Fetch the record
+        const { record } = await web5.dwn.records.read({
+          message: {
+            filter: {
+              recordId,
+            },
+          },
+        });
+
+        if (!record) throw new Error("Record not found");
+
+        // Update the record
+        await record?.update({
+          data: {
+            ...data,
+            published: publish,
+          },
+          published: publish,
+        });
+
+        await record.send(useWeb5Store.getState().did!);
+
+        if (data.thumbnailBlobId) {
+          // Fetch the thumbnail record
+          const { record: thumbnailRecord } = await web5.dwn.records.read({
+            message: {
+              filter: {
+                recordId: data.thumbnailBlobId,
+              },
+            },
+          });
+
+          // Update the thumbnail record
+          await thumbnailRecord.update({
+            published: publish,
+          });
+          await thumbnailRecord.send(useWeb5Store.getState().did!);
+        }
+
+        if (data.fileBlobId) {
+          // Fetch the file record
+          const { record: fileRecord } = await web5.dwn.records.read({
+            message: {
+              filter: {
+                recordId: data.fileBlobId,
+              },
+            },
+          });
+
+          // Update the file record
+          await fileRecord.update({
+            published: publish,
+          });
+          await fileRecord.send(useWeb5Store.getState().did!);
+        }
+
+        // Update the current file
+        let file: any = {
+          ...get().file,
+          record,
+        };
+        set({ file });
+
+        // Update the collection items array
+        set((state) => ({
+          ...state,
+          collectionItems: state.collectionItems?.map((item) => {
+            if (item.data.identifier === recordId) {
+              return {
+                data: item.data,
+                record,
+              };
+            } else {
+              return item;
+            }
+          }),
+        }));
+      } catch (err) {
+        console.error(err);
+      }
+
+      // unset loading
+      useAppStore.getState().actions.setLoading(false);
     },
     uploadFile: async (file: File) => {
       try {
@@ -161,6 +291,56 @@ const useStorageStore = create<StorageState>((set, get) => ({
           data: blob,
         });
 
+        // Send to dwn
+        uploadedFile?.send(did);
+
+        // If the file is a pdf, create a thumbnail
+        let thumbnailBlobId: string | undefined = undefined;
+        if (file.type === "application/pdf") {
+          try {
+            const loadingTask = pdfjs.getDocument(URL.createObjectURL(blob));
+            const doc = await loadingTask.promise;
+            const canvas = await doc.getPage(1).then(makeThumb);
+
+            // Convert canvas to blob
+            const thumbnailBlob = await new Promise((resolve) => {
+              canvas.toBlob((blob: Blob) => {
+                resolve(blob);
+              });
+            });
+
+            // Upload the thumbnail blob
+            const { record: uploadedThumbnail } = await web5.dwn.records.create(
+              {
+                data: thumbnailBlob,
+              }
+            );
+            thumbnailBlobId = uploadedThumbnail?.id;
+            uploadedThumbnail?.send(did);
+          } catch (error) {
+            console.error(error);
+          }
+        } else if (file.type.startsWith("video/")) {
+          const canvas: any = await makeThumbFromVideo(blob);
+
+          // Convert canvas to blob
+          const thumbnailBlob = await new Promise((resolve) => {
+            canvas.toBlob((blob: Blob) => {
+              resolve(blob);
+            });
+          });
+
+          // Upload the thumbnail blob
+          const { record: uploadedThumbnail } = await web5.dwn.records.create({
+            data: thumbnailBlob,
+            message: {
+              published: false,
+            },
+          });
+          thumbnailBlobId = uploadedThumbnail?.id;
+          uploadedThumbnail?.send(did);
+        }
+
         // Create the digital document
         let data: DigitalDocument = {
           "@context": "https://schema.org",
@@ -170,6 +350,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
           size: file.size.toString(),
           fileBlobId: uploadedFile!.id,
           identifier: "",
+          thumbnailBlobId,
           dateCreated: new Date().toISOString(),
           dateModified: new Date().toISOString(),
           datePublished: new Date().toISOString(),
@@ -180,37 +361,53 @@ const useStorageStore = create<StorageState>((set, get) => ({
           data,
           message: {
             schema: "https://schema.org/DigitalDocument",
-            protocol: schemaOrgProtocolDefinition.protocol,
-            protocolPath: get().collection?.id
-              ? "collection/digitalDocument"
-              : "digitalDocument",
+            // protocol: schemaOrgProtocolDefinition.protocol,
+            // protocolPath: get().collection?.id
+            //   ? "collection/digitalDocument"
+            //   : "digitalDocument",
             dataFormat: "application/json",
-            published: true,
-            parentId: get().collection?.id || undefined,
-            contextId: get().collection?.contextId || undefined,
+            published: false,
+            // parentId: get().collection?.id || undefined,
+            // contextId: get().collection?.contextId || undefined,
           },
         });
+
+        record?.send(did);
 
         // Update the collection items array
         if (record) {
           data.identifier = record.id;
 
           set((state) => ({
-            collectionItems: [data, ...(state.collectionItems ?? [])],
+            collectionItems: [
+              {
+                data,
+                record,
+              },
+              ...(state.collectionItems ?? []),
+            ],
           }));
-
-          // Vectorize the file
-          // upload to chroma
-          const formData = new FormData();
-          formData.append("file", file);
-          formData.append("did", did);
-          formData.append("recordId", record!.id);
         }
       } catch (err) {
         console.log(err);
+        useAppStore.getState().actions.setLoading(false);
       }
 
       useAppStore.getState().actions.setLoading(false);
+    },
+    fetchBlob: async (recordId: string) => {
+      const web5 = useWeb5Store.getState().web5;
+      if (!web5) return null;
+
+      const { record } = await web5.dwn.records.read({
+        message: {
+          filter: {
+            recordId,
+          },
+        },
+      });
+
+      return record?.data.blob();
     },
     createCollection: async ({ name }: { name: string }) => {
       const web5 = useWeb5Store.getState().web5;
@@ -245,11 +442,17 @@ const useStorageStore = create<StorageState>((set, get) => ({
       if (record) {
         data.identifier = record.id;
         set((state) => ({
-          collectionItems: [data, ...(state.collectionItems ?? [])],
+          collectionItems: [
+            {
+              data,
+              record,
+            },
+            ...(state.collectionItems ?? []),
+          ],
         }));
       }
     },
-    fetchFile: async (recordId: string) => {
+    fetchFile: async (did: string, recordId: string) => {
       const web5 = useWeb5Store.getState().web5;
       if (!web5) return;
 
@@ -257,6 +460,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
 
       web5.dwn.records
         .read({
+          from: did,
           message: {
             filter: {
               recordId,
@@ -264,12 +468,16 @@ const useStorageStore = create<StorageState>((set, get) => ({
           },
         })
         .then(async ({ record }) => {
-          if (!record) return;
+          if (!record) {
+            set({ fetchingFile: false, file: null });
+          }
 
           let data: DigitalDocument = await record.data.json();
+          data.identifier = record.id;
 
           // Fetch the file
           const { record: blobRecord } = await web5.dwn.records.read({
+            from: did,
             message: {
               filter: {
                 recordId: data.fileBlobId,
@@ -280,6 +488,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
 
           set({
             file: {
+              record,
               data,
               blob,
             },
@@ -306,7 +515,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
       // Remove the record from the collection items array
       set((state) => ({
         collectionItems: state.collectionItems?.filter(
-          (item) => item.identifier !== recordId
+          (item) => item.data.identifier !== recordId
         ),
       }));
 
@@ -320,10 +529,14 @@ const useStorageStore = create<StorageState>((set, get) => ({
       } else {
         const filteredCollectionItems = get().collectionItems?.filter(
           (item) => {
-            if (item["@type"] === "DigitalDocument") {
-              return item.name.toLowerCase().includes(searchStr.toLowerCase());
+            if (item.data["@type"] === "DigitalDocument") {
+              return item.data.name
+                .toLowerCase()
+                .includes(searchStr.toLowerCase());
             } else {
-              return item.name.toLowerCase().includes(searchStr.toLowerCase());
+              return item.data.name
+                .toLowerCase()
+                .includes(searchStr.toLowerCase());
             }
           }
         );
@@ -344,6 +557,7 @@ export type DigitalDocument = {
   size: string;
   fileBlobId: string;
   identifier: string;
+  published?: boolean;
   dateCreated?: string;
   dateModified?: string;
   datePublished?: string;

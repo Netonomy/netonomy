@@ -1,26 +1,5 @@
 version: "3.0"
 services:
-  server:
-    build: ./server
-    ports:
-      - 3000:3000
-    volumes:
-      - ./server:/usr/src/app
-    depends_on:
-      - vector-store
-
-  postgres:
-    image: postgres
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
-    volumes:
-      - ./.postgresql/data:/var/lib/postgresql/data
-      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
-    ports:
-      - 5432:5432
-
   dwn-server:
     image: ghcr.io/tbd54566975/dwn-server:main
     ports:
@@ -31,3 +10,12 @@ services:
       - DS_PORT=3100
       - DS_MAX_RECORD_DATA_SIZE=100gb
     platform: linux/amd64
+
+  app:
+    build:
+      context: ./tauri-app
+    container_name: app
+    ports:
+      - 1420:1420
+    volumes:
+      - "./tauri-app/src:/app/src"
