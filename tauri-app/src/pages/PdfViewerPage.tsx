@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, ZoomInIcon, ZoomOutIcon } from "lucide-react";
+import { ArrowLeft, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { pdfjs } from "react-pdf";
@@ -56,7 +56,7 @@ export default function PdfViewerPage() {
 
   useEffect(() => {
     fetchFile(didInRoute!, recordId!);
-  }, []);
+  }, [didInRoute, recordId]);
 
   return (
     <PageContainer>
@@ -114,59 +114,58 @@ export default function PdfViewerPage() {
       </div>
 
       {file?.blob && (
-        <AutoSizer>
-          {({ height, width }: { height: number; width: number }) => (
-            <Document
-              file={URL.createObjectURL(file.blob)}
-              onLoadSuccess={onDocumentLoadSuccess}
-              loading={
-                <div
-                  className="flex items-center justify-center"
-                  style={{ height, width }}
-                >
-                  <RingLoader
-                    className="absolute z-30 top-0 left-0 right-0 "
-                    loading
-                  />
-                </div>
-              }
-            >
-              <List
-                height={height}
-                itemCount={numPages || 0}
-                itemSize={height}
-                width={width}
-                // onScroll={({ scrollOffset }: { scrollOffset: any }) => {
-                // //   const pageNumber =
-                // //     Math.floor(scrollOffset / height) + 1;
-
-                //   // setDisplayedPage(pageNumber);
-                // }}
-              >
-                {({ index, style }: { index: number; style: any }) => (
+        <div className="flex flex-1 w-full pt-[55px]">
+          <AutoSizer>
+            {({ height, width }: { height: number; width: number }) => (
+              <Document
+                file={URL.createObjectURL(file.blob)}
+                onLoadSuccess={onDocumentLoadSuccess}
+                loading={
                   <div
-                    style={{
-                      ...style,
-                      display: "flex",
-                      justifyContent: "center",
-                      paddingTop: "60px",
-                      transform: `scale(${scale})`,
-                    }}
+                    className="flex items-center justify-center"
+                    style={{ height, width }}
                   >
-                    <Page key={index} pageNumber={index + 1} height={height} />
+                    <RingLoader
+                      className="absolute z-30 top-0 left-0 right-0 "
+                      loading
+                    />
                   </div>
-                )}
-              </List>
-            </Document>
+                }
+              >
+                <List
+                  height={height}
+                  itemCount={numPages || 0}
+                  itemSize={height}
+                  width={width}
+                >
+                  {({ index, style }: { index: number; style: any }) => (
+                    <div
+                      style={{
+                        ...style,
+                        display: "flex",
+                        height: height,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Page
+                        key={index}
+                        pageNumber={index + 1}
+                        height={height}
+                        scale={scale}
+                      />
+                    </div>
+                  )}
+                </List>
+              </Document>
+            )}
+          </AutoSizer>
+
+          {fetchingFile && <MyRingLoader />}
+          {!file && !fetchingFile && (
+            <div className="text-lg font-semibold">File not found</div>
           )}
-        </AutoSizer>
+        </div>
       )}
-      <div className="h-full w-full items-center flex justify-center">
-        {fetchingFile && <MyRingLoader />}
-        {!file && !fetchingFile && (
-          <div className="text-lg font-semibold">File not found</div>
-        )}
-      </div>
     </PageContainer>
   );
 }
