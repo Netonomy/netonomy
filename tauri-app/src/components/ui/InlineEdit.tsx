@@ -33,7 +33,7 @@ export default function InlineEdit({
         <div ref={editViewRef}>{editView}</div>
       ) : (
         <div
-          className="hover:bg-primary-foreground p-1 rounded-lg"
+          className="hover:bg-primary-foreground rounded-lg p-1"
           onClick={() => {
             setTimeout(() => {
               setEditing(true);

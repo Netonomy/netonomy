@@ -11,30 +11,27 @@ import useWeb5Store from "@/stores/useWeb5Store";
 import useStorageStore from "@/stores/useFileStorageStore";
 
 import {
-  RenderCurrentPageLabelProps,
-  pageNavigationPlugin,
-} from "@react-pdf-viewer/page-navigation";
-import {
   RenderZoomInProps,
   RenderZoomOutProps,
   ZoomPlugin,
 } from "@react-pdf-viewer/zoom";
+import {
+  PageNavigationPlugin,
+  RenderCurrentPageLabelProps,
+} from "@react-pdf-viewer/page-navigation";
 
 export default function FileViewerHeader({
   zoomPluginInstance,
+  pageNavigationPluginInstance,
 }: {
-  zoomPluginInstance: ZoomPlugin;
+  zoomPluginInstance?: ZoomPlugin;
+  pageNavigationPluginInstance?: PageNavigationPlugin;
 }) {
   const navigate = useNavigate();
   const file = useStorageStore((state) => state.file);
   const fetchingFile = useStorageStore((state) => state.fetchingFile);
   const did = useWeb5Store((state) => state.did);
   const updateFile = useStorageStore((state) => state.actions.updateFileItem);
-
-  // Pdf viewer plugins
-  const pageNavigationPluginInstance = pageNavigationPlugin();
-  const { CurrentPageLabel } = pageNavigationPluginInstance;
-  const { ZoomIn, ZoomOut } = zoomPluginInstance;
 
   const [fileName, setFileName] = useState("");
   const fileNameRef = useRef(fileName);
@@ -100,44 +97,50 @@ export default function FileViewerHeader({
           </div>
         )}
 
-        {fetchingFile ? (
-          <Skeleton className="h-4 w-16 bg-myGrey mt-1" />
-        ) : (
-          <CurrentPageLabel>
-            {(props: RenderCurrentPageLabelProps) => (
-              <p className="text-sm text-muted-foreground">
-                {props.numberOfPages} Pages
-              </p>
+        {pageNavigationPluginInstance && (
+          <>
+            {fetchingFile ? (
+              <Skeleton className="h-4 w-16 bg-myGrey mt-1" />
+            ) : (
+              <pageNavigationPluginInstance.CurrentPageLabel>
+                {(props: RenderCurrentPageLabelProps) => (
+                  <p className="text-sm text-muted-foreground ml-1">
+                    {props.numberOfPages} Pages
+                  </p>
+                )}
+              </pageNavigationPluginInstance.CurrentPageLabel>
             )}
-          </CurrentPageLabel>
+          </>
         )}
       </div>
 
       <div className="flex items-center gap-2 mr-4">
-        <div className="flex gap-1">
-          <ZoomOut>
-            {(props: RenderZoomOutProps) => (
-              <Button
-                onClick={props.onClick}
-                variant={"ghost"}
-                className="rounded-full p-2"
-              >
-                <ZoomOutIcon />
-              </Button>
-            )}
-          </ZoomOut>
-          <ZoomIn>
-            {(props: RenderZoomInProps) => (
-              <Button
-                onClick={props.onClick}
-                variant={"ghost"}
-                className="rounded-full p-2"
-              >
-                <ZoomInIcon />
-              </Button>
-            )}
-          </ZoomIn>
-        </div>
+        {zoomPluginInstance && (
+          <div className="flex gap-1">
+            <zoomPluginInstance.ZoomOut>
+              {(props: RenderZoomOutProps) => (
+                <Button
+                  onClick={props.onClick}
+                  variant={"ghost"}
+                  className="rounded-full p-2"
+                >
+                  <ZoomOutIcon />
+                </Button>
+              )}
+            </zoomPluginInstance.ZoomOut>
+            <zoomPluginInstance.ZoomIn>
+              {(props: RenderZoomInProps) => (
+                <Button
+                  onClick={props.onClick}
+                  variant={"ghost"}
+                  className="rounded-full p-2"
+                >
+                  <ZoomInIcon />
+                </Button>
+              )}
+            </zoomPluginInstance.ZoomIn>
+          </div>
+        )}
 
         <DownloadButton />
 
