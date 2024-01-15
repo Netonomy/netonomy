@@ -59,7 +59,7 @@ function FileGrid() {
         } ${isDragActive && "bg-primary-foreground"}`}
         {...getRootProps()}
       >
-        {fetching && (
+        {fetching ? (
           <>
             {Array.from({ length: 10 }).map((_, i) => (
               <div key={i} className="p-2">
@@ -93,16 +93,18 @@ function FileGrid() {
               </div>
             ))}
           </>
+        ) : (
+          <>
+            {collectionItems &&
+              collectionItems.map((file) => {
+                return selectedDisplayTab === "grid" ? (
+                  <FileGridItem file={file} key={file.data.identifier} />
+                ) : (
+                  <FileListItem file={file} key={file.data.identifier} />
+                );
+              })}
+          </>
         )}
-
-        {collectionItems &&
-          collectionItems.map((file) => {
-            return selectedDisplayTab === "grid" ? (
-              <FileGridItem file={file} key={file.data.identifier} />
-            ) : (
-              <FileListItem file={file} key={file.data.identifier} />
-            );
-          })}
       </div>
     </div>
   );
