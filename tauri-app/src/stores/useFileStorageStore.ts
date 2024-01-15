@@ -74,7 +74,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
       const web5 = useWeb5Store.getState().web5;
       if (!web5) return;
 
-      // set({ fetching: true });
+      set({ fetching: true });
 
       // // Set the collection items to null
       // set({ collectionItems: null });

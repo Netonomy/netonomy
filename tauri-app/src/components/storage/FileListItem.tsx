@@ -15,6 +15,7 @@ import { MoreHorizontal, Trash2 } from "lucide-react";
 import FileContextMenu from "./FileContextMenu";
 import { getFileType } from "@/lib/utils";
 import useWeb5Store from "@/stores/useWeb5Store";
+import { useState } from "react";
 
 export default function FileListItem({
   file,
@@ -28,6 +29,7 @@ export default function FileListItem({
   const did = useWeb5Store((state) => state.did);
   const type = file.data["@type"];
   const isFolder = type === "Collection";
+  const [editing, setEditing] = useState(false);
 
   const fetchBlob = useStorageStore((state) => state.actions.fetchBlob);
   const deleteItem = useStorageStore((state) => state.actions.deleteItem);
@@ -35,7 +37,7 @@ export default function FileListItem({
   return (
     <div key={file.data.identifier} className="p-2">
       {!isFolder ? (
-        <FileContextMenu file={file}>
+        <FileContextMenu file={file} setEditing={setEditing}>
           <div
             key={file.data.identifier}
             className={`h-auto w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
