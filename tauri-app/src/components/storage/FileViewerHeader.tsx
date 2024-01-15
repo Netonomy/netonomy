@@ -33,6 +33,7 @@ export default function FileViewerHeader({
   const did = useWeb5Store((state) => state.did);
   const updateFile = useStorageStore((state) => state.actions.updateFileItem);
 
+  const [editing, setEditing] = useState(false);
   const [fileName, setFileName] = useState("");
   const fileNameRef = useRef(fileName);
 
@@ -61,6 +62,8 @@ export default function FileViewerHeader({
         ) : (
           <div className="max-w-[calc(100vw-40vw)] ">
             <InlineEdit
+              editing={editing}
+              setEditing={setEditing}
               editView={
                 <Input
                   autoFocus

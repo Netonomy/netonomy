@@ -1,24 +1,26 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 
 export default function InlineEdit({
   editView,
   readView,
   onConfirm,
+  editing,
+  setEditing,
 }: {
   editView: ReactNode;
   readView: ReactNode;
   onConfirm: () => void;
+  editing: boolean;
+  setEditing: (editing: boolean) => void;
 }) {
   const editViewRef = useRef<any>(null);
-
-  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside, false);
     return () => {
       document.removeEventListener("click", handleClickOutside, false);
     };
-  }, []);
+  }, [editing]);
 
   const handleClickOutside = (event: any) => {
     if (editViewRef.current && !editViewRef.current.contains(event.target)) {

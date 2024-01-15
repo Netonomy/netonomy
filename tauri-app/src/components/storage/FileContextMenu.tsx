@@ -2,7 +2,7 @@ import useStorageStore, {
   Collection,
   DigitalDocument,
 } from "@/stores/useFileStorageStore";
-import { Share, Check, Copy, Trash, Lock } from "lucide-react";
+import { Share, Check, Copy, Trash, Lock, Pencil } from "lucide-react";
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -20,12 +20,14 @@ import { getFileType } from "@/lib/utils";
 export default function FileContextMenu({
   children,
   file,
+  setEditing,
 }: {
   children: React.ReactNode;
   file: {
     data: DigitalDocument | Collection;
     record: Record;
   };
+  setEditing: (editing: boolean) => void;
 }) {
   const updateFile = useStorageStore((state) => state.actions.updateFileItem);
   const deleteItem = useStorageStore((state) => state.actions.deleteItem);
@@ -36,6 +38,16 @@ export default function FileContextMenu({
       <ContextMenuTrigger>{children}</ContextMenuTrigger>
 
       <ContextMenuContent>
+        <ContextMenuItem
+          onClick={(event) => {
+            event.stopPropagation();
+            setEditing(true);
+          }}
+        >
+          <Pencil className="w-4 h-4 mr-2 text-inherit" />
+          Edit
+        </ContextMenuItem>
+
         <ContextMenuSub>
           <ContextMenuSubTrigger>
             <Share className="w-4 h-4 mr-2 text-inherit" />

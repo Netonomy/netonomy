@@ -253,7 +253,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
           collectionItems: state.collectionItems?.map((item) => {
             if (item.data.identifier === recordId) {
               return {
-                data: item.data,
+                data,
                 record,
               };
             } else {

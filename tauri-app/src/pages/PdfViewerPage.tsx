@@ -20,7 +20,7 @@ export default function PdfViewerPage() {
   const file = useCollectionStore((state) => state.file);
   const fetchingFile = useCollectionStore((state) => state.fetchingFile);
 
-  const zoomPluginInstance = zoomPlugin();
+  const zoomPluginInstance = zoomPlugin({ enableShortcuts: true });
   const pageNavigationPluginInstance = pageNavigationPlugin();
 
   useEffect(() => {
