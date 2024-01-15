@@ -1,58 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ZoomInIcon, ZoomOutIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { pdfjs } from "react-pdf";
-import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList as List } from "react-window";
-import { Document, Page } from "react-pdf";
-import { RingLoader } from "react-spinners";
 import useCollectionStore from "@/stores/useFileStorageStore";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
 import MyRingLoader from "@/components/MyRingLoader";
 import ShareButtonPopover from "@/components/ShareButtonPopover";
 import useWeb5Store from "@/stores/useWeb5Store";
 import PageContainer from "@/components/PageContainer";
 import { Skeleton } from "@/components/ui/skeleton";
 import DownloadButton from "@/components/storage/DownloadButton";
-// Set the worker source for PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.js",
-  import.meta.url
-).toString();
+import { Viewer } from "@react-pdf-viewer/core";
+import {
+  RenderZoomInProps,
+  RenderZoomOutProps,
+  zoomPlugin,
+} from "@react-pdf-viewer/zoom";
+import {
+  RenderCurrentPageLabelProps,
+  pageNavigationPlugin,
+} from "@react-pdf-viewer/page-navigation";
+import "@react-pdf-viewer/zoom/lib/styles/index.css";
+import "@react-pdf-viewer/core/lib/styles/index.css";
 
 export default function PdfViewerPage() {
   const navigate = useNavigate();
   const { did: didInRoute, recordId } = useParams();
   const did = useWeb5Store((state) => state.did);
-  const [numPages, setNumPages] = useState<number>();
-  const [scale, setScale] = useState<number>(1);
   const fetchFile = useCollectionStore((state) => state.actions.fetchFile);
   const file = useCollectionStore((state) => state.file);
   const fetchingFile = useCollectionStore((state) => state.fetchingFile);
-
-  /**
-   * Callback function for when the PDF document is successfully loaded.
-   * @param {Object} data - The data object containing the number of pages.
-   */
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-    setNumPages(numPages);
-  }
-
-  /**
-   * Increase the scale of the PDF document by 0.1.
-   */
-  function zoomIn() {
-    setScale((prevScale) => prevScale + 0.1);
-  }
-
-  /**
-   * Decrease the scale of the PDF document by 0.1.
-   */
-  function zoomOut() {
-    setScale((prevScale) => prevScale - 0.1);
-  }
+  const zoomPluginInstance = zoomPlugin();
+  const { ZoomIn, ZoomOut } = zoomPluginInstance;
+  const pageNavigationPluginInstance = pageNavigationPlugin();
+  const { CurrentPageLabel } = pageNavigationPluginInstance;
 
   useEffect(() => {
     fetchFile(didInRoute!, recordId!);
@@ -84,27 +64,40 @@ export default function PdfViewerPage() {
           {fetchingFile ? (
             <Skeleton className="h-4 w-16 bg-myGrey mt-1" />
           ) : (
-            <p className="text-sm text-muted-foreground">{numPages} Pages</p>
+            <CurrentPageLabel>
+              {(props: RenderCurrentPageLabelProps) => (
+                <p className="text-sm text-muted-foreground">
+                  {props.numberOfPages} Pages
+                </p>
+              )}
+            </CurrentPageLabel>
           )}
         </div>
 
         <div className="flex items-center gap-2 mr-4">
           <div className="flex gap-1">
-            <Button
-              onClick={zoomOut}
-              variant={"ghost"}
-              className="rounded-full p-2"
-            >
-              <ZoomOutIcon />
-            </Button>
-
-            <Button
-              onClick={zoomIn}
-              variant={"ghost"}
-              className="rounded-full p-2"
-            >
-              <ZoomInIcon />
-            </Button>
+            <ZoomOut>
+              {(props: RenderZoomOutProps) => (
+                <Button
+                  onClick={props.onClick}
+                  variant={"ghost"}
+                  className="rounded-full p-2"
+                >
+                  <ZoomOutIcon />
+                </Button>
+              )}
+            </ZoomOut>
+            <ZoomIn>
+              {(props: RenderZoomInProps) => (
+                <Button
+                  onClick={props.onClick}
+                  variant={"ghost"}
+                  className="rounded-full p-2"
+                >
+                  <ZoomInIcon />
+                </Button>
+              )}
+            </ZoomIn>
           </div>
 
           <DownloadButton />
@@ -113,59 +106,26 @@ export default function PdfViewerPage() {
         </div>
       </div>
 
-      {file?.blob && (
-        <div className="flex flex-1 w-full pt-[55px]">
-          <AutoSizer>
-            {({ height, width }: { height: number; width: number }) => (
-              <Document
-                file={URL.createObjectURL(file.blob)}
-                onLoadSuccess={onDocumentLoadSuccess}
-                loading={
-                  <div
-                    className="flex items-center justify-center"
-                    style={{ height, width }}
-                  >
-                    <RingLoader
-                      className="absolute z-30 top-0 left-0 right-0 "
-                      loading
-                    />
-                  </div>
-                }
-              >
-                <List
-                  height={height}
-                  itemCount={numPages || 0}
-                  itemSize={height}
-                  width={width}
-                >
-                  {({ index, style }: { index: number; style: any }) => (
-                    <div
-                      style={{
-                        ...style,
-                        display: "flex",
-                        height: height,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Page
-                        key={index}
-                        pageNumber={index + 1}
-                        height={height}
-                        scale={scale}
-                      />
-                    </div>
-                  )}
-                </List>
-              </Document>
-            )}
-          </AutoSizer>
+      <div className="flex flex-1 w-full mt-[55px] overflow-y-auto">
+        {file?.blob && (
+          <Viewer
+            fileUrl={URL.createObjectURL(file.blob)}
+            plugins={[zoomPluginInstance]}
+            renderLoader={(_: number) => <MyRingLoader />}
+          />
+        )}
 
-          {fetchingFile && <MyRingLoader />}
-          {!file && !fetchingFile && (
+        {fetchingFile && (
+          <div className="flex flex-1 items-center justify-center">
+            <MyRingLoader />
+          </div>
+        )}
+        {!file && !fetchingFile && (
+          <div className="flex flex-1 items-center justify-center">
             <div className="text-lg font-semibold">File not found</div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </PageContainer>
   );
 }

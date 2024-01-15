@@ -5,6 +5,7 @@ import { SplashPage } from "./pages/SplashPage";
 import HomePage from "./pages/HomePage";
 import { ThemeProvider } from "./components/ThemeProvider";
 import ImageViewerPage from "./pages/ImageViewerPage";
+import { Worker } from "@react-pdf-viewer/core";
 const PdfViewerPage = React.lazy(() => import("./pages/PdfViewerPage"));
 const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const CreateProfilePage = React.lazy(() => import("./pages/CreateProfilePage"));
@@ -66,9 +67,11 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      {web5 ? <RouterProvider router={router} /> : <SplashPage />}
-    </ThemeProvider>
+    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        {web5 ? <RouterProvider router={router} /> : <SplashPage />}
+      </ThemeProvider>
+    </Worker>
   );
 }
 

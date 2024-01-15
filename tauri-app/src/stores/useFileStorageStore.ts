@@ -4,12 +4,7 @@ import { Record } from "@web5/api";
 import useAppStore from "./useAppStore";
 import { atomWithStorage } from "jotai/utils";
 import { makeThumb, makeThumbFromVideo } from "@/lib/utils";
-import { pdfjs } from "react-pdf";
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.js",
-  import.meta.url
-).toString();
+import * as pdfjs from "pdfjs-dist";
 
 export const selectedStorageDisplayTabAtom = atomWithStorage(
   "selectedStorageDisplayTab",

@@ -90,3 +90,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+.rpv-core__viewer {
+  --rpv-core__inner-page-background-color: transparent !important;
+  --rpv-core__page-layer-box-shadow: none !important;
+  background-color: transparent !important;
+}
