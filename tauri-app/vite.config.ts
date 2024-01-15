@@ -2,10 +2,35 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import million from "million/compiler";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [million.vite({ auto: true, mute: true }), react()],
+  plugins: [
+    million.vite({ auto: true, mute: true }),
+    react(),
+    VitePWA({
+      registerType: "autoUpdate",
+      manifest: {
+        name: "netonomy",
+        short_name: "netonomy",
+        description: "Connect, Create, Collaborate",
+        theme_color: "#000",
+        icons: [
+          {
+            src: "icons/icon.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "icons/icon.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+        ],
+      },
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
