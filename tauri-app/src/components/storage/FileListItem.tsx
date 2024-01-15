@@ -29,7 +29,7 @@ export default function FileListItem({
   const did = useWeb5Store((state) => state.did);
   const type = file.data["@type"];
   const isFolder = type === "Collection";
-  const [editing, setEditing] = useState(false);
+  const [, setEditing] = useState(false);
 
   const fetchBlob = useStorageStore((state) => state.actions.fetchBlob);
   const deleteItem = useStorageStore((state) => state.actions.deleteItem);
