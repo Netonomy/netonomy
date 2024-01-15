@@ -6,11 +6,9 @@
 
 </div>
 
-### Mission
+### Connect, Create, Collaborate, Share
 
-Give people and organizations control over their digital identity, data, and finances
-
-Since users will have complete ownership we enable direct peer to peer transfer of information
+Building on top of [Web5](https://developer.tbd.website/projects/web5/) netonomy allows people and organization to own their data and transfer information peer to peer
 
 ### Feature Roadmap
 
@@ -20,6 +18,7 @@ Since users will have complete ownership we enable direct peer to peer transfer 
 - [ ] Image storage + backup/sync with device
 - [ ] User Profiles + feed of published records
 - [ ] Contacts
-- [ ] Threads 
+- [ ] Threads
+- [ ] Calendar
 - [ ] Bitcoin Wallet (2/3 multi sig)
-- [ ] Bitcoin lightning 
+- [ ] Bitcoin lightning
