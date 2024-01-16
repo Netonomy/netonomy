@@ -53,7 +53,7 @@ export default function FileGridItem({
         <FileContextMenu file={file} setEditing={setEditing}>
           <div
             key={file.data.identifier}
-            className={`h-auto w-full rounded-lg flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+            className={`h-auto w-full rounded-lg flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card`}
             onClick={async () => {
               if (editing) return;
               const fileType = getFileType(
@@ -132,7 +132,7 @@ export default function FileGridItem({
       ) : (
         <div
           key={file.data.identifier}
-          className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+          className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card`}
         >
           <FileIcon type={"folder"} />
 

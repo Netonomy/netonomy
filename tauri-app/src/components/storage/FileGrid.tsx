@@ -37,7 +37,7 @@ function FileGrid() {
       <div className="flex flex-1 w-full overflow-y-auto p-2">
         <div
           className={`w-full flex-1 rounded-lg items-center flex justify-center ${
-            isDragActive && "bg-primary-foreground"
+            isDragActive && "bg-card"
           }`}
           {...getRootProps()}
         >
@@ -50,19 +50,19 @@ function FileGrid() {
   }
 
   return (
-    <div className="flex flex-1 w-full overflow-y-auto p-2 max-h-[calc(100vh-100px)] ">
+    <div className="flex flex-1 w-full overflow-y-auto max-h-[calc(100vh-100px)]">
       <div
         className={`${
           selectedDisplayTab === "list"
             ? "w-full flex-1 overflow-y-auto max-h-[calc(100vh-90px)] md:max-h-[calc(100vh-100px)] items-center rounded-lg "
             : " w-full flex-1 overflow-y-auto grid grid-cols-auto grid-rows-sm rounded-lg  max-h-[calc(100vh-120px)] md:max-h-min "
-        } ${isDragActive && "bg-primary-foreground"}`}
+        } ${isDragActive && "bg-card"}`}
         {...getRootProps()}
       >
         {fetching ? (
           <>
             {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="p-2">
+              <div key={i} className="">
                 {selectedDisplayTab === "grid" ? (
                   <div
                     className={`h-auto w-full rounded flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
@@ -96,11 +96,15 @@ function FileGrid() {
         ) : (
           <>
             {collectionItems &&
-              collectionItems.map((file) => {
+              collectionItems.map((file, i) => {
                 return selectedDisplayTab === "grid" ? (
                   <FileGridItem file={file} key={file.data.identifier} />
                 ) : (
-                  <FileListItem file={file} key={file.data.identifier} />
+                  <FileListItem
+                    file={file}
+                    key={file.data.identifier}
+                    index={i}
+                  />
                 );
               })}
           </>

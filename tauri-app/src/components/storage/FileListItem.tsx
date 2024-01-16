@@ -19,11 +19,13 @@ import { useState } from "react";
 
 export default function FileListItem({
   file,
+  index,
 }: {
   file: {
     data: DigitalDocument | Collection;
     record: Record;
   };
+  index: number;
 }) {
   const navigate = useNavigate();
   const did = useWeb5Store((state) => state.did);
@@ -40,7 +42,9 @@ export default function FileListItem({
         <FileContextMenu file={file} setEditing={setEditing}>
           <div
             key={file.data.identifier}
-            className={`h-auto w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+            className={`h-auto w-full rounded-sm flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card ${
+              index % 2 === 0 && "bg-card"
+            }`}
             onClick={async () => {
               const fileType = getFileType(
                 (file.data as DigitalDocument).encodingFormat

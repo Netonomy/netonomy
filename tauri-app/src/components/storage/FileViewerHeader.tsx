@@ -45,7 +45,7 @@ export default function FileViewerHeader({
   }, [file?.data]);
 
   return (
-    <div className="absolute top-0 left-0 right-0 h-[55px] z-40 flex items-center backdrop-blur-xl bg-white/30 dark:bg-black/30 ">
+    <div className="absolute top-0 left-0 right-0 h-[60px] z-40 flex items-center backdrop-blur-xl  dark:bg-black/30 ">
       <Button
         className="m-4 w-10 rounded-full p-0"
         variant={"ghost"}

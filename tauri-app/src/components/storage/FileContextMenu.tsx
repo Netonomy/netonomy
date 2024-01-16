@@ -140,8 +140,8 @@ export default function FileContextMenu({
             deleteItem((file.data as DigitalDocument).identifier);
           }}
         >
-          <Trash className="w-4 h-4 mr-2 text-inherit" />
-          Delete
+          <Trash className="w-4 h-4 mr-2 text-red-500" />
+          <div className="text-red-500">Delete</div>
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

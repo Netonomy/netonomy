@@ -33,6 +33,7 @@ export default function VideoPlayerPage() {
               overflow: "hidden",
               background: "black",
               position: "relative",
+              boxShadow: "0 0 10px rgba(0,0,0,0.5)",
             }}
             controls
           />

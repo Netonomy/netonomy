@@ -68,11 +68,11 @@ export default function FileIcon({
   }, []);
 
   let style =
-    "min-h-[65px] min-w-[65px] max-w-[65px] max-h-[65px] md:min-h-[80px] md:min-w-[80px] md:max-h-[80px] md:max-w-[80px] rounded-sm flex items-center justify-center";
+    "min-h-[65px] min-w-[65px] max-w-[65px] max-h-[65px] md:min-h-[80px] md:min-w-[80px] md:max-h-[80px] md:max-w-[80px] rounded-sm flex items-center justify-center drop-shadow-lg";
 
   if (selectedStorageTabDiaply === "list")
     style =
-      "min-h-[60px] min-w-[60px] max-h-[60px] max-w-[60px] rounded-sm flex items-center justify-center";
+      "min-h-[40px] min-w-[40px] max-h-[40px] max-w-[40px] rounded-sm flex items-center justify-center drop-shadow-sm";
 
   if (type === "folder")
     return (

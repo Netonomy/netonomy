@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
-import { Record } from "@web5/api";
+import { Record, RecordsReadRequest } from "@web5/api";
 import useAppStore from "./useAppStore";
 import { atomWithStorage } from "jotai/utils";
 import { makeThumb, makeThumbFromVideo } from "@/lib/utils";
@@ -449,19 +449,24 @@ const useStorageStore = create<StorageState>((set, get) => ({
     },
     fetchFile: async (did: string, recordId: string) => {
       const web5 = useWeb5Store.getState().web5;
+      const userDid = useWeb5Store.getState().did;
       if (!web5) return;
 
       set({ file: null, fetchingFile: true });
 
-      web5.dwn.records
-        .read({
-          from: did,
-          message: {
-            filter: {
-              recordId,
-            },
+      let query: RecordsReadRequest = {
+        message: {
+          filter: {
+            recordId,
           },
-        })
+        },
+      };
+      if (userDid !== did) {
+        query.from = did;
+      }
+
+      web5.dwn.records
+        .read(query)
         .then(async ({ record }) => {
           if (!record) {
             set({ fetchingFile: false, file: null });
@@ -470,15 +475,21 @@ const useStorageStore = create<StorageState>((set, get) => ({
           let data: DigitalDocument = await record.data.json();
           data.identifier = record.id;
 
-          // Fetch the file
-          const { record: blobRecord } = await web5.dwn.records.read({
-            from: did,
+          let fileBlobQuery: RecordsReadRequest = {
             message: {
               filter: {
                 recordId: data.fileBlobId,
               },
             },
-          });
+          };
+          if (userDid !== did) {
+            fileBlobQuery.from = did;
+          }
+
+          // Fetch the file
+          const { record: blobRecord } = await web5.dwn.records.read(
+            fileBlobQuery
+          );
           const blob = await blobRecord?.data.blob();
 
           set({

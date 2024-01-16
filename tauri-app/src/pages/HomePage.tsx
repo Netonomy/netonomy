@@ -8,6 +8,7 @@ import useAppStore from "@/stores/useAppStore";
 import ProfilePage from "./ProfilePage";
 import Chat from "@/components/messages/chat/Chat";
 import PageContainer from "@/components/PageContainer";
+import NavBar from "@/components/NavBar";
 // import NavBar from "@/components/NavBar";
 
 export default function HomePage() {
@@ -28,7 +29,7 @@ export default function HomePage() {
       <div
         className={`flex flex-1 flex-col items-center relative md:flex-row-reverse`}
       >
-        <div className="flex flex-1 h-full w-full md:p-2 md:m-4">
+        <div className="flex flex-1 h-full w-full md:p-2 md:m-2">
           {/* {selectedNavBarItem === NavBarOptions.messages && <MessagesPreview />} */}
           {selectedNavBarItem === NavBarOptions.storage && <Storage />}
           {selectedNavBarItem === NavBarOptions.ai && (
@@ -38,7 +39,7 @@ export default function HomePage() {
           {selectedNavBarItem === NavBarOptions.profile && <ProfilePage />}
         </div>
 
-        {/* <NavBar /> */}
+        <NavBar />
       </div>
     </PageContainer>
   );
