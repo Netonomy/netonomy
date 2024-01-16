@@ -15,6 +15,9 @@ import { Record } from "@web5/api";
 import FileContextMenu from "./FileContextMenu";
 import useWeb5Store from "@/stores/useWeb5Store";
 import { getFileType } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
+import InlineEdit from "../ui/InlineEdit";
+import { Input } from "../ui/input";
 
 export default function FileGridItem({
   file,
@@ -28,18 +31,31 @@ export default function FileGridItem({
   const type = file.data["@type"];
   const isFolder = type === "Collection";
   const did = useWeb5Store((state) => state.did);
+  const [editing, setEditing] = useState(false);
 
   const fetchBlob = useStorageStore((state) => state.actions.fetchBlob);
   const deleteItem = useStorageStore((state) => state.actions.deleteItem);
+  const updateFile = useStorageStore((state) => state.actions.updateFileItem);
+
+  const [fileName, setFileName] = useState("");
+  const fileNameRef = useRef(fileName);
+
+  useEffect(() => {
+    if (file?.data) {
+      setFileName(file.data.name);
+      fileNameRef.current = file.data.name;
+    }
+  }, [file]);
 
   return (
     <div key={file.data.identifier} className="p-6">
       {!isFolder ? (
-        <FileContextMenu file={file}>
+        <FileContextMenu file={file} setEditing={setEditing}>
           <div
             key={file.data.identifier}
             className={`h-auto w-full rounded-lg flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
             onClick={async () => {
+              if (editing) return;
               const fileType = getFileType(
                 (file.data as DigitalDocument).encodingFormat
               );
@@ -63,9 +79,46 @@ export default function FileGridItem({
             </div>
 
             <div className="flex w-full flex-col gap-[2px]">
-              <div className="text-xs md:text-xs font-normal truncate text-center">
-                {(file.data as DigitalDocument).name}
-              </div>
+              <InlineEdit
+                readView={
+                  <div className="text-xs md:text-xs font-normal truncate text-center">
+                    {(file.data as DigitalDocument).name}
+                  </div>
+                }
+                editView={
+                  <Input
+                    autoFocus
+                    value={fileName}
+                    onChange={(e) => {
+                      setFileName(e.target.value);
+                      fileNameRef.current = e.target.value;
+                    }}
+                    onFocus={(e) => {
+                      // Highlight filename without extension
+                      const dotIndex = e.target.value.indexOf(".");
+                      if (dotIndex !== -1) {
+                        e.target.setSelectionRange(0, dotIndex);
+                      }
+                    }}
+                  />
+                }
+                onConfirm={() => {
+                  if (file?.data.name === fileNameRef.current) return;
+                  if (file) {
+                    const data = {
+                      ...file.data,
+                      name: fileNameRef.current,
+                    };
+                    updateFile(
+                      file.record.id,
+                      data as DigitalDocument,
+                      file.record.published
+                    );
+                  }
+                }}
+                editing={editing}
+                setEditing={setEditing}
+              />
 
               <small className="text-xs text-gray-500 leading-none text-center">
                 {(file.data as DigitalDocument).datePublished &&

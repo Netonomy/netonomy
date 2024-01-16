@@ -6,7 +6,7 @@ export default function PageContainer({
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-screen w-screen flex flex-col relative max-h-[-webkit-fill-available]">
+    <div className="h-screen w-screen flex flex-col relative max-h-[-webkit-fill-available] overflow-hidden">
       <TopLoader />
 
       {children}

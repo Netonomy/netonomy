@@ -4,12 +4,7 @@ import { Record } from "@web5/api";
 import useAppStore from "./useAppStore";
 import { atomWithStorage } from "jotai/utils";
 import { makeThumb, makeThumbFromVideo } from "@/lib/utils";
-import { pdfjs } from "react-pdf";
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.js",
-  import.meta.url
-).toString();
+import * as pdfjs from "pdfjs-dist";
 
 export const selectedStorageDisplayTabAtom = atomWithStorage(
   "selectedStorageDisplayTab",
@@ -79,7 +74,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
       const web5 = useWeb5Store.getState().web5;
       if (!web5) return;
 
-      // set({ fetching: true });
+      set({ fetching: true });
 
       // // Set the collection items to null
       // set({ collectionItems: null });
@@ -258,7 +253,7 @@ const useStorageStore = create<StorageState>((set, get) => ({
           collectionItems: state.collectionItems?.map((item) => {
             if (item.data.identifier === recordId) {
               return {
-                data: item.data,
+                data,
                 record,
               };
             } else {
