@@ -49,12 +49,16 @@ export default function InlineEdit({
 
   return (
     <div className="transition-all">
-      {editing ? (
+      {editing || value === "" ? (
         <div ref={editViewRef}>
           {editView({
             fieldProps: {
               value,
-              onChange: (e) => setValue(e.target.value),
+              onChange: (e) => {
+                if (value === "") setEditing(true);
+                setValue(e.target.value);
+                valueRef.current = e.target.value;
+              },
               autoFocus: true,
             },
           })}

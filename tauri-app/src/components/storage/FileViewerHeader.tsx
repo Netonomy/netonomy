@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import InlineEdit from "@/components/ui/InlineEdit";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import DownloadButton from "@/components/storage/DownloadButton";

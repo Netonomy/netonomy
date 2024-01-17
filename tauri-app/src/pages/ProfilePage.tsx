@@ -46,14 +46,14 @@ export default function ProfilePage() {
           <InlineEdit
             defaultValue={profile?.name || ""}
             readView={
-              <h3 className="text-2xl font-semibold tracking-tight min-h-6">
+              <h3 className="text-2xl font-semibold tracking-tight min-h-6 min-w-[200px]">
                 {name}
               </h3>
             }
             editView={({ fieldProps }) => <Input {...fieldProps} autoFocus />}
             onConfirm={(value) => {
               setname(value);
-              const updatedProfile = { ...profile, name: value };
+              const updatedProfile: Profile = { ...profile, name: value };
               updateProfile(updatedProfile);
             }}
           />

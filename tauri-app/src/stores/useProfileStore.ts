@@ -21,7 +21,7 @@ interface ProfileState {
       about,
     }: {
       name: string;
-      profileImg: File;
+      profileImg?: File;
       about?: string;
     }) => Promise<void>;
     createConnection: (did: string) => Promise<void>;
@@ -33,7 +33,7 @@ interface ProfileState {
  * Zustand store for managing the user's profile
  * This store contains the user's profile, and functions to fetch and create it.
  */
-const useProfileStore = create<ProfileState>((set) => ({
+const useProfileStore = create<ProfileState>((set, get) => ({
   profile: null,
   avatarImage: null,
   profileRecord: null,
@@ -113,14 +113,21 @@ const useProfileStore = create<ProfileState>((set) => ({
         // Get the profile record
         const { profileRecord } = useProfileStore.getState();
 
-        // Update the profile record
-        const updateRes = await profileRecord?.update({
-          data: profile,
-          published: true,
-        });
+        // If the profile record doesn't exist, create it
+        if (!profileRecord) {
+          get().actions.createProfile({
+            name: profile.name,
+          });
+        } else {
+          // Update the profile record
+          const updateRes = await profileRecord?.update({
+            data: profile,
+            published: true,
+          });
 
-        // Update the profile record and person state
-        if (updateRes?.status.code === 200) set({ profileRecord, profile });
+          // Update the profile record and person state
+          if (updateRes?.status.code === 200) set({ profileRecord, profile });
+        }
       } catch (error) {
         console.error(error);
       }
@@ -131,7 +138,7 @@ const useProfileStore = create<ProfileState>((set) => ({
       about,
     }: {
       name: string;
-      profileImg: File;
+      profileImg?: File;
       about?: string;
     }) => {
       try {
@@ -140,16 +147,20 @@ const useProfileStore = create<ProfileState>((set) => ({
         if (!web5 || !did) return;
 
         // Convert file to blob
-        const blob = new Blob([profileImg], {
-          type: "image/png",
-        });
+        let profileImgRecord: Record | undefined;
+        if (profileImg) {
+          const blob = new Blob([profileImg], {
+            type: "image/png",
+          });
 
-        const { record: profileImgRecord } = await web5.dwn.records.create({
-          data: blob,
-          message: {
-            published: true,
-          },
-        });
+          const { record } = await web5.dwn.records.create({
+            data: blob,
+            message: {
+              published: true,
+            },
+          });
+          profileImgRecord = record;
+        }
 
         // Send the profile record
         // await profileImgRecord?.send(did!)
