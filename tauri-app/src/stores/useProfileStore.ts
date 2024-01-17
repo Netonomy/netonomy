@@ -117,16 +117,17 @@ const useProfileStore = create<ProfileState>((set, get) => ({
         if (!profileRecord) {
           get().actions.createProfile({
             name: profile.name,
+            about: profile.about,
           });
         } else {
           // Update the profile record
-          const updateRes = await profileRecord?.update({
+          await profileRecord?.update({
             data: profile,
             published: true,
           });
 
           // Update the profile record and person state
-          if (updateRes?.status.code === 200) set({ profileRecord, profile });
+          set({ profileRecord, profile });
         }
       } catch (error) {
         console.error(error);

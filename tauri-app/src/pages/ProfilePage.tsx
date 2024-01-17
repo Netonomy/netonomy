@@ -16,9 +16,9 @@ export default function ProfilePage() {
   const [about, setAbout] = useState("");
 
   useEffect(() => {
-    setname(profile?.name || "");
-    setAbout(profile?.about || "");
-  }, [profile?.name]);
+    if (profile?.name) setname(profile.name);
+    if (profile?.about) setAbout(profile.about);
+  }, [profile]);
 
   useEffect(() => {
     fetchProfile();
@@ -44,14 +44,17 @@ export default function ProfilePage() {
       <div className="flex flex-col gap-2 w-[425px]">
         <div className="w-fit">
           <InlineEdit
-            defaultValue={profile?.name || ""}
+            defaultValue={name}
             readView={
               <h3 className="text-2xl font-semibold tracking-tight min-h-6 min-w-[200px]">
                 {name}
               </h3>
             }
-            editView={({ fieldProps }) => <Input {...fieldProps} autoFocus />}
+            editView={({ fieldProps }) => (
+              <Input {...fieldProps} autoFocus placeholder="Name" />
+            )}
             onConfirm={(value) => {
+              if (value === profile?.name) return;
               setname(value);
               const updatedProfile: Profile = { ...profile, name: value };
               updateProfile(updatedProfile);
@@ -60,12 +63,15 @@ export default function ProfilePage() {
         </div>
 
         <InlineEdit
-          defaultValue={profile?.about || ""}
+          defaultValue={about}
           readView={
             <p className="leading-7 [&:not(:first-child)]:mt-6">{about}</p>
           }
-          editView={({ fieldProps }) => <Input {...fieldProps} autoFocus />}
+          editView={({ fieldProps }) => (
+            <Input {...fieldProps} autoFocus placeholder="About" />
+          )}
           onConfirm={(value) => {
+            if (value === profile?.about) return;
             setAbout(value);
             const updatedProfile: Profile = { ...profile!, about: value };
             updateProfile(updatedProfile);

@@ -7,6 +7,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import ImageViewerPage from "./pages/ImageViewerPage";
 import Storage from "./components/storage/Storage";
 import ProfilePage from "./pages/ProfilePage";
+import Chat from "./components/messages/chat/Chat";
 const PdfViewerPage = React.lazy(() => import("./pages/PdfViewerPage"));
 const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const CreateProfilePage = React.lazy(() => import("./pages/CreateProfilePage"));
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "/ai",
+        element: <Chat showBackButton={false} />,
       },
     ],
   },

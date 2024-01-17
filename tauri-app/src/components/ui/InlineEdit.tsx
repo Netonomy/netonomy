@@ -21,7 +21,7 @@ export default function InlineEdit({
 
   useEffect(() => {
     valueRef.current = value; // Update the ref whenever value changes
-  }, [value, defaultValue]);
+  }, [value]);
 
   useEffect(() => {
     if (turnOnEditing !== undefined && turnOnEditing) {
