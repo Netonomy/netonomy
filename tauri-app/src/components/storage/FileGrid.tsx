@@ -76,7 +76,7 @@ function FileGrid() {
         className={`${
           selectedDisplayTab === "list"
             ? "w-full flex-1 overflow-y-auto max-h-[calc(100vh-90px)] md:max-h-[calc(100vh-100px)] items-center rounded-lg "
-            : " w-full flex-1 overflow-y-auto grid grid-cols-auto gap-0 grid-rows-sm rounded-lg max-h-[calc(100vh-120px)] md:max-h-min justify-center"
+            : " w-full flex-1 overflow-y-auto grid grid-cols-auto gap-0 grid-rows-sm rounded-lg max-h-[calc(100vh-120px)] md:max-h-min justify-center md:justify-start "
         } ${isDragActive && "bg-card"}`}
         {...getRootProps()}
       >
