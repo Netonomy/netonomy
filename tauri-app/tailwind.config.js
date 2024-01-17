@@ -67,11 +67,11 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       gridTemplateColumns: {
-        auto: "repeat(auto-fill, minmax(165px, 1fr))",
+        auto: "repeat(auto-fill, 150px)",
       },
       gridTemplateRows: {
         sm: 'repeat(auto-fill, minmax(175px, 1fr))'
-      }
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

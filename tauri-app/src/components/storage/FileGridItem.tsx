@@ -36,6 +36,11 @@ export default function FileGridItem({
   const fetchBlob = useStorageStore((state) => state.actions.fetchBlob);
   const deleteItem = useStorageStore((state) => state.actions.deleteItem);
   const updateFile = useStorageStore((state) => state.actions.updateFileItem);
+  const selectedFileIds = useStorageStore((state) => state.selectedFileIds);
+  // const select = useStorageStore((state) => state.actions.addSelectedFileId);
+  // const unselect = useStorageStore(
+  //   (state) => state.actions.removeSelectedFileId
+  // );
 
   const [fileName, setFileName] = useState("");
   const fileNameRef = useRef(fileName);
@@ -48,12 +53,21 @@ export default function FileGridItem({
   }, [file]);
 
   return (
-    <div key={file.data.identifier} className="p-6">
+    <>
       {!isFolder ? (
         <FileContextMenu file={file} setEditing={setEditing}>
           <div
             key={file.data.identifier}
-            className={`h-auto w-full rounded-lg flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card`}
+            className={`h-auto w-full rounded-lg flex flex-col items-center gap-3 relative p-4 hover:cursor-pointer transition overflow-x-visible hover:bg-card ${
+              selectedFileIds.includes(file.record.id) && "bg-card"
+            }`}
+            // onClick={() => {
+            //   if (selectedFileIds.includes(file.record.id)) {
+            //     unselect(file.record.id);
+            //   } else {
+            //     select(file.record.id);
+            //   }
+            // }}
             onClick={async () => {
               if (editing) return;
               const fileType = getFileType(
@@ -80,19 +94,16 @@ export default function FileGridItem({
 
             <div className="flex w-full flex-col gap-[2px]">
               <InlineEdit
+                defaultValue={fileName}
+                turnOnEditing={editing}
                 readView={
-                  <div className="text-xs md:text-xs font-normal truncate text-center">
-                    {(file.data as DigitalDocument).name}
+                  <div className="text-xs md:text-xs font-normal text-wrap text-center break-words">
+                    {fileName}
                   </div>
                 }
-                editView={
+                editView={({ fieldProps }) => (
                   <Input
-                    autoFocus
-                    value={fileName}
-                    onChange={(e) => {
-                      setFileName(e.target.value);
-                      fileNameRef.current = e.target.value;
-                    }}
+                    {...fieldProps}
                     onFocus={(e) => {
                       // Highlight filename without extension
                       const dotIndex = e.target.value.indexOf(".");
@@ -101,13 +112,15 @@ export default function FileGridItem({
                       }
                     }}
                   />
-                }
-                onConfirm={() => {
-                  if (file?.data.name === fileNameRef.current) return;
+                )}
+                onConfirm={(value) => {
+                  setFileName(value);
+                  setEditing(false);
+                  if (file?.data.name === value) return;
                   if (file) {
                     const data = {
                       ...file.data,
-                      name: fileNameRef.current,
+                      name: value,
                     };
                     updateFile(
                       file.record.id,
@@ -116,16 +129,14 @@ export default function FileGridItem({
                     );
                   }
                 }}
-                editing={editing}
-                setEditing={setEditing}
               />
 
-              <small className="text-xs text-gray-500 leading-none text-center">
+              {/* <small className="text-xs text-gray-500 leading-none text-center">
                 {(file.data as DigitalDocument).datePublished &&
                   new Date(
                     (file.data as DigitalDocument).datePublished!
                   ).toLocaleDateString()}
-              </small>
+              </small> */}
             </div>
           </div>
         </FileContextMenu>
@@ -170,6 +181,6 @@ export default function FileGridItem({
           </DropdownMenu>
         </div>
       )}
-    </div>
+    </>
   );
 }

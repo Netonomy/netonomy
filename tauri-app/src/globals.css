@@ -51,7 +51,7 @@
 
   @media screen and (prefers-color-scheme: dark) {
     .dark {
-      --background: 240 10% 3.9%;
+      --background: 0 0% 4%;
       --foreground: 0 0% 98%;
 
       --card: 240 10% 3.9%;

@@ -33,14 +33,11 @@ export default function FileViewerHeader({
   const did = useWeb5Store((state) => state.did);
   const updateFile = useStorageStore((state) => state.actions.updateFileItem);
 
-  const [editing, setEditing] = useState(false);
   const [fileName, setFileName] = useState("");
-  const fileNameRef = useRef(fileName);
 
   useEffect(() => {
     if (file?.data) {
       setFileName(file.data.name);
-      fileNameRef.current = file.data.name;
     }
   }, [file?.data]);
 
@@ -61,42 +58,44 @@ export default function FileViewerHeader({
           <Skeleton className="h-5 w-32 bg-myGrey" />
         ) : (
           <div className="max-w-[calc(100vw-40vw)] ">
-            <InlineEdit
-              editing={editing}
-              setEditing={setEditing}
-              editView={
-                <Input
-                  autoFocus
-                  value={fileName}
-                  onChange={(e) => {
-                    setFileName(e.target.value);
-                    fileNameRef.current = e.target.value;
-                  }}
-                  onFocus={(e) => {
-                    // Highlight filename without extension
-                    const dotIndex = e.target.value.indexOf(".");
-                    if (dotIndex !== -1) {
-                      e.target.setSelectionRange(0, dotIndex);
-                    }
-                  }}
-                />
-              }
-              readView={
-                <div className="text-lg font-semibold truncate h-ful">
-                  {fileName}
-                </div>
-              }
-              onConfirm={() => {
-                if (file?.data.name === fileNameRef.current) return;
-                if (file) {
-                  const data = {
-                    ...file.data,
-                    name: fileNameRef.current,
-                  };
-                  updateFile(file.record.id, data, file.record.published);
+            {did === file?.record.author ? (
+              <InlineEdit
+                defaultValue={fileName}
+                editView={({ fieldProps }) => (
+                  <Input
+                    {...fieldProps}
+                    autoFocus
+                    onFocus={(e) => {
+                      // Highlight filename without extension
+                      const dotIndex = e.target.value.indexOf(".");
+                      if (dotIndex !== -1) {
+                        e.target.setSelectionRange(0, dotIndex);
+                      }
+                    }}
+                  />
+                )}
+                readView={
+                  <div className="text-lg font-semibold truncate h-ful">
+                    {fileName}
+                  </div>
                 }
-              }}
-            />
+                onConfirm={(value) => {
+                  setFileName(value);
+                  if (file?.data.name === value) return;
+                  if (file) {
+                    const data = {
+                      ...file.data,
+                      name: value,
+                    };
+                    updateFile(file.record.id, data, file.record.published);
+                  }
+                }}
+              />
+            ) : (
+              <div className="text-lg font-semibold truncate h-ful">
+                {fileName}
+              </div>
+            )}
           </div>
         )}
 

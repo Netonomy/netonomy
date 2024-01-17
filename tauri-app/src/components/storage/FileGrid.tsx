@@ -1,14 +1,16 @@
 import useCollectionStore, {
   selectedStorageDisplayTabAtom,
 } from "@/stores/useFileStorageStore";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { Skeleton } from "../ui/skeleton";
 import FileGridItem from "./FileGridItem";
 import { useAtom } from "jotai/react";
 import FileListItem from "./FileListItem";
+import useStorageStore from "@/stores/useFileStorageStore";
 
 function FileGrid() {
+  const gridRef = useRef<any>(null);
   const collectionItems = useCollectionStore((state) => state.collectionItems);
   const fetchCollection = useCollectionStore(
     (state) => state.actions.fetchFilesAndFolders
@@ -16,6 +18,9 @@ function FileGrid() {
   const uploadFile = useCollectionStore((state) => state.actions.uploadFile);
   const [selectedDisplayTab] = useAtom(selectedStorageDisplayTabAtom);
   const fetching = useCollectionStore((state) => state.fetching);
+  const clearSelectedFileIds = useStorageStore(
+    (state) => state.actions.clearSelectedFileIds
+  );
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
@@ -31,6 +36,19 @@ function FileGrid() {
   useEffect(() => {
     fetchCollection(undefined);
   }, []);
+
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside, false);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, false);
+    };
+  }, []);
+
+  const handleClickOutside = (event: any) => {
+    if (gridRef.current && !gridRef.current.contains(event.target)) {
+      clearSelectedFileIds();
+    }
+  };
 
   if (collectionItems?.length === 0) {
     return (
@@ -50,12 +68,15 @@ function FileGrid() {
   }
 
   return (
-    <div className="flex flex-1 w-full overflow-y-auto max-h-[calc(100vh-100px)]">
+    <div
+      className="flex flex-1 w-full overflow-y-auto max-h-[calc(100vh-100px)]"
+      ref={gridRef}
+    >
       <div
         className={`${
           selectedDisplayTab === "list"
             ? "w-full flex-1 overflow-y-auto max-h-[calc(100vh-90px)] md:max-h-[calc(100vh-100px)] items-center rounded-lg "
-            : " w-full flex-1 overflow-y-auto grid grid-cols-auto grid-rows-sm rounded-lg  max-h-[calc(100vh-120px)] md:max-h-min "
+            : " w-full flex-1 overflow-y-auto grid grid-cols-auto gap-0 grid-rows-sm rounded-lg max-h-[calc(100vh-120px)] md:max-h-min justify-center"
         } ${isDragActive && "bg-card"}`}
         {...getRootProps()}
       >

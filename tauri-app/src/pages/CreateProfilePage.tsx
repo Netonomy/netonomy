@@ -16,9 +16,11 @@ import {
 import ProfileImgSelector from "@/components/ProfileImgSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const profileSchema = z.object({
   name: z.string().min(2).max(50),
+  about: z.string().max(500).optional(),
 });
 
 export default function CreateProfilePage() {
@@ -45,6 +47,7 @@ export default function CreateProfilePage() {
       await createProfile({
         name: values.name,
         profileImg: file,
+        about: values.about,
       });
 
       navigate("/");
@@ -59,7 +62,7 @@ export default function CreateProfilePage() {
           className="space-y-8 w-full max-w-[335px] h-full flex flex-col items-center"
         >
           <div className="w-full flex items-center flex-col flex-1">
-            <div className="mt-[25%] flex flex-col items-center w-full ">
+            <div className="mt-[15%] flex flex-col items-center w-full">
               <div className="flex flex-col items-center gap-4">
                 <h3 className="text-4xl text-center font-semibold tracking-tight">
                   Create your digital profile
@@ -69,19 +72,44 @@ export default function CreateProfilePage() {
               <div className="flex flex-col items-center gap-2 mt-12">
                 <ProfileImgSelector file={file} setFile={setFile} />
               </div>
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Name" {...field} className="w-full" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
+              <div className="flex flex-col items-center gap-6 w-full">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Name"
+                          {...field}
+                          className="w-full"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="about"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>About</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="About"
+                          {...field}
+                          className="w-full"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
           </div>
 

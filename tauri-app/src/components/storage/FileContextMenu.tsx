@@ -32,6 +32,7 @@ export default function FileContextMenu({
   const updateFile = useStorageStore((state) => state.actions.updateFileItem);
   const deleteItem = useStorageStore((state) => state.actions.deleteItem);
   const [linkCopied, setLinkCopied] = useState(false);
+  const selectedFileIds = useStorageStore((state) => state.selectedFileIds);
 
   return (
     <ContextMenu>
@@ -70,6 +71,7 @@ export default function FileContextMenu({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+
                 updateFile(
                   (file.data as DigitalDocument).identifier,
                   file.data as DigitalDocument,
@@ -137,7 +139,14 @@ export default function FileContextMenu({
         <ContextMenuItem
           onClick={(event) => {
             event.stopPropagation();
-            deleteItem((file.data as DigitalDocument).identifier);
+
+            if (selectedFileIds.length > 0) {
+              selectedFileIds.forEach((id) => {
+                deleteItem(id);
+              });
+            } else {
+              deleteItem((file.data as DigitalDocument).identifier);
+            }
           }}
         >
           <Trash className="w-4 h-4 mr-2 text-red-500" />

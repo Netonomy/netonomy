@@ -1,19 +1,37 @@
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
+import { InputProps } from "./input";
 
 export default function InlineEdit({
   editView,
   readView,
   onConfirm,
-  editing,
-  setEditing,
+  defaultValue,
+  turnOnEditing,
 }: {
-  editView: ReactNode;
+  editView: ({ fieldProps }: { fieldProps: InputProps }) => ReactNode;
   readView: ReactNode;
-  onConfirm: () => void;
-  editing: boolean;
-  setEditing: (editing: boolean) => void;
+  onConfirm: (value: string) => void;
+  defaultValue: string;
+  turnOnEditing?: boolean;
 }) {
   const editViewRef = useRef<any>(null);
+  const [value, setValue] = useState(defaultValue || "");
+  const valueRef = useRef<string>(""); // Ref to store the current value
+  const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    valueRef.current = value; // Update the ref whenever value changes
+  }, [value, defaultValue]);
+
+  useEffect(() => {
+    if (turnOnEditing !== undefined && turnOnEditing) {
+      setEditing(true);
+    }
+  }, [turnOnEditing]);
+
+  useEffect(() => {
+    setValue(defaultValue || "");
+  }, [defaultValue, turnOnEditing]);
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside, false);
@@ -25,17 +43,25 @@ export default function InlineEdit({
   const handleClickOutside = (event: any) => {
     if (editViewRef.current && !editViewRef.current.contains(event.target)) {
       setEditing(false);
-      onConfirm();
+      onConfirm(valueRef.current);
     }
   };
 
   return (
     <div className="transition-all">
       {editing ? (
-        <div ref={editViewRef}>{editView}</div>
+        <div ref={editViewRef}>
+          {editView({
+            fieldProps: {
+              value,
+              onChange: (e) => setValue(e.target.value),
+              autoFocus: true,
+            },
+          })}
+        </div>
       ) : (
         <div
-          className="hover:bg-primary-foreground rounded-lg p-1"
+          className="hover:bg-card rounded-lg p-2"
           onClick={() => {
             setTimeout(() => {
               setEditing(true);

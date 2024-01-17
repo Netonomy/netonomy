@@ -33,8 +33,12 @@ interface StorageState {
     blob: Blob;
     record: Record;
   } | null;
+  selectedFileIds: string[];
   fetchingFile: boolean;
   actions: {
+    addSelectedFileId: (id: string) => void;
+    removeSelectedFileId: (id: string) => void;
+    clearSelectedFileIds: () => void;
     setSelectedDisplayTab: (tab: "grid" | "list") => void;
     fetchFilesAndFolders: (parentId?: string) => Promise<void>;
     uploadFile: (file: File) => Promise<void>;
@@ -66,7 +70,19 @@ const useStorageStore = create<StorageState>((set, get) => ({
   file: null,
   fetchingFile: false,
   selectedDisplayTab: "grid",
+  selectedFileIds: [],
   actions: {
+    addSelectedFileId: (id: string) =>
+      set((state) => ({
+        selectedFileIds: [...state.selectedFileIds, id],
+      })),
+    removeSelectedFileId: (id: string) =>
+      set((state) => ({
+        selectedFileIds: state.selectedFileIds.filter(
+          (selectedId) => selectedId !== id
+        ),
+      })),
+    clearSelectedFileIds: () => set({ selectedFileIds: [] }),
     setSelectedDisplayTab: (tab: "grid" | "list") => {
       set({ selectedDisplayTab: tab });
     },

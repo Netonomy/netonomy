@@ -1,22 +1,28 @@
 import { create } from "zustand";
-import useWeb5Store, { schemaOrgProtocolDefinition } from "./useWeb5Store";
+import useWeb5Store from "./useWeb5Store";
 import { Record, RecordsQueryRequest, RecordsReadRequest } from "@web5/api";
-import { Person } from "@/types/Person";
+import { Profile } from "@/types/Profile";
+
+const profileSchema = "https://netonomy.io/Profile";
 
 interface ProfileState {
-  profile: Person | null;
+  profile: Profile | null;
+  avatarImage: Blob | null;
   profileRecord: Record | null;
   fetched: boolean;
   fetchProfile: (did?: string) => Promise<void>;
   actions: {
-    setProfile: (profile: Person) => void;
+    setProfile: (profile: Profile) => void;
     setFetched: (fetched: boolean) => void;
+    updateProfile: (profile: Profile) => Promise<void>;
     createProfile: ({
       name,
       profileImg,
+      about,
     }: {
       name: string;
       profileImg: File;
+      about?: string;
     }) => Promise<void>;
     createConnection: (did: string) => Promise<void>;
     isOwnerProfile: (did: string) => boolean;
@@ -29,6 +35,7 @@ interface ProfileState {
  */
 const useProfileStore = create<ProfileState>((set) => ({
   profile: null,
+  avatarImage: null,
   profileRecord: null,
   fetched: false,
   fetchProfile: async (did?: string) => {
@@ -36,22 +43,25 @@ const useProfileStore = create<ProfileState>((set) => ({
     const usersDid = useWeb5Store.getState().did;
     if (!web5 || !usersDid) return;
 
+    // Check if the profile is the owner's profile
     let isOwnerProfile = true;
     if (did) {
       isOwnerProfile = usersDid === did;
     }
 
     try {
+      // Create the query options
       const queryOptions: RecordsQueryRequest = {
         message: {
           filter: {
-            schema: "https://schema.org/Person",
-            protocol: schemaOrgProtocolDefinition.protocol,
+            schema: profileSchema,
+            // protocol: schemaOrgProtocolDefinition.protocol,
             dataFormat: "application/json",
           },
         },
       };
 
+      // If the profile is not the owner's profile, add the from field to the query options
       if (!isOwnerProfile) queryOptions["from"] = did;
 
       // Fetch the profile
@@ -60,28 +70,28 @@ const useProfileStore = create<ProfileState>((set) => ({
       // If the profile exists, load it
       if (records && records?.length > 0) {
         set({ profileRecord: records[0] });
-        const profile = await records[0].data.json();
-
-        const profileImgQueryOptions: RecordsReadRequest = {
-          message: {
-            filter: {
-              recordId: profile.image,
-            },
-          },
-        };
-
-        if (!isOwnerProfile) profileImgQueryOptions["from"] = did;
+        const profile: Profile = await records[0].data.json();
 
         // Load the profile image
-        if (profile.image) {
+        if (profile.avatarBlobId) {
+          // Create the query options for the profile image
+          const profileImgQueryOptions: RecordsReadRequest = {
+            message: {
+              filter: {
+                recordId: profile.avatarBlobId,
+              },
+            },
+          };
+
+          // If the profile is not the owner's profile, add the from field to the query options
+          if (!isOwnerProfile) profileImgQueryOptions["from"] = did;
+
+          // Fetch the profile image and set it
           const image = await web5.dwn.records.read(profileImgQueryOptions);
-
           const blob = await image?.record.data.blob();
-
-          const url = URL.createObjectURL(blob);
-          profile.image = url;
-        } else {
+          set({ avatarImage: blob });
         }
+
         // Set the profile
         set({ profile });
       }
@@ -92,14 +102,37 @@ const useProfileStore = create<ProfileState>((set) => ({
     set({ fetched: true });
   },
   actions: {
-    setProfile: (profile: Person) => set({ profile }),
+    setProfile: (profile: Profile) => set({ profile }),
     setFetched: (fetched: boolean) => set({ fetched }),
+    updateProfile: async (profile: Profile) => {
+      try {
+        const web5 = useWeb5Store.getState().web5;
+        const did = useWeb5Store.getState().did;
+        if (!web5 || !did) return;
+
+        // Get the profile record
+        const { profileRecord } = useProfileStore.getState();
+
+        // Update the profile record
+        const updateRes = await profileRecord?.update({
+          data: profile,
+          published: true,
+        });
+
+        // Update the profile record and person state
+        if (updateRes?.status.code === 200) set({ profileRecord, profile });
+      } catch (error) {
+        console.error(error);
+      }
+    },
     createProfile: async ({
       name,
       profileImg,
+      about,
     }: {
       name: string;
       profileImg: File;
+      about?: string;
     }) => {
       try {
         const web5 = useWeb5Store.getState().web5;
@@ -111,43 +144,37 @@ const useProfileStore = create<ProfileState>((set) => ({
           type: "image/png",
         });
 
-        const { record: profileImgRecord, status } =
-          await web5.dwn.records.create({
-            data: blob,
-            message: {
-              published: true,
-            },
-          });
-
-        console.log(status);
+        const { record: profileImgRecord } = await web5.dwn.records.create({
+          data: blob,
+          message: {
+            published: true,
+          },
+        });
 
         // Send the profile record
         // await profileImgRecord?.send(did!)
+        const profile: Profile = {
+          name,
+          avatarBlobId: profileImgRecord?.id,
+          about,
+        };
 
         const { record: profileRecord } = await web5.dwn.records.create({
-          data: {
-            "@context": "https://schema.org",
-            "@type": "Person",
-            name,
-            image: profileImgRecord?.id,
-          },
+          data: profile,
           message: {
-            schema: "https://schema.org/Person",
-            protocol: schemaOrgProtocolDefinition.protocol,
-            protocolPath: "person",
+            schema: profileSchema,
+            // protocol: schemaOrgProtocolDefinition.protocol,
+            // protocolPath: "person",
             dataFormat: "application/json",
             published: true,
           },
         });
 
-        console.log(profileRecord);
-
-        // await profileRecord?.send(did)
-
         if (profileRecord) {
-          const profile: Person = {
+          const profile: Profile = {
             name,
-            image: URL.createObjectURL(blob),
+            avatarBlobId: profileImgRecord?.id,
+            // image: URL.createObjectURL(blob),
           };
 
           set({ profile, fetched: true });
@@ -171,15 +198,11 @@ const useProfileStore = create<ProfileState>((set) => ({
         if (data.follows) data.follows.push(did);
         else data.follows = [did];
 
-        console.log(data);
-
         // Update the profile record
         const updateRes = await profileRecord?.update({
           data,
           published: true,
         });
-
-        console.log(updateRes);
 
         // Update the profile record and person state
         if (updateRes?.status.code === 200)

@@ -1,8 +1,8 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
 import { Button } from "./ui/button";
 import { X } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function ProfileImgSelector(props: {
   file: File | null;
@@ -69,7 +69,7 @@ export default function ProfileImgSelector(props: {
 
   const onCropComplete = useCallback(
     async (
-      // croppedArea: any,
+      _: any,
       croppedAreaPixels: { x: number; y: number; height: number; width: number }
     ) => {
       setCroppedAreaPixels(croppedAreaPixels);

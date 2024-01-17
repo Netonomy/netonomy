@@ -5,6 +5,8 @@ import { SplashPage } from "./pages/SplashPage";
 import HomePage from "./pages/HomePage";
 import { ThemeProvider } from "./components/ThemeProvider";
 import ImageViewerPage from "./pages/ImageViewerPage";
+import Storage from "./components/storage/Storage";
+import ProfilePage from "./pages/ProfilePage";
 const PdfViewerPage = React.lazy(() => import("./pages/PdfViewerPage"));
 const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const CreateProfilePage = React.lazy(() => import("./pages/CreateProfilePage"));
@@ -14,6 +16,16 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <HomePage />,
+    children: [
+      {
+        path: "/",
+        element: <Storage />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
+      },
+    ],
   },
   {
     path: "/pdf/:did/:recordId",
