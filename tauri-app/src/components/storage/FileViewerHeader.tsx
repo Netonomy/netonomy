@@ -42,7 +42,7 @@ export default function FileViewerHeader({
   }, [file?.data]);
 
   return (
-    <div className="absolute top-0 left-0 right-0 h-[60px] z-40 flex items-center backdrop-blur-xl  dark:bg-black/30 ">
+    <div className="absolute top-0 left-0 right-0 h-[65px] z-40 flex items-center backdrop-blur-md">
       <Button
         className="m-4 w-10 rounded-full p-0"
         variant={"ghost"}
@@ -55,7 +55,7 @@ export default function FileViewerHeader({
 
       <div className="flex flex-col justify-center flex-auto">
         {fetchingFile ? (
-          <Skeleton className="h-5 w-32 bg-myGrey" />
+          <Skeleton className="h-5 w-32" />
         ) : (
           <div className="max-w-[calc(100vw-40vw)] ">
             {did === file?.record.author ? (
@@ -102,7 +102,7 @@ export default function FileViewerHeader({
         {pageNavigationPluginInstance && (
           <>
             {fetchingFile ? (
-              <Skeleton className="h-4 w-16 bg-myGrey mt-1" />
+              <Skeleton className="h-4 w-16 mt-1" />
             ) : (
               <pageNavigationPluginInstance.CurrentPageLabel>
                 {(props: RenderCurrentPageLabelProps) => (

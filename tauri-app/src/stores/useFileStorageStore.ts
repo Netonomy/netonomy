@@ -297,6 +297,8 @@ const useStorageStore = create<StorageState>((set, get) => ({
           type: file.type,
         });
 
+        // const compressedFile = await compressFile(blob);
+
         // Upload the file
         const { record: uploadedFile } = await web5.dwn.records.create({
           data: blob,

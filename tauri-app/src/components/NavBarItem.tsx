@@ -1,6 +1,8 @@
 import { NavBarOption } from "@/enums/NavBarOption";
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
+import useWeb5Store from "@/stores/useWeb5Store";
 
 export default function NavBarItem({
   icon,
@@ -12,26 +14,20 @@ export default function NavBarItem({
   selected?: boolean;
 }) {
   const navigate = useNavigate();
+  const did = useWeb5Store((state) => state.did);
 
   return (
-    <div
-      className={`flex flex-col items-center gap-2 p-3 rounded-sm cursor-pointer drop-shadow-lg ${
-        selected && "bg-secondary"
-      }`}
+    <Button
+      variant={selected ? "default" : "outline"}
+      size={"icon"}
+      className="text-foreground"
       onClick={() => {
         if (item === NavBarOption.storage) navigate("/");
+        else if (item === NavBarOption.profile) navigate(`/profile/${did}`);
         else navigate(`/${item}`);
       }}
     >
-      <div className={`${selected ? "text-primary" : "text-gray-400"}`}>
-        {icon}
-      </div>
-
-      <div
-        className={`w-1 h-1 rounded-full md:hidden ${
-          selected ? "bg-primary" : "bg-transparent"
-        }`}
-      />
-    </div>
+      {icon}
+    </Button>
   );
 }

@@ -68,7 +68,7 @@ export default function FileIcon({
   }, []);
 
   let style =
-    "min-h-[65px] min-w-[65px] max-w-[65px] max-h-[65px] md:min-h-[80px] md:min-w-[80px] md:max-h-[80px] md:max-w-[80px] rounded-sm flex items-center justify-center drop-shadow-lg";
+    "min-h-[65px] min-w-[65px] max-w-[65px] max-h-[65px] md:min-h-[80px] md:min-w-[80px] md:max-h-[80px] md:max-w-[80px] rounded-sm flex items-center justify-center drop-shadow-md";
 
   if (selectedStorageTabDiaply === "list")
     style =

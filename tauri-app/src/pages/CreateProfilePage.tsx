@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import ProfileImgSelector from "@/components/ProfileImgSelector";
+// import ProfileImgSelector from "@/components/ProfileImgSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,7 +24,7 @@ const profileSchema = z.object({
 });
 
 export default function CreateProfilePage() {
-  const [file, setFile] = useState<File | null>(null);
+  const [file] = useState<File | null>(null);
   const navigate = useNavigate();
   const web5 = useWeb5Store((state) => state.web5);
   const did = useWeb5Store((state) => state.did);
@@ -70,7 +70,7 @@ export default function CreateProfilePage() {
               </div>
 
               <div className="flex flex-col items-center gap-2 mt-12">
-                <ProfileImgSelector file={file} setFile={setFile} />
+                {/* <ProfileImgSelector file={file} setFile={setFile} /> */}
               </div>
 
               <div className="flex flex-col items-center gap-6 w-full">

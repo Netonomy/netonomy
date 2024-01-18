@@ -1,19 +1,25 @@
+import ProfileImgSelector from "@/components/ProfileImgSelector";
 import InlineEdit from "@/components/ui/InlineEdit";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import InlineEditTextarea from "@/components/ui/InlineEditTextArea";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import useProfileStore from "@/stores/useProfileStore";
-import { Profile } from "@/types/Profile";
-import { User } from "lucide-react";
+import useWeb5Store from "@/stores/useWeb5Store";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 export default function ProfilePage() {
+  const { did: didInRoute } = useParams();
+  const did = useWeb5Store((state) => state.did);
   const profile = useProfileStore((state) => state.profile);
   const fetchProfile = useProfileStore((state) => state.fetchProfile);
   const avatarImage = useProfileStore((state) => state.avatarImage);
   const updateProfile = useProfileStore((state) => state.actions.updateProfile);
-
   const [name, setname] = useState("");
   const [about, setAbout] = useState("");
+
+  const [aboutTimeout, setAboutTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [nameTimeout, setNameTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (profile?.name) setname(profile.name);
@@ -21,62 +27,118 @@ export default function ProfilePage() {
   }, [profile]);
 
   useEffect(() => {
-    fetchProfile();
+    fetchProfile(didInRoute);
   }, []);
 
   return (
-    <div className="h-full w-full flex justify-center pt-[100px] gap-6">
-      <div className="h-32 w-32 lg:h-44 lg:w-44 cursor-pointer">
-        <Avatar className="h-full w-full">
-          {avatarImage && (
-            <img
-              src={URL.createObjectURL(avatarImage)}
-              className="h-full w-full"
-            />
-          )}
-
-          <AvatarFallback>
-            <User className="h-14 w-14" />
-          </AvatarFallback>
-        </Avatar>
-      </div>
+    <div className="h-full w-full flex justify-center items-start pt-[100px] gap-6">
+      <ProfileImgSelector
+        file={avatarImage}
+        setFile={() => {}}
+        height={150}
+        width={150}
+        onSave={(file) => {
+          if (file) {
+            updateProfile({
+              newAvatarImage: file,
+            });
+          }
+        }}
+        viewOnly={did !== didInRoute}
+      />
 
       <div className="flex flex-col gap-2 w-[425px]">
         <div className="w-fit">
-          <InlineEdit
-            defaultValue={name}
-            readView={
-              <h3 className="text-2xl font-semibold tracking-tight min-h-6 min-w-[200px]">
-                {name}
-              </h3>
-            }
-            editView={({ fieldProps }) => (
-              <Input {...fieldProps} autoFocus placeholder="Name" />
-            )}
-            onConfirm={(value) => {
-              if (value === profile?.name) return;
-              setname(value);
-              const updatedProfile: Profile = { ...profile, name: value };
-              updateProfile(updatedProfile);
-            }}
-          />
+          {profile && profile.name ? (
+            <InlineEdit
+              defaultValue={name}
+              readView={
+                <h3 className="text-2xl font-semibold tracking-tight min-h-6 min-w-[200px]">
+                  {name}
+                </h3>
+              }
+              editView={({ fieldProps }) => (
+                <Input
+                  {...fieldProps}
+                  autoFocus
+                  placeholder="Name"
+                  className="min-w-[250px]"
+                />
+              )}
+              onConfirm={(value) => {
+                if (value === profile?.name) return;
+                setname(value);
+                updateProfile({
+                  name: value,
+                });
+              }}
+            />
+          ) : (
+            <Input
+              value={name}
+              placeholder="Name"
+              onChange={(e) => {
+                setname(e.target.value);
+
+                if (e.target.value === profile?.name) return;
+                if (nameTimeout) clearTimeout(nameTimeout);
+
+                const timeout = setTimeout(() => {
+                  updateProfile({
+                    name: e.target.value,
+                  });
+                }, 1000);
+                setNameTimeout(timeout);
+              }}
+              className="min-w-[200px]"
+            />
+          )}
         </div>
 
-        <InlineEdit
-          defaultValue={about}
-          readView={
-            <p className="leading-7 [&:not(:first-child)]:mt-6">{about}</p>
-          }
-          editView={({ fieldProps }) => (
-            <Input {...fieldProps} autoFocus placeholder="About" />
-          )}
-          onConfirm={(value) => {
-            if (value === profile?.about) return;
-            setAbout(value);
-            const updatedProfile: Profile = { ...profile!, about: value };
-            updateProfile(updatedProfile);
-          }}
-        />
+        {profile && profile.about ? (
+          <InlineEditTextarea
+            defaultValue={about}
+            readView={
+              <p className="leading-7 [&:not(:first-child)]:mt-6 min-h-[150px]">
+                {about}
+              </p>
+            }
+            editView={({ fieldProps }) => (
+              <Textarea
+                {...fieldProps}
+                autoFocus
+                placeholder="About"
+                className="min-h-[150px] max-h-[250px]"
+              />
+            )}
+            onConfirm={(value) => {
+              if (value === profile?.about) return;
+              setAbout(value);
+              updateProfile({
+                about: value,
+              });
+            }}
+          />
+        ) : (
+          <Textarea
+            value={about}
+            placeholder="About"
+            onChange={(e) => {
+              setAbout(e.target.value);
+
+              if (e.target.value === profile?.about) return;
+              if (aboutTimeout) clearTimeout(aboutTimeout);
+
+              const timeout = setTimeout(() => {
+                updateProfile({
+                  about: e.target.value,
+                });
+              }, 1000);
+              setAboutTimeout(timeout);
+            }}
+            className="min-h-[150px] max-h-[250px]"
+          />
+        )}
       </div>
     </div>
   );

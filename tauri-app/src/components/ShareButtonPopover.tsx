@@ -14,7 +14,7 @@ export default function ShareButtonPopover() {
   return (
     <Popover>
       <PopoverTrigger>
-        <Button className="gap-1">
+        <Button className="gap-[6px] text-sm">
           {file?.record.published ? (
             <>
               <Share className="h-3 w-3" /> Share
@@ -32,7 +32,7 @@ export default function ShareButtonPopover() {
 
           <div className="flex flex-col rounded-sm border overflow-hidden ">
             <div
-              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer border-b-[1px] hover:bg-primary-foreground relative"
+              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer border-b-[1px] hover:bg-secondary-hover relative"
               onClick={() => {
                 updateFile(
                   (file?.data as DigitalDocument).identifier,
@@ -60,7 +60,7 @@ export default function ShareButtonPopover() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.25 }}
                     exit={{ opacity: 0 }}
-                    className="rounded-full bg-primary p-1"
+                    className="rounded-full bg-foreground p-1"
                   >
                     <Check
                       className="h-3 w-3 text-secondary"
@@ -72,7 +72,7 @@ export default function ShareButtonPopover() {
             </div>
 
             <div
-              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer hover:bg-primary-foreground relative"
+              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer hover:bg-secondary-hover relative"
               onClick={() => {
                 updateFile(
                   (file?.data as DigitalDocument).identifier,
@@ -102,7 +102,7 @@ export default function ShareButtonPopover() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.25 }}
                     exit={{ opacity: 0 }}
-                    className="rounded-full bg-primary p-1"
+                    className="rounded-full bg-foreground p-1"
                   >
                     <Check
                       className="h-3 w-3 text-secondary"
@@ -152,21 +152,15 @@ export default function ShareButtonPopover() {
               }}
             >
               {linkCopied ? (
-                <Check
-                  className="w-3 h-3 mr-1 text-primary"
-                  fontWeight={"bold"}
-                />
+                <Check className="w-3 h-3 mr-1" fontWeight={"bold"} />
               ) : (
-                <Copy
-                  className="w-3 h-3 mr-1 text-primary"
-                  fontWeight={"bold"}
-                />
+                <Copy className="w-3 h-3 mr-1" fontWeight={"bold"} />
               )}
 
               {linkCopied ? (
-                <p className="text-sm text-primary">Link Copied!</p>
+                <p className="text-sm">Link Copied!</p>
               ) : (
-                <p className="text-sm text-primary">Copy Link</p>
+                <p className="text-sm">Copy Link</p>
               )}
             </div>
           )}

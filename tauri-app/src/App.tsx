@@ -23,7 +23,7 @@ const router = createBrowserRouter([
         element: <Storage />,
       },
       {
-        path: "/profile",
+        path: "/profile/:did",
         element: <ProfilePage />,
       },
       {

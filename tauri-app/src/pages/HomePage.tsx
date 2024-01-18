@@ -20,7 +20,7 @@ export default function HomePage() {
       <div
         className={`flex flex-1 flex-col items-center relative md:flex-row-reverse`}
       >
-        <div className="flex flex-1 h-full w-full md:p-2 md:m-2">
+        <div className="flex flex-1 h-full w-full md:p-2 md:m-2 md:ml-[80px]">
           <Outlet />
         </div>
 

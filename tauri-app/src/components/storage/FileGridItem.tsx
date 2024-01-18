@@ -58,8 +58,8 @@ export default function FileGridItem({
         <FileContextMenu file={file} setEditing={setEditing}>
           <div
             key={file.data.identifier}
-            className={`h-auto w-full rounded-lg flex flex-col items-center gap-3 relative p-4 hover:cursor-pointer transition overflow-x-visible hover:bg-card ${
-              selectedFileIds.includes(file.record.id) && "bg-card"
+            className={`h-auto w-full rounded-lg flex flex-col items-center gap-3 relative p-4 hover:cursor-pointer transition overflow-x-visible hover:bg-card-foreground ${
+              selectedFileIds.includes(file.record.id) && "bg-card-foreground"
             }`}
             // onClick={() => {
             //   if (selectedFileIds.includes(file.record.id)) {

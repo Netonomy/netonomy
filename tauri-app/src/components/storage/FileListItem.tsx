@@ -19,8 +19,8 @@ import { useState } from "react";
 
 export default function FileListItem({
   file,
-  index,
-}: {
+}: // index,
+{
   file: {
     data: DigitalDocument | Collection;
     record: Record;
@@ -42,9 +42,7 @@ export default function FileListItem({
         <FileContextMenu file={file} setEditing={setEditing}>
           <div
             key={file.data.identifier}
-            className={`h-auto w-full rounded-sm flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card ${
-              index % 2 === 0 && "bg-card"
-            }`}
+            className={`h-auto w-full rounded-sm flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card-foreground`}
             onClick={async () => {
               const fileType = getFileType(
                 (file.data as DigitalDocument).encodingFormat

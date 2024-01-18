@@ -24,7 +24,7 @@ export default function DownloadButton() {
       }}
       className="h-9 w-9"
     >
-      <Download className="h-4 w-4" />
+      <Download className="h-4 w-4 text-ine" />
     </Button>
   );
 }

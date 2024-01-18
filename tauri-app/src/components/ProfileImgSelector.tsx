@@ -1,12 +1,16 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
 import { Button } from "./ui/button";
 import { X } from "lucide-react";
 
 export default function ProfileImgSelector(props: {
-  file: File | null;
+  file: File | Blob | null;
   setFile: Dispatch<SetStateAction<File | null>>;
+  height: number;
+  width: number;
+  onSave?: (file: File) => void;
+  viewOnly?: boolean;
 }) {
   const inputref = useRef<any>(null);
 
@@ -64,6 +68,7 @@ export default function ProfileImgSelector(props: {
       croppedAreaPixels
     );
     props.setFile(croppedImage as File);
+    if (props.onSave) props.onSave(croppedImage as File);
     setShowCropper(false);
   }
 
@@ -122,16 +127,27 @@ export default function ProfileImgSelector(props: {
       )}
 
       <Avatar
-        className="h-16 w-16"
         onClick={() => {
+          if (props.viewOnly) return;
           inputref.current.click();
         }}
+        style={{
+          height: props.height,
+          width: props.width,
+        }}
       >
-        <AvatarImage
+        <img src={props.file ? URL.createObjectURL(props.file) : undefined} />
+        {/* <AvatarImage
           src={props.file ? URL.createObjectURL(props.file) : undefined}
-        />
+        /> */}
         <AvatarFallback>
-          <div className="rounded-full h-16 w-16 bg-gray-400 file:text-transparent" />
+          <div
+            className="rounded-full bg-card-foreground file:text-transparent"
+            style={{
+              height: props.height,
+              width: props.width,
+            }}
+          />
         </AvatarFallback>
       </Avatar>
       <input
@@ -142,7 +158,7 @@ export default function ProfileImgSelector(props: {
         ref={inputref}
       />
 
-      <p className="text-sm text-muted-foreground">Select a profile image.</p>
+      {/* <p className="text-sm text-muted-foreground">Select a profile image.</p> */}
     </div>
   );
 }

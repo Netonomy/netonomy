@@ -42,7 +42,7 @@ export default function StorageHeader() {
               onClick={() => {
                 inputRef.current?.click();
               }}
-              className="rounded-full bg-secondary p-1 h-8 w-8 flex items-center justify-center"
+              className="rounded-full p-1 h-8 w-8 flex items-center justify-center hover:bg-card-foreground"
             >
               <Plus />
             </div>

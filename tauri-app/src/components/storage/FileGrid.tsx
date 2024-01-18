@@ -55,11 +55,11 @@ function FileGrid() {
       <div className="flex flex-1 w-full overflow-y-auto p-2">
         <div
           className={`w-full flex-1 rounded-lg items-center flex justify-center ${
-            isDragActive && "bg-card"
+            isDragActive && "bg-card-foreground"
           }`}
           {...getRootProps()}
         >
-          <div className="text-2xl font-medium text-primary">
+          <div className="text-2xl font-medium">
             Start by dragging a file here.
           </div>
         </div>
@@ -77,7 +77,7 @@ function FileGrid() {
           selectedDisplayTab === "list"
             ? "w-full flex-1 overflow-y-auto max-h-[calc(100vh-90px)] md:max-h-[calc(100vh-100px)] items-center rounded-lg "
             : " w-full flex-1 overflow-y-auto grid grid-cols-auto gap-0 grid-rows-sm rounded-lg max-h-[calc(100vh-120px)] md:max-h-min justify-center md:justify-start "
-        } ${isDragActive && "bg-card"}`}
+        } ${isDragActive && "bg-card-foreground"}`}
         {...getRootProps()}
       >
         {fetching ? (
@@ -86,7 +86,7 @@ function FileGrid() {
               <div key={i} className="">
                 {selectedDisplayTab === "grid" ? (
                   <div
-                    className={`h-auto w-full rounded flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                    className={`h-auto w-full rounded flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card-foreground`}
                   >
                     <Skeleton className="min-h-[65px] min-w-[65px] max-w-[65px] max-h-[65px] md:min-h-[80px] md:min-w-[80px] md:max-h-[80px] md:max-w-[80px] rounded-lg" />
 
@@ -94,7 +94,7 @@ function FileGrid() {
                   </div>
                 ) : (
                   <div
-                    className={`h-auto w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                    className={`h-auto w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card-foreground`}
                   >
                     <div className="flex items-center justify-center">
                       <Skeleton className="min-h-[60px] min-w-[60px] max-h-[60px] max-w-[60px] rounded-lg" />

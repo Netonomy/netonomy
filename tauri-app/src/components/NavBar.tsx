@@ -3,6 +3,7 @@ import NavBarItem from "./NavBarItem";
 import { NavBarOption } from "@/enums/NavBarOption";
 import useIsTauriApp from "@/hooks/useIsTauriApp";
 import { useLocation } from "react-router-dom";
+import { Card, CardContent } from "./ui/card";
 
 export default function NavBar() {
   const isTauriApp = useIsTauriApp();
@@ -10,30 +11,32 @@ export default function NavBar() {
   const selcetedNavBarItem = useLocation().pathname.replace("/", "");
 
   return (
-    <div className="flex w-full h-16 items-center gap-4 md:h-full md:w-[65px] md:flex-col md:py-4 md:border-r-[1.5px]">
-      {/* <NavBarItem icon={<MessageSquare />} item={NavBarOptions.messages} /> */}
+    <Card className="w-auto h-16 items-center gap-4 md:w-[60px] absolute bottom-2 md:top-3 md:left-3 md:bottom-3 md:h-auto ">
+      <CardContent className="flex md:flex-col justify-center items-center h-full p-4 w-full md:py-4 md:justify-start gap-4">
+        {/* <NavBarItem icon={<MessageSquare />} item={NavBarOptions.messages} /> */}
 
-      <NavBarItem
-        icon={<Folder />}
-        item={NavBarOption.storage}
-        selected={selcetedNavBarItem === ""}
-      />
-
-      {isTauriApp && (
         <NavBarItem
-          icon={<Bot />}
-          item={NavBarOption.ai}
-          selected={selcetedNavBarItem === "ai"}
+          icon={<Folder />}
+          item={NavBarOption.storage}
+          selected={selcetedNavBarItem === ""}
         />
-      )}
 
-      <div className="flex-1" />
+        {isTauriApp && (
+          <NavBarItem
+            icon={<Bot />}
+            item={NavBarOption.ai}
+            selected={selcetedNavBarItem === "ai"}
+          />
+        )}
 
-      <NavBarItem
-        icon={<User />}
-        item={NavBarOption.profile}
-        selected={selcetedNavBarItem === "profile"}
-      />
-    </div>
+        <div className="hidden md:flex md:flex-1" />
+
+        <NavBarItem
+          icon={<User />}
+          item={NavBarOption.profile}
+          selected={selcetedNavBarItem === "profile"}
+        />
+      </CardContent>
+    </Card>
   );
 }
