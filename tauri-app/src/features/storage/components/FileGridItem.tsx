@@ -1,7 +1,3 @@
-import useStorageStore, {
-  Collection,
-  DigitalDocument,
-} from "@/stores/useFileStorageStore";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -9,96 +5,73 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../../components/ui/dropdown-menu";
 import FileIcon from "./FileIcon";
-import { Record } from "@web5/api";
 import FileContextMenu from "./FileContextMenu";
-import useWeb5Store from "@/stores/useWeb5Store";
+import useWeb5Store from "@/features/app/useWeb5Store";
 import { getFileType } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
-import InlineEdit from "../ui/InlineEdit";
-import { Input } from "../ui/input";
+import { useState } from "react";
+import InlineEdit from "../../../components/ui/InlineEdit";
+import { Input } from "../../../components/ui/input";
+import { MyFile } from "@/types/MyFile";
+import { Record } from "@web5/api";
+import { useDeleteFileMutation } from "../hooks";
 
 export default function FileGridItem({
   file,
 }: {
   file: {
-    data: DigitalDocument | Collection;
     record: Record;
+    data: MyFile;
+    thumbnailBlob: Blob | null;
   };
 }) {
   const navigate = useNavigate();
-  const type = file.data["@type"];
-  const isFolder = type === "Collection";
   const did = useWeb5Store((state) => state.did);
   const [editing, setEditing] = useState(false);
+  const deleteFileMutation = useDeleteFileMutation();
 
-  const fetchBlob = useStorageStore((state) => state.actions.fetchBlob);
-  const deleteItem = useStorageStore((state) => state.actions.deleteItem);
-  const updateFile = useStorageStore((state) => state.actions.updateFileItem);
-  const selectedFileIds = useStorageStore((state) => state.selectedFileIds);
-  // const select = useStorageStore((state) => state.actions.addSelectedFileId);
-  // const unselect = useStorageStore(
-  //   (state) => state.actions.removeSelectedFileId
-  // );
-
-  const [fileName, setFileName] = useState("");
-  const fileNameRef = useRef(fileName);
-
-  useEffect(() => {
-    if (file?.data) {
-      setFileName(file.data.name);
-      fileNameRef.current = file.data.name;
-    }
-  }, [file]);
+  const [, setFileName] = useState("");
 
   return (
     <>
-      {!isFolder ? (
+      {true ? (
         <FileContextMenu file={file} setEditing={setEditing}>
           <div
-            key={file.data.identifier}
-            className={`h-auto w-full rounded-lg flex flex-col items-center gap-3 relative p-4 hover:cursor-pointer transition overflow-x-visible hover:bg-card-foreground ${
-              selectedFileIds.includes(file.record.id) && "bg-card-foreground"
-            }`}
-            // onClick={() => {
-            //   if (selectedFileIds.includes(file.record.id)) {
-            //     unselect(file.record.id);
-            //   } else {
-            //     select(file.record.id);
-            //   }
-            // }}
+            key={file.record.id}
+            className={`h-auto w-full rounded-lg flex flex-col items-center gap-3 relative p-4 hover:cursor-pointer transition overflow-x-visible hover:bg-card-foreground `}
             onClick={async () => {
               if (editing) return;
-              const fileType = getFileType(
-                (file.data as DigitalDocument).encodingFormat
-              );
-              if (fileType === "pdf") navigate(`/pdf/${did}/${file.record.id}`);
+              const fileType = getFileType(file.data.type);
+              if (fileType === "pdf")
+                navigate(`/file/pdf/${did}/${file.record.id}`);
               else if (fileType === "image")
-                navigate(`/image/${did}/${file.record.id}`);
+                navigate(`/file/image/${did}/${file.record.id}`);
               else if (fileType === "video")
-                navigate(
-                  `/video/${did}/${(file.data as DigitalDocument).identifier}`
-                );
+                navigate(`/file/video/${did}/${file.record.id}`);
               else {
-                const blob = await fetchBlob(
-                  (file.data as DigitalDocument).fileBlobId
+                window.open(
+                  `${import.meta.env.DWN_URL}/${did}/record/${file.record.id}`,
+                  "_blank"
                 );
-                if (blob) window.open(URL.createObjectURL(blob), "_blank");
               }
             }}
           >
             <div className="flex flex-1 w-full items-center justify-center ">
-              <FileIcon file={file.data as DigitalDocument} type="file" />
+              <FileIcon
+                file={file.data}
+                type="file"
+                thumbnailBlob={file.thumbnailBlob}
+              />
             </div>
 
             <div className="flex w-full flex-col gap-[2px]">
               <InlineEdit
-                defaultValue={fileName}
+                defaultValue={file.data.name}
                 turnOnEditing={editing}
                 readView={
                   <div className="text-xs md:text-xs font-normal text-wrap text-center break-words">
-                    {fileName}
+                    {file.data.name}
                   </div>
                 }
                 editView={({ fieldProps }) => (
@@ -117,17 +90,17 @@ export default function FileGridItem({
                   setFileName(value);
                   setEditing(false);
                   if (file?.data.name === value) return;
-                  if (file) {
-                    const data = {
-                      ...file.data,
-                      name: value,
-                    };
-                    updateFile(
-                      file.record.id,
-                      data as DigitalDocument,
-                      file.record.published
-                    );
-                  }
+                  // if (file) {
+                  //   const data = {
+                  //     ...file,
+                  //     name: value,
+                  //   };
+                  //   updateFile(
+                  //     file.record.id,
+                  //     data as DigitalDocument,
+                  //     file.record.published
+                  //   );
+                  // }
                 }}
               />
 
@@ -142,23 +115,19 @@ export default function FileGridItem({
         </FileContextMenu>
       ) : (
         <div
-          key={file.data.identifier}
+          key={file.record.id}
           className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card`}
         >
-          <FileIcon type={"folder"} />
+          <FileIcon type={"folder"} thumbnailBlob={file.thumbnailBlob} />
 
           <div className="flex flex-1 flex-col ml-4 gap-[2px]">
             <div className="text-md md:text-lg font-normal max-w-[221px] sm:max-w-[400px] xl:max-w-[400px] truncate">
-              {(file.data as Collection).name}
+              {file.data.name}
             </div>
 
             <small className="text-sm text-gray-500 font-medium leading-none">
-              {(file.data as Collection).dateCreated && (
-                <>
-                  {new Date(
-                    (file.data as Collection).dateCreated
-                  ).toLocaleDateString()}
-                </>
+              {file.data.dateCreated && (
+                <>{new Date(file.data.dateCreated).toLocaleDateString()}</>
               )}
             </small>
           </div>
@@ -171,7 +140,8 @@ export default function FileGridItem({
               <DropdownMenuItem
                 onClick={(event) => {
                   event.stopPropagation();
-                  deleteItem((file.data as Collection).identifier);
+
+                  deleteFileMutation.mutate(file.record.id);
                 }}
                 className="cursor-pointer roun"
               >

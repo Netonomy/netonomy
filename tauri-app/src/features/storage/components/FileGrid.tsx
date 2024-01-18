@@ -1,30 +1,32 @@
-import useCollectionStore, {
-  selectedStorageDisplayTabAtom,
-} from "@/stores/useFileStorageStore";
 import { useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "../../../components/ui/skeleton";
 import FileGridItem from "./FileGridItem";
-import { useAtom } from "jotai/react";
+import {
+  invalidateFilesQuery,
+  useFilesQuery,
+  useUploadFileMutation,
+} from "../hooks";
+import useAppStore from "@/features/app/useAppStore";
+import useStorageStore from "../store";
 import FileListItem from "./FileListItem";
-import useStorageStore from "@/stores/useFileStorageStore";
 
 function FileGrid() {
   const gridRef = useRef<any>(null);
-  const collectionItems = useCollectionStore((state) => state.collectionItems);
-  const fetchCollection = useCollectionStore(
-    (state) => state.actions.fetchFilesAndFolders
-  );
-  const uploadFile = useCollectionStore((state) => state.actions.uploadFile);
-  const [selectedDisplayTab] = useAtom(selectedStorageDisplayTabAtom);
-  const fetching = useCollectionStore((state) => state.fetching);
-  const clearSelectedFileIds = useStorageStore(
-    (state) => state.actions.clearSelectedFileIds
-  );
+  const selectedDisplayTab = useStorageStore((state) => state.selectedDisplay);
+  const filesQuery = useFilesQuery();
+  const uploadFileMutation = useUploadFileMutation();
+  const setLoading = useAppStore((state) => state.actions.setLoading);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
-      uploadFile(file);
+      setLoading(true);
+      uploadFileMutation.mutate(file, {
+        onSuccess: () => {
+          invalidateFilesQuery();
+          setLoading(false);
+        },
+      });
     }
   }, []);
 
@@ -32,10 +34,6 @@ function FileGrid() {
     onDrop,
     noClick: true,
   });
-
-  useEffect(() => {
-    fetchCollection(undefined);
-  }, []);
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside, false);
@@ -46,11 +44,11 @@ function FileGrid() {
 
   const handleClickOutside = (event: any) => {
     if (gridRef.current && !gridRef.current.contains(event.target)) {
-      clearSelectedFileIds();
+      // clearSelectedFileIds();
     }
   };
 
-  if (collectionItems?.length === 0) {
+  if (filesQuery.data?.length === 0) {
     return (
       <div className="flex flex-1 w-full overflow-y-auto p-2">
         <div
@@ -80,7 +78,7 @@ function FileGrid() {
         } ${isDragActive && "bg-card-foreground"}`}
         {...getRootProps()}
       >
-        {fetching ? (
+        {filesQuery.isLoading ? (
           <>
             {Array.from({ length: 10 }).map((_, i) => (
               <div key={i} className="">
@@ -116,16 +114,12 @@ function FileGrid() {
           </>
         ) : (
           <>
-            {collectionItems &&
-              collectionItems.map((file, i) => {
+            {filesQuery.data &&
+              filesQuery.data.map((file, i) => {
                 return selectedDisplayTab === "grid" ? (
-                  <FileGridItem file={file} key={file.data.identifier} />
+                  <FileGridItem file={file} key={file.record.id} />
                 ) : (
-                  <FileListItem
-                    file={file}
-                    key={file.data.identifier}
-                    index={i}
-                  />
+                  <FileListItem file={file} key={file.record.id} index={i} />
                 );
               })}
           </>

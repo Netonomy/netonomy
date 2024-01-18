@@ -1,45 +1,42 @@
 import { Input } from "@/components/ui/input";
 import InlineEdit from "@/components/ui/InlineEdit";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
-import DownloadButton from "@/components/storage/DownloadButton";
-import ShareButtonPopover from "@/components/ShareButtonPopover";
+import DownloadButton from "@/features/storage/components/DownloadButton";
+import ShareButtonPopover from "@/features/storage/components/ShareButtonPopover";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ZoomInIcon, ZoomOutIcon } from "lucide-react";
-import useWeb5Store from "@/stores/useWeb5Store";
-import useStorageStore from "@/stores/useFileStorageStore";
+import useWeb5Store from "@/features/app/useWeb5Store";
+import { RenderZoomInProps, RenderZoomOutProps } from "@react-pdf-viewer/zoom";
+import { RenderCurrentPageLabelProps } from "@react-pdf-viewer/page-navigation";
+import { useFileQuery, useUpdateFileInfoMutation } from "../hooks";
+import { MyFile } from "@/types/MyFile";
+import useStorageStore from "../store";
 
-import {
-  RenderZoomInProps,
-  RenderZoomOutProps,
-  ZoomPlugin,
-} from "@react-pdf-viewer/zoom";
-import {
-  PageNavigationPlugin,
-  RenderCurrentPageLabelProps,
-} from "@react-pdf-viewer/page-navigation";
-
-export default function FileViewerHeader({
-  zoomPluginInstance,
-  pageNavigationPluginInstance,
-}: {
-  zoomPluginInstance?: ZoomPlugin;
-  pageNavigationPluginInstance?: PageNavigationPlugin;
-}) {
+export default function FileViewerHeader() {
   const navigate = useNavigate();
-  const file = useStorageStore((state) => state.file);
-  const fetchingFile = useStorageStore((state) => state.fetchingFile);
+  const { did: didInRoute, recordId } = useParams();
   const did = useWeb5Store((state) => state.did);
-  const updateFile = useStorageStore((state) => state.actions.updateFileItem);
-
+  const updateFileMutation = useUpdateFileInfoMutation();
   const [fileName, setFileName] = useState("");
+
+  const pageNavigationPluginInstance = useStorageStore(
+    (state) => state.pdfNavigationPlugin
+  );
+  const zoomPluginInstance = useStorageStore((state) => state.pdfZoomPlugin);
+
+  const {
+    data: file,
+    isLoading,
+    isFetching,
+  } = useFileQuery(didInRoute!, recordId!);
 
   useEffect(() => {
     if (file?.data) {
       setFileName(file.data.name);
     }
-  }, [file?.data]);
+  }, [isFetching]);
 
   return (
     <div className="absolute top-0 left-0 right-0 h-[65px] z-40 flex items-center backdrop-blur-md">
@@ -54,7 +51,7 @@ export default function FileViewerHeader({
       </Button>
 
       <div className="flex flex-col justify-center flex-auto">
-        {fetchingFile ? (
+        {isLoading ? (
           <Skeleton className="h-5 w-32" />
         ) : (
           <div className="max-w-[calc(100vw-40vw)] ">
@@ -81,13 +78,19 @@ export default function FileViewerHeader({
                 }
                 onConfirm={(value) => {
                   setFileName(value);
+
                   if (file?.data.name === value) return;
                   if (file) {
-                    const data = {
+                    const newFileInfo: MyFile = {
                       ...file.data,
                       name: value,
                     };
-                    updateFile(file.record.id, data, file.record.published);
+
+                    updateFileMutation.mutate({
+                      record: file.record,
+                      newFileInfo,
+                      publish: file.record.published,
+                    });
                   }
                 }}
               />
@@ -101,7 +104,7 @@ export default function FileViewerHeader({
 
         {pageNavigationPluginInstance && (
           <>
-            {fetchingFile ? (
+            {isLoading ? (
               <Skeleton className="h-4 w-16 mt-1" />
             ) : (
               <pageNavigationPluginInstance.CurrentPageLabel>

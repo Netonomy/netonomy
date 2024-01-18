@@ -1,31 +1,39 @@
 import { Plus, LayoutGrid, AlignJustify, File } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "../../../components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../../components/ui/dropdown-menu";
 import { useRef } from "react";
-import { Input } from "../ui/input";
-import useCollectionStore, {
-  selectedStorageDisplayTabAtom,
-} from "@/stores/useFileStorageStore";
-import { useAtom } from "jotai/react";
+import { Input } from "../../../components/ui/input";
+import useStorageStore from "../store";
+import { invalidateFilesQuery, useUploadFileMutation } from "../hooks";
+import useAppStore from "@/features/app/useAppStore";
 
 export default function StorageHeader() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const uploadFile = useCollectionStore((state) => state.actions.uploadFile);
-  const [selectedDisplayTab, setSelectedDisplayTab] = useAtom(
-    selectedStorageDisplayTabAtom
+  const selectedDisplayTab = useStorageStore((state) => state.selectedDisplay);
+  const setSelectedDisplayTab = useStorageStore(
+    (state) => state.setSelectedDisplay
   );
+
+  const uploadFileMutation = useUploadFileMutation();
+  const setLoading = useAppStore((state) => state.actions.setLoading);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     for (const file of files) {
-      uploadFile(file);
+      setLoading(true);
+      uploadFileMutation.mutate(file, {
+        onSuccess: () => {
+          invalidateFilesQuery();
+          setLoading(false);
+        },
+      });
     }
   };
 

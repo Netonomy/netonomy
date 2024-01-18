@@ -7,7 +7,6 @@ import { Card, CardContent } from "./ui/card";
 
 export default function NavBar() {
   const isTauriApp = useIsTauriApp();
-
   const selcetedNavBarItem = useLocation().pathname.replace("/", "");
 
   return (
@@ -34,7 +33,7 @@ export default function NavBar() {
         <NavBarItem
           icon={<User />}
           item={NavBarOption.profile}
-          selected={selcetedNavBarItem === "profile"}
+          selected={selcetedNavBarItem.startsWith("profile")}
         />
       </CardContent>
     </Card>

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
-import { Button } from "./ui/button";
+import { Button } from "../../../components/ui/button";
 import { X } from "lucide-react";
 
 export default function ProfileImgSelector(props: {

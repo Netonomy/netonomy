@@ -2,7 +2,7 @@ import { NavBarOption } from "@/enums/NavBarOption";
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import useWeb5Store from "@/stores/useWeb5Store";
+import useWeb5Store from "@/features/app/useWeb5Store";
 
 export default function NavBarItem({
   icon,

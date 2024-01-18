@@ -1,7 +1,3 @@
-import useStorageStore, {
-  Collection,
-  DigitalDocument,
-} from "@/stores/useFileStorageStore";
 import { Record } from "@web5/api";
 import { useNavigate } from "react-router-dom";
 import FileIcon from "./FileIcon";
@@ -10,71 +6,70 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+} from "../../../components/ui/dropdown-menu";
+import { MoreHorizontal, Trash, Trash2 } from "lucide-react";
 import FileContextMenu from "./FileContextMenu";
 import { getFileType } from "@/lib/utils";
-import useWeb5Store from "@/stores/useWeb5Store";
+import useWeb5Store from "@/features/app/useWeb5Store";
 import { useState } from "react";
+import { MyFile } from "@/types/MyFile";
+import { invalidateFilesQuery, useDeleteFileMutation } from "../hooks";
+import useAppStore from "@/features/app/useAppStore";
 
 export default function FileListItem({
   file,
 }: // index,
 {
   file: {
-    data: DigitalDocument | Collection;
     record: Record;
+    data: MyFile;
+    thumbnailBlob: Blob | null;
   };
   index: number;
 }) {
   const navigate = useNavigate();
   const did = useWeb5Store((state) => state.did);
-  const type = file.data["@type"];
-  const isFolder = type === "Collection";
   const [, setEditing] = useState(false);
-
-  const fetchBlob = useStorageStore((state) => state.actions.fetchBlob);
-  const deleteItem = useStorageStore((state) => state.actions.deleteItem);
+  const deleteFileMutation = useDeleteFileMutation();
+  const setLoading = useAppStore((state) => state.actions.setLoading);
 
   return (
-    <div key={file.data.identifier} className="p-2">
-      {!isFolder ? (
+    <div key={file.record.id} className="p-2">
+      {true ? (
         <FileContextMenu file={file} setEditing={setEditing}>
           <div
-            key={file.data.identifier}
+            key={file.record.id}
             className={`h-auto w-full rounded-sm flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card-foreground`}
             onClick={async () => {
-              const fileType = getFileType(
-                (file.data as DigitalDocument).encodingFormat
-              );
-              if (fileType === "pdf") navigate(`/pdf/${did}/${file.record.id}`);
+              const fileType = getFileType(file.data.type);
+              if (fileType === "pdf")
+                navigate(`/file/pdf/${did}/${file.record.id}`);
               else if (fileType === "image")
-                navigate(`/image/${did}/${file.record.id}`);
+                navigate(`/file/image/${did}/${file.record.id}`);
               else if (fileType === "video")
-                navigate(
-                  `/video/${did}/${(file.data as DigitalDocument).identifier}`
-                );
+                navigate(`/file/video/${did}/${file.record.id}`);
               else {
-                const blob = await fetchBlob(
-                  (file.data as DigitalDocument).fileBlobId
+                window.open(
+                  `${import.meta.env.DWN_URL}/${did}/record/${file.record.id}`,
+                  "_blank"
                 );
-                if (blob) window.open(URL.createObjectURL(blob), "_blank");
               }
             }}
           >
             <div className="flex items-center justify-center">
-              <FileIcon type={"file"} file={file.data as DigitalDocument} />
+              <FileIcon
+                file={file.data}
+                type="file"
+                thumbnailBlob={file.thumbnailBlob}
+              />{" "}
             </div>
             <div className="flex flex-1 flex-col ml-4 gap-[2px]">
               <div className="text-sm font-normal flex flex-1 max-w-[calc(100vw-30vw)] truncate">
-                {(file.data as DigitalDocument).name}
+                {file.data.name}
               </div>
 
               <small className="text-xs text-gray-500 font-medium leading-none">
-                {(file.data as DigitalDocument).datePublished &&
-                  new Date(
-                    (file.data as DigitalDocument).datePublished!
-                  ).toLocaleDateString()}
+                {new Date(file.record.dateCreated).toLocaleDateString()}
               </small>
             </div>
 
@@ -86,7 +81,15 @@ export default function FileListItem({
                 <DropdownMenuItem
                   onClick={(event) => {
                     event.stopPropagation();
-                    deleteItem((file.data as DigitalDocument).identifier);
+                    deleteFileMutation.mutate(file.record.id, {
+                      onSuccess: () => {
+                        invalidateFilesQuery();
+                        setLoading(false);
+                      },
+                      onError: () => {
+                        setLoading(false);
+                      },
+                    });
                   }}
                   className="cursor-pointer roun"
                 >
@@ -98,23 +101,23 @@ export default function FileListItem({
         </FileContextMenu>
       ) : (
         <div
-          key={file.data.identifier}
+          key={file.record.id}
           className={`h-14 w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
         >
-          <FileIcon type={"folder"} />
+          <FileIcon
+            file={file.data}
+            type="file"
+            thumbnailBlob={file.thumbnailBlob}
+          />
 
           <div className="flex flex-1 flex-col ml-4 gap-[2px]">
             <div className="text-md md:text-lg font-normal max-w-[221px] sm:max-w-[400px] xl:max-w-[400px] truncate">
-              {(file.data as DigitalDocument).name}
+              {file.data.name}
             </div>
 
             <small className="text-sm text-gray-500 font-medium leading-none">
-              {(file.data as DigitalDocument).dateCreated && (
-                <>
-                  {new Date(
-                    (file.data as DigitalDocument).dateCreated!
-                  ).toLocaleDateString()}
-                </>
+              {file.record.dateCreated && (
+                <>{new Date(file.record.dateCreated).toLocaleDateString()}</>
               )}
             </small>
           </div>
@@ -127,11 +130,12 @@ export default function FileListItem({
               <DropdownMenuItem
                 onClick={(event) => {
                   event.stopPropagation();
-                  deleteItem((file.data as DigitalDocument).identifier);
+                  deleteFileMutation.mutate(file.record.id);
                 }}
-                className="cursor-pointer roun"
+                className="cursor-pointer "
               >
-                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                <Trash className="w-4 h-4 mr-2 text-red-500" />
+                <div className="text-red-500">Delete</div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

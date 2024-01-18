@@ -1,5 +1,6 @@
 import useChatStore from "@/stores/useChatStore";
 import { listen } from "@tauri-apps/api/event";
+import { Bot } from "lucide-react";
 import { useEffect, Fragment } from "react";
 
 export default function MessagesList() {
@@ -62,7 +63,7 @@ export default function MessagesList() {
           <div className=" flex flex-1 mb-20 flex-col items-center gap-4 w-[95%] p-4 justify-center">
             <div className="flex flex-col gap-8 items-center max-w-[600px]">
               <div className="h-[200px] w-[200px] rounded-full overflow-hidden relative">
-                <img src="/AI.png" height={200} width={200} alt="agent-ring" />
+                <Bot className="w-full h-full absolute top-0 left-0" />
               </div>
 
               <div className="gap-2 flex flex-col">

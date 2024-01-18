@@ -1,4 +1,4 @@
-import useAppStore from "@/stores/useAppStore";
+import useAppStore from "@/features/app/useAppStore";
 import BarLoader from "react-spinners/BarLoader";
 import { useTheme } from "./ThemeProvider";
 

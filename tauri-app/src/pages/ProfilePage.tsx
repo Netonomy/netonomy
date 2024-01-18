@@ -1,55 +1,93 @@
-import ProfileImgSelector from "@/components/ProfileImgSelector";
+import ProfileImgSelector from "@/features/profile/components/ProfileImgSelector";
 import InlineEdit from "@/components/ui/InlineEdit";
 import InlineEditTextarea from "@/components/ui/InlineEditTextArea";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import useProfileStore from "@/stores/useProfileStore";
-import useWeb5Store from "@/stores/useWeb5Store";
+import useWeb5Store from "@/features/app/useWeb5Store";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import {
+  invaldiateProfileQuery,
+  useCreateProfileMutation,
+  useProfileQuery,
+  useUpdateProfileMutation,
+} from "@/features/profile/hooks";
 
 export default function ProfilePage() {
   const { did: didInRoute } = useParams();
   const did = useWeb5Store((state) => state.did);
-  const profile = useProfileStore((state) => state.profile);
-  const fetchProfile = useProfileStore((state) => state.fetchProfile);
-  const avatarImage = useProfileStore((state) => state.avatarImage);
-  const updateProfile = useProfileStore((state) => state.actions.updateProfile);
+
+  const createProfileMutation = useCreateProfileMutation();
+  const updateProfileMutation = useUpdateProfileMutation();
+
   const [name, setname] = useState("");
   const [about, setAbout] = useState("");
 
   const [aboutTimeout, setAboutTimeout] = useState<NodeJS.Timeout | null>(null);
   const [nameTimeout, setNameTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    setname(profile?.name || "");
-    setAbout(profile?.about || "");
-  }, [profile]);
+  const { data: profile, isFetching } = useProfileQuery(didInRoute!);
+
+  const updateProfile = (data: {
+    newAvatarImage?: File | null;
+    name?: string;
+    about?: string;
+  }) => {
+    // If there is no profile then create one
+    if (!profile) {
+      createProfileMutation.mutate(
+        {
+          avatarImage: data.newAvatarImage || null,
+          data: {
+            name: data.name || name,
+            about: data.about || about,
+          },
+        },
+        {
+          onSuccess: () => invaldiateProfileQuery(did!),
+        }
+      );
+    } else {
+      updateProfileMutation.mutate(
+        {
+          record: profile.record,
+          newAvatarImage: data.newAvatarImage || undefined,
+          data: {
+            name: data.name || name,
+            about: data.about || about,
+            avatarBlobId: profile.data.avatarBlobId,
+          },
+        },
+        {
+          onSuccess: () => invaldiateProfileQuery(did!),
+        }
+      );
+    }
+  };
 
   useEffect(() => {
-    fetchProfile(didInRoute);
-  }, []);
+    setname(profile?.data.name || "");
+    setAbout(profile?.data.about || "");
+  }, [isFetching]);
 
   return (
     <div className="h-full w-full flex justify-center items-start pt-[100px] gap-6">
       <ProfileImgSelector
-        file={avatarImage}
+        file={profile?.avatarImageBlob || null}
         setFile={() => {}}
         height={150}
         width={150}
         onSave={(file) => {
-          if (file) {
-            updateProfile({
-              newAvatarImage: file,
-            });
-          }
+          updateProfile({
+            newAvatarImage: file,
+          });
         }}
         viewOnly={did !== didInRoute}
       />
 
       <div className="flex flex-col gap-2 w-[425px]">
         <div className="w-fit">
-          {profile && profile.name ? (
+          {profile && profile.data.name && profile.data.name !== "" ? (
             <InlineEdit
               disabled={did !== didInRoute}
               defaultValue={name}
@@ -67,8 +105,6 @@ export default function ProfilePage() {
                 />
               )}
               onConfirm={(value) => {
-                if (value === profile?.name) return;
-                setname(value);
                 updateProfile({
                   name: value,
                 });
@@ -81,7 +117,6 @@ export default function ProfilePage() {
               onChange={(e) => {
                 setname(e.target.value);
 
-                if (e.target.value === profile?.name) return;
                 if (nameTimeout) clearTimeout(nameTimeout);
 
                 const timeout = setTimeout(() => {
@@ -96,7 +131,7 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {profile && profile.about ? (
+        {profile && profile.data.about && profile.data.about !== "" ? (
           <InlineEditTextarea
             disabled={did !== didInRoute}
             defaultValue={about}
@@ -110,11 +145,11 @@ export default function ProfilePage() {
                 {...fieldProps}
                 autoFocus
                 placeholder="About"
-                // className="min-h-[150px] max-h-[250px]"
+                className="max-h-[250px]"
               />
             )}
             onConfirm={(value) => {
-              if (value === profile?.about) return;
+              if (value === profile?.data.about) return;
               setAbout(value);
               updateProfile({
                 about: value,
@@ -128,7 +163,6 @@ export default function ProfilePage() {
             onChange={(e) => {
               setAbout(e.target.value);
 
-              if (e.target.value === profile?.about) return;
               if (aboutTimeout) clearTimeout(aboutTimeout);
 
               const timeout = setTimeout(() => {
@@ -138,7 +172,7 @@ export default function ProfilePage() {
               }, 1000);
               setAboutTimeout(timeout);
             }}
-            // className="min-h-[150px] max-h-[250px]"
+            className="max-h-[250px]"
           />
         )}
       </div>

@@ -103,7 +103,7 @@ export function makeThumbFromVideo(videoBlob: any) {
 
 export function getFileType(
   encodingFormat: string
-): "image" | "pdf" | "video" | "other" {
+): "image" | "pdf" | "video" | "spreadsheet" | "other" {
   if (encodingFormat === "application/pdf") return "pdf";
   else if (
     encodingFormat === "image/jpeg" ||
@@ -114,6 +114,11 @@ export function getFileType(
   )
     return "image";
   else if (encodingFormat.startsWith("video/")) return "video";
+  else if (
+    encodingFormat ===
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  )
+    return "spreadsheet";
   else return "other";
 }
 

@@ -1,5 +1,4 @@
-import useProfileStore from "@/stores/useProfileStore";
-import useWeb5Store from "@/stores/useWeb5Store";
+import useWeb5Store from "@/features/app/useWeb5Store";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +27,6 @@ export default function CreateProfilePage() {
   const navigate = useNavigate();
   const web5 = useWeb5Store((state) => state.web5);
   const did = useWeb5Store((state) => state.did);
-  const createProfile = useProfileStore((state) => state.actions.createProfile);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof profileSchema>>({
@@ -39,16 +37,16 @@ export default function CreateProfilePage() {
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof profileSchema>) {
+  async function onSubmit(_: z.infer<typeof profileSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     if (file && web5 && did) {
       // Create profile
-      await createProfile({
-        name: values.name,
-        profileImg: file,
-        about: values.about,
-      });
+      // await createProfile({
+      //   name: values.name,
+      //   profileImg: file,
+      //   about: values.about,
+      // });
 
       navigate("/");
     }

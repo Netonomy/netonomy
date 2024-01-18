@@ -1,17 +1,21 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import useWeb5Store from "./stores/useWeb5Store";
+import useWeb5Store from "./features/app/useWeb5Store";
 import React, { Suspense, useEffect } from "react";
 import { SplashPage } from "./pages/SplashPage";
 import HomePage from "./pages/HomePage";
 import { ThemeProvider } from "./components/ThemeProvider";
-import ImageViewerPage from "./pages/ImageViewerPage";
-import Storage from "./components/storage/Storage";
+import Storage from "./features/storage/components/Storage";
 import ProfilePage from "./pages/ProfilePage";
 import Chat from "./components/messages/chat/Chat";
-const PdfViewerPage = React.lazy(() => import("./pages/PdfViewerPage"));
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import PdfViewer from "./features/storage/components/fileViewers/PdfViewer";
+import FileViewerPage from "./pages/FileViewerPage";
+import ImageViewer from "./features/storage/components/fileViewers/ImageViewer";
+import VideoViwer from "./features/storage/components/fileViewers/VideoViewer";
 const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const CreateProfilePage = React.lazy(() => import("./pages/CreateProfilePage"));
-const VideoViewerPage = React.lazy(() => import("./pages/VideoViewerPage"));
+
+export const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -33,28 +37,22 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/pdf/:did/:recordId",
-    element: (
-      <Suspense>
-        <PdfViewerPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/image/:did/:recordId",
-    element: (
-      <Suspense>
-        <ImageViewerPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/video/:did/:recordId",
-    element: (
-      <Suspense>
-        <VideoViewerPage />
-      </Suspense>
-    ),
+    path: "/file",
+    element: <FileViewerPage />,
+    children: [
+      {
+        path: "pdf/:did/:recordId",
+        element: <PdfViewer />,
+      },
+      {
+        path: "image/:did/:recordId",
+        element: <ImageViewer />,
+      },
+      {
+        path: "video/:did/:recordId",
+        element: <VideoViwer />,
+      },
+    ],
   },
   {
     path: "/messages",
@@ -84,7 +82,9 @@ function App() {
 
   return (
     <ThemeProvider>
-      {web5 ? <RouterProvider router={router} /> : <SplashPage />}
+      <QueryClientProvider client={queryClient}>
+        {web5 ? <RouterProvider router={router} /> : <SplashPage />}
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
