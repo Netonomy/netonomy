@@ -7,12 +7,14 @@ export default function InlineEdit({
   onConfirm,
   defaultValue,
   turnOnEditing,
+  disabled,
 }: {
   editView: ({ fieldProps }: { fieldProps: InputProps }) => ReactNode;
   readView: ReactNode;
   onConfirm: (value: string) => void;
   defaultValue: string;
   turnOnEditing?: boolean;
+  disabled?: boolean;
 }) {
   const editViewRef = useRef<any>(null);
   const [value, setValue] = useState(defaultValue || "");
@@ -66,8 +68,11 @@ export default function InlineEdit({
         </div>
       ) : (
         <div
-          className="hover:bg-card-foreground rounded-lg p-1 px-2"
+          className={`${
+            !disabled && "hover:bg-card-foreground"
+          } rounded-lg p-1 px-2`}
           onClick={() => {
+            if (disabled) return;
             setTimeout(() => {
               setEditing(true);
             }, 0);

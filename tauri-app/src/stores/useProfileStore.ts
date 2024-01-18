@@ -53,31 +53,34 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     const usersDid = useWeb5Store.getState().did;
     if (!web5 || !usersDid) return;
 
-    // Check if the profile is the owner's profile
-    let isOwnerProfile = true;
-    if (did) {
-      isOwnerProfile = usersDid === did;
-    }
-
     try {
       // Create the query options
-      const queryOptions: RecordsQueryRequest = {
+      const profileQuery: RecordsQueryRequest = {
         message: {
           filter: {
             schema: profileSchema,
             // protocol: schemaOrgProtocolDefinition.protocol,
-            dataFormat: "application/json",
+            // dataFormat: "application/json",
           },
         },
       };
 
       // If the profile is not the owner's profile, add the from field to the query options
-      if (!isOwnerProfile) queryOptions.from = did;
+      if (usersDid !== did) profileQuery.from = did;
 
       // Fetch the profile
-      const { records } = await web5.dwn.records.query(queryOptions);
+      const { records } = await web5.dwn.records.query(profileQuery);
 
-      console.log(records);
+      // If the profile doesn't exist, set the profile state to null
+      if (!records || records?.length === 0) {
+        set({
+          profile: null,
+          profileRecord: null,
+          avatarImage: null,
+          avatarImageRecord: null,
+        });
+        return;
+      }
 
       // If the profile exists, load it
       if (records && records?.length > 0) {
@@ -87,7 +90,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
         // Load the profile image
         if (profile.avatarBlobId) {
           // Create the query options for the profile image
-          const profileImgQueryOptions: RecordsReadRequest = {
+          const profileImageQuery: RecordsReadRequest = {
             message: {
               filter: {
                 recordId: profile.avatarBlobId,
@@ -96,10 +99,10 @@ const useProfileStore = create<ProfileState>((set, get) => ({
           };
 
           // If the profile is not the owner's profile, add the from field to the query options
-          if (!isOwnerProfile) profileImgQueryOptions.from = did;
+          if (usersDid !== did) profileImageQuery.from = did;
 
           // Fetch the profile image and set it
-          const image = await web5.dwn.records.read(profileImgQueryOptions);
+          const image = await web5.dwn.records.read(profileImageQuery);
           set({ avatarImageRecord: image?.record });
           const blob = await image?.record.data.blob();
           set({ avatarImage: blob });

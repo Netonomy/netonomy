@@ -22,8 +22,8 @@ export default function ProfilePage() {
   const [nameTimeout, setNameTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (profile?.name) setname(profile.name);
-    if (profile?.about) setAbout(profile.about);
+    setname(profile?.name || "");
+    setAbout(profile?.about || "");
   }, [profile]);
 
   useEffect(() => {
@@ -51,6 +51,7 @@ export default function ProfilePage() {
         <div className="w-fit">
           {profile && profile.name ? (
             <InlineEdit
+              disabled={did !== didInRoute}
               defaultValue={name}
               readView={
                 <h3 className="text-2xl font-semibold tracking-tight min-h-6 min-w-[200px]">
@@ -97,9 +98,10 @@ export default function ProfilePage() {
 
         {profile && profile.about ? (
           <InlineEditTextarea
+            disabled={did !== didInRoute}
             defaultValue={about}
             readView={
-              <p className="leading-7 [&:not(:first-child)]:mt-6 min-h-[150px]">
+              <p className="leading-7 [&:not(:first-child)]:mt-6 min-h-[75px]">
                 {about}
               </p>
             }
@@ -108,7 +110,7 @@ export default function ProfilePage() {
                 {...fieldProps}
                 autoFocus
                 placeholder="About"
-                className="min-h-[150px] max-h-[250px]"
+                // className="min-h-[150px] max-h-[250px]"
               />
             )}
             onConfirm={(value) => {
@@ -136,7 +138,7 @@ export default function ProfilePage() {
               }, 1000);
               setAboutTimeout(timeout);
             }}
-            className="min-h-[150px] max-h-[250px]"
+            // className="min-h-[150px] max-h-[250px]"
           />
         )}
       </div>
