@@ -234,6 +234,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
             },
           });
           profileImgRecord = record;
+          record?.send(did);
 
           // Update the profile image record and person state
           set({ avatarImageRecord: record, avatarImage: blob });
@@ -257,6 +258,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
             published: true,
           },
         });
+        profileRecord?.send(did);
 
         if (profileRecord) {
           const profile: Profile = {
