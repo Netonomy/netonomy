@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // darkMode: ["class"],
+  darkMode: ["class"],
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     container: {
@@ -12,7 +12,7 @@ module.exports = {
     },
     extend: {
       colors: {
-        myGrey: "#dedede",
+        myGrey: "#f7f7f7",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -25,6 +25,7 @@ module.exports = {
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          hover: "hsl(var(--secondary-hover))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -67,11 +68,11 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       gridTemplateColumns: {
-        auto: "repeat(auto-fill, minmax(175px, 0.5fr))",
+        auto: "repeat(auto-fill, 150px)",
       },
       gridTemplateRows: {
         sm: 'repeat(auto-fill, minmax(175px, 1fr))'
-      }
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

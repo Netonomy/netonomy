@@ -1,9 +1,9 @@
 import { Download } from "lucide-react";
-import { Button } from "../ui/button";
-import useStorageStore from "@/stores/useFileStorageStore";
+import { Button } from "../../../components/ui/button";
+import useStorageStore from "../store";
 
 export default function DownloadButton() {
-  const file = useStorageStore((state) => state.file);
+  const file = useStorageStore((state) => state.fileInView);
 
   const downloadFile = (blob: Blob, fileName: string) => {
     const url = URL.createObjectURL(blob);
@@ -24,7 +24,7 @@ export default function DownloadButton() {
       }}
       className="h-9 w-9"
     >
-      <Download className="h-4 w-4" />
+      <Download className="h-4 w-4 text-ine" />
     </Button>
   );
 }

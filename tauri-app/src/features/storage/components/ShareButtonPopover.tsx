@@ -1,20 +1,32 @@
 import { Check, Copy, Lock, Share } from "lucide-react";
-import { Button } from "./ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import useStorageStore, { DigitalDocument } from "@/stores/useFileStorageStore";
+import { Button } from "../../../components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../components/ui/popover";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { getFileType } from "@/lib/utils";
+import {
+  invalidateFileQuery,
+  useUpdateFileInfoMutation,
+} from "@/features/storage/hooks";
+import useStorageStore from "@/features/storage/store";
+import useWeb5Store from "@/features/app/useWeb5Store";
+import useAppStore from "@/features/app/useAppStore";
 
 export default function ShareButtonPopover() {
-  const file = useStorageStore((state) => state.file);
+  const file = useStorageStore((state) => state.fileInView);
+  const did = useWeb5Store((state) => state.did);
   const [linkCopied, setLinkCopied] = useState(false);
-  const updateFile = useStorageStore((state) => state.actions.updateFileItem);
+  const setLoading = useAppStore((state) => state.actions.setLoading);
+  const updateFileMutation = useUpdateFileInfoMutation();
 
   return (
     <Popover>
       <PopoverTrigger>
-        <Button className="gap-1">
+        <Button className="gap-[6px] text-sm">
           {file?.record.published ? (
             <>
               <Share className="h-3 w-3" /> Share
@@ -32,13 +44,24 @@ export default function ShareButtonPopover() {
 
           <div className="flex flex-col rounded-sm border overflow-hidden ">
             <div
-              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer border-b-[1px] hover:bg-primary-foreground relative"
+              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer border-b-[1px] hover:bg-secondary-hover relative"
               onClick={() => {
-                updateFile(
-                  (file?.data as DigitalDocument).identifier,
-                  file?.data as DigitalDocument,
-                  false
-                );
+                if (file) {
+                  setLoading(true);
+                  updateFileMutation.mutate(
+                    {
+                      record: file.record,
+                      newFileInfo: file.data,
+                      publish: false,
+                    },
+                    {
+                      onSuccess: () => {
+                        invalidateFileQuery(did!, file.record.id);
+                        setLoading(false);
+                      },
+                    }
+                  );
+                }
               }}
             >
               <div className="w-full flex justify-start items-center ">
@@ -60,7 +83,7 @@ export default function ShareButtonPopover() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.25 }}
                     exit={{ opacity: 0 }}
-                    className="rounded-full bg-primary p-1"
+                    className="rounded-full bg-foreground p-1"
                   >
                     <Check
                       className="h-3 w-3 text-secondary"
@@ -72,13 +95,24 @@ export default function ShareButtonPopover() {
             </div>
 
             <div
-              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer hover:bg-primary-foreground relative"
+              className="w-full flex flex-col justify-start items-start rounded p-2 cursor-pointer hover:bg-secondary-hover relative"
               onClick={() => {
-                updateFile(
-                  (file?.data as DigitalDocument).identifier,
-                  file?.data as DigitalDocument,
-                  true
-                );
+                if (file) {
+                  setLoading(true);
+                  updateFileMutation.mutate(
+                    {
+                      record: file.record,
+                      newFileInfo: file.data,
+                      publish: true,
+                    },
+                    {
+                      onSuccess: () => {
+                        invalidateFileQuery(did!, file.record.id);
+                        setLoading(false);
+                      },
+                    }
+                  );
+                }
               }}
             >
               <div className="w-full flex justify-start items-center ">
@@ -102,7 +136,7 @@ export default function ShareButtonPopover() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.25 }}
                     exit={{ opacity: 0 }}
-                    className="rounded-full bg-primary p-1"
+                    className="rounded-full bg-foreground p-1"
                   >
                     <Check
                       className="h-3 w-3 text-secondary"
@@ -121,27 +155,25 @@ export default function ShareButtonPopover() {
                 event.preventDefault();
                 event.stopPropagation();
 
-                const fileType = getFileType(
-                  (file.data as DigitalDocument).encodingFormat
-                );
+                const fileType = getFileType(file.data.type);
 
                 if (fileType === "pdf")
                   navigator.clipboard.writeText(
-                    `${window.location.origin}/pdf/${file.record.author}/${file.record.id}`
+                    `${window.location.origin}/file/pdf/${file.record.author}/${file.record.id}`
                   );
                 else if (fileType === "image")
                   navigator.clipboard.writeText(
-                    `${window.location.origin}/image/${file.record.author}/${file.record.id}`
+                    `${window.location.origin}/file/image/${file.record.author}/${file.record.id}`
                   );
                 else if (fileType === "video")
                   navigator.clipboard.writeText(
-                    `${window.location.origin}/video/${file.record.author}/${file.record.id}`
+                    `${window.location.origin}/file/video/${file.record.author}/${file.record.id}`
                   );
                 else
                   navigator.clipboard.writeText(
                     `${import.meta.env.VITE_DWN_URL}/${
                       file.record.author
-                    }/records/${(file.data as DigitalDocument).fileBlobId}`
+                    }/records/${file.data.fileBlobId}`
                   );
 
                 setLinkCopied(true);
@@ -152,21 +184,15 @@ export default function ShareButtonPopover() {
               }}
             >
               {linkCopied ? (
-                <Check
-                  className="w-3 h-3 mr-1 text-primary"
-                  fontWeight={"bold"}
-                />
+                <Check className="w-3 h-3 mr-1" fontWeight={"bold"} />
               ) : (
-                <Copy
-                  className="w-3 h-3 mr-1 text-primary"
-                  fontWeight={"bold"}
-                />
+                <Copy className="w-3 h-3 mr-1" fontWeight={"bold"} />
               )}
 
               {linkCopied ? (
-                <p className="text-sm text-primary">Link Copied!</p>
+                <p className="text-sm">Link Copied!</p>
               ) : (
-                <p className="text-sm text-primary">Copy Link</p>
+                <p className="text-sm">Copy Link</p>
               )}
             </div>
           )}

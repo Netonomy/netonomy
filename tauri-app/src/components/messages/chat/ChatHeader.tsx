@@ -1,7 +1,7 @@
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import useChatStore from "@/stores/useChatStore";
-import { ArrowLeft, PlusIcon } from "lucide-react";
+import { ArrowLeft, Bot, PlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function ChatHeader({
@@ -31,7 +31,7 @@ export default function ChatHeader({
         <div className="flex items-center gap-2 w-[80%] justify-center relative ">
           {messages.length > 0 && (
             <Avatar>
-              <AvatarImage src="AI.png" alt="agent-ring" />
+              <Bot className="w-full h-full" />
             </Avatar>
           )}
         </div>

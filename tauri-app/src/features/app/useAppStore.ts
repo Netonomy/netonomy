@@ -1,20 +1,20 @@
-import { NavBarOptions } from "@/enums/NavBarOptions";
+import { NavBarOption } from "@/enums/NavBarOption";
 import { create } from "zustand";
 
 interface AppState {
-  navBarItem: NavBarOptions;
+  navBarItem: NavBarOption;
   loading: boolean;
   actions: {
-    setNavBarItem: (navBarItem: NavBarOptions) => void;
+    setNavBarItem: (navBarItem: NavBarOption) => void;
     setLoading: (loading: boolean) => void;
   };
 }
 
 const useAppStore = create<AppState>((set) => ({
-  navBarItem: NavBarOptions.storage,
+  navBarItem: NavBarOption.storage,
   loading: false,
   actions: {
-    setNavBarItem: (navBarItem: NavBarOptions) => {
+    setNavBarItem: (navBarItem: NavBarOption) => {
       set({ navBarItem });
     },
     setLoading: (loading: boolean) => set({ loading }),

@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import Compressor from "compressorjs";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -102,7 +103,7 @@ export function makeThumbFromVideo(videoBlob: any) {
 
 export function getFileType(
   encodingFormat: string
-): "image" | "pdf" | "video" | "other" {
+): "image" | "pdf" | "video" | "spreadsheet" | "other" {
   if (encodingFormat === "application/pdf") return "pdf";
   else if (
     encodingFormat === "image/jpeg" ||
@@ -113,5 +114,28 @@ export function getFileType(
   )
     return "image";
   else if (encodingFormat.startsWith("video/")) return "video";
+  else if (
+    encodingFormat ===
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  )
+    return "spreadsheet";
   else return "other";
+}
+
+export function compressFile(file: Blob): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    new Compressor(file, {
+      quality: 0.6,
+
+      // The compression process is asynchronous,
+      // which means you have to access the `result` in the `success` hook function.
+      success(result) {
+        resolve(result);
+      },
+      error(err) {
+        console.log(err.message);
+        reject(err);
+      },
+    });
+  });
 }

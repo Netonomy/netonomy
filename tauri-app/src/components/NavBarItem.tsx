@@ -1,37 +1,33 @@
-import { NavBarOptions } from "@/enums/NavBarOptions";
-import useAppStore from "@/stores/useAppStore";
+import { NavBarOption } from "@/enums/NavBarOption";
 import { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
+import useWeb5Store from "@/features/app/useWeb5Store";
 
 export default function NavBarItem({
   icon,
   item,
+  selected,
 }: {
   icon: ReactNode;
-  item: NavBarOptions;
+  item: NavBarOption;
+  selected?: boolean;
 }) {
-  const selectedNavBar = useAppStore((state) => state.navBarItem);
-  const setNavBarItem = useAppStore((state) => state.actions.setNavBarItem);
+  const navigate = useNavigate();
+  const did = useWeb5Store((state) => state.did);
 
   return (
-    <div
-      className={`flex flex-col items-center gap-2 p-3 rounded-lg cursor-pointer ${
-        selectedNavBar === item && "bg-secondary"
-      }`}
-      onClick={() => setNavBarItem(item)}
+    <Button
+      variant={selected ? "default" : "outline"}
+      size={"icon"}
+      className="text-foreground"
+      onClick={() => {
+        if (item === NavBarOption.storage) navigate("/");
+        else if (item === NavBarOption.profile) navigate(`/profile/${did}`);
+        else navigate(`/${item}`);
+      }}
     >
-      <div
-        className={`${
-          selectedNavBar === item ? "text-primary" : "text-gray-400"
-        }`}
-      >
-        {icon}
-      </div>
-
-      <div
-        className={`w-1 h-1 rounded-full md:hidden ${
-          selectedNavBar === item ? "bg-primary" : "bg-transparent"
-        }`}
-      />
-    </div>
+      {icon}
+    </Button>
   );
 }

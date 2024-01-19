@@ -1,25 +1,32 @@
-import useCollectionStore, {
-  selectedStorageDisplayTabAtom,
-} from "@/stores/useFileStorageStore";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "../../../components/ui/skeleton";
 import FileGridItem from "./FileGridItem";
-import { useAtom } from "jotai/react";
+import {
+  invalidateFilesQuery,
+  useFilesQuery,
+  useUploadFileMutation,
+} from "../hooks";
+import useAppStore from "@/features/app/useAppStore";
+import useStorageStore from "../store";
 import FileListItem from "./FileListItem";
 
 function FileGrid() {
-  const collectionItems = useCollectionStore((state) => state.collectionItems);
-  const fetchCollection = useCollectionStore(
-    (state) => state.actions.fetchFilesAndFolders
-  );
-  const uploadFile = useCollectionStore((state) => state.actions.uploadFile);
-  const [selectedDisplayTab] = useAtom(selectedStorageDisplayTabAtom);
-  const fetching = useCollectionStore((state) => state.fetching);
+  const gridRef = useRef<any>(null);
+  const selectedDisplayTab = useStorageStore((state) => state.selectedDisplay);
+  const filesQuery = useFilesQuery();
+  const uploadFileMutation = useUploadFileMutation();
+  const setLoading = useAppStore((state) => state.actions.setLoading);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
-      uploadFile(file);
+      setLoading(true);
+      uploadFileMutation.mutate(file, {
+        onSuccess: () => {
+          invalidateFilesQuery();
+          setLoading(false);
+        },
+      });
     }
   }, []);
 
@@ -29,19 +36,28 @@ function FileGrid() {
   });
 
   useEffect(() => {
-    fetchCollection(undefined);
+    document.addEventListener("click", handleClickOutside, false);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, false);
+    };
   }, []);
 
-  if (collectionItems?.length === 0) {
+  const handleClickOutside = (event: any) => {
+    if (gridRef.current && !gridRef.current.contains(event.target)) {
+      // clearSelectedFileIds();
+    }
+  };
+
+  if (filesQuery.data?.length === 0) {
     return (
       <div className="flex flex-1 w-full overflow-y-auto p-2">
         <div
           className={`w-full flex-1 rounded-lg items-center flex justify-center ${
-            isDragActive && "bg-primary-foreground"
+            isDragActive && "bg-card-foreground"
           }`}
           {...getRootProps()}
         >
-          <div className="text-2xl font-medium text-primary">
+          <div className="text-2xl font-medium">
             Start by dragging a file here.
           </div>
         </div>
@@ -50,22 +66,25 @@ function FileGrid() {
   }
 
   return (
-    <div className="flex flex-1 w-full overflow-y-auto p-2 max-h-[calc(100vh-100px)] ">
+    <div
+      className="flex flex-1 w-full overflow-y-auto max-h-[calc(100vh-100px)]"
+      ref={gridRef}
+    >
       <div
         className={`${
           selectedDisplayTab === "list"
             ? "w-full flex-1 overflow-y-auto max-h-[calc(100vh-90px)] md:max-h-[calc(100vh-100px)] items-center rounded-lg "
-            : " w-full flex-1 overflow-y-auto grid grid-cols-auto grid-rows-sm rounded-lg  max-h-[calc(100vh-120px)] md:max-h-min "
-        } ${isDragActive && "bg-primary-foreground"}`}
+            : " w-full flex-1 overflow-y-auto grid grid-cols-auto gap-0 grid-rows-sm rounded-lg max-h-[calc(100vh-120px)] md:max-h-min justify-center md:justify-start "
+        } ${isDragActive && "bg-card-foreground"}`}
         {...getRootProps()}
       >
-        {fetching ? (
+        {filesQuery.isLoading ? (
           <>
             {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="p-2">
+              <div key={i} className="">
                 {selectedDisplayTab === "grid" ? (
                   <div
-                    className={`h-auto w-full rounded flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                    className={`h-auto w-full rounded flex flex-col items-center gap-4 relative p-4 hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card-foreground`}
                   >
                     <Skeleton className="min-h-[65px] min-w-[65px] max-w-[65px] max-h-[65px] md:min-h-[80px] md:min-w-[80px] md:max-h-[80px] md:max-w-[80px] rounded-lg" />
 
@@ -73,7 +92,7 @@ function FileGrid() {
                   </div>
                 ) : (
                   <div
-                    className={`h-auto w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-primary-foreground`}
+                    className={`h-auto w-full rounded-lg flex flex-row items-center p-2  hover:cursor-pointer transition overflow-x-visible z-50 hover:bg-card-foreground`}
                   >
                     <div className="flex items-center justify-center">
                       <Skeleton className="min-h-[60px] min-w-[60px] max-h-[60px] max-w-[60px] rounded-lg" />
@@ -95,12 +114,12 @@ function FileGrid() {
           </>
         ) : (
           <>
-            {collectionItems &&
-              collectionItems.map((file) => {
+            {filesQuery.data &&
+              filesQuery.data.map((file, i) => {
                 return selectedDisplayTab === "grid" ? (
-                  <FileGridItem file={file} key={file.data.identifier} />
+                  <FileGridItem file={file} key={file.record.id} />
                 ) : (
-                  <FileListItem file={file} key={file.data.identifier} />
+                  <FileListItem file={file} key={file.record.id} index={i} />
                 );
               })}
           </>

@@ -6,7 +6,7 @@
 
 </div>
 
-### Connect, Create, Collaborate, Share
+### Connect, Create, Collaborate
 
 Building on top of [Web5](https://developer.tbd.website/projects/web5/) netonomy allows people and organization to own their data and transfer information peer to peer
 
@@ -22,3 +22,5 @@ Building on top of [Web5](https://developer.tbd.website/projects/web5/) netonomy
 - [ ] Calendar
 - [ ] Bitcoin Wallet (2/3 multi sig)
 - [ ] Bitcoin lightning
+
+[Minimalism Life](https://minimalism.com/)

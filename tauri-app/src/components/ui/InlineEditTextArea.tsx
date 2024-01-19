@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { InputProps } from "./input";
+import { TextareaProps } from "./textarea";
 
-export default function InlineEdit({
+export default function InlineEditTextarea({
   editView,
   readView,
   onConfirm,
@@ -9,7 +9,7 @@ export default function InlineEdit({
   turnOnEditing,
   disabled,
 }: {
-  editView: ({ fieldProps }: { fieldProps: InputProps }) => ReactNode;
+  editView: ({ fieldProps }: { fieldProps: TextareaProps }) => ReactNode;
   readView: ReactNode;
   onConfirm: (value: string) => void;
   defaultValue: string;
