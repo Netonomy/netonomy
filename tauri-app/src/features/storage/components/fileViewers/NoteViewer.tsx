@@ -1,9 +1,9 @@
 import PageContainer from "@/components/PageContainer";
-import SlashCommand from "@/components/editor/extensions/SlashCommand";
+import SlashCommand from "@/features/storage/components/editor/extensions/SlashCommand";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
-export default function NoteEditorPage() {
+export default function NoteEditor() {
   const editor = useEditor({
     extensions: [SlashCommand, StarterKit],
     editorProps: {

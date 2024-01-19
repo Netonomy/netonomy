@@ -12,6 +12,7 @@ import PdfViewer from "./features/storage/components/fileViewers/PdfViewer";
 import FileViewerPage from "./pages/FileViewerPage";
 import ImageViewer from "./features/storage/components/fileViewers/ImageViewer";
 import VideoViwer from "./features/storage/components/fileViewers/VideoViewer";
+import NoteEditor from "./features/storage/components/fileViewers/NoteViewer";
 const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const CreateProfilePage = React.lazy(() => import("./pages/CreateProfilePage"));
 
@@ -55,13 +56,10 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/note/:recordId",
-    element: (
-      <Suspense>
-        <NoteEditorPage />
-      </Suspense>
-    ),
+    path: "note",
+    element: <NoteEditor />,
   },
+
   {
     path: "/messages",
     element: (
